@@ -1,0 +1,22 @@
+PODS:
+  - Flutter (1.0.0)
+  - keyboard_utils (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - keyboard_utils (from `.symlinks/plugins/keyboard_utils/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  keyboard_utils:
+    :path: ".symlinks/plugins/keyboard_utils/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  keyboard_utils: ab24bc711be9e91a5937c20489056b8dd650fecc
+
+PODFILE CHECKSUM: c34e2287a9ccaa606aeceab922830efb9a6ff69a
+
+COCOAPODS: 1.9.3
