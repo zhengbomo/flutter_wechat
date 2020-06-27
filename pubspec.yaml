@@ -18,9 +18,8 @@ dependencies:
   quiver: ^2.1.3
   provider: ^4.1.3
   keyboard_utils: ^1.2.3
-
-
-
+  # scroll_to_index: ^1.0.6
+  scroll_to_index_with_offset: ^1.0.11
 
 
 dev_dependencies:

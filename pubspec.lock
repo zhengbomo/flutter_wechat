@@ -158,6 +158,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.3"
+  scroll_to_index_with_offset:
+    dependency: "direct main"
+    description:
+      name: scroll_to_index_with_offset
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.11"
   sky_engine:
     dependency: transitive
     description: flutter

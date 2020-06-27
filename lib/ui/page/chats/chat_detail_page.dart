@@ -1,9 +1,14 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterwechat/data/constants/constants.dart';
 import 'package:flutterwechat/data/providers/chat_message_model.dart';
+import 'package:flutterwechat/data/providers/chat_message_ui_model.dart';
 import 'package:flutterwechat/ui/page/chats/chat_editor.dart';
+import 'package:flutterwechat/ui/page/chats/chat_input_type.dart';
+import 'package:flutterwechat/ui/page/chats/view/chat_message_container.dart';
+import 'package:flutterwechat/ui/page/chats/view/chat_message_text.dart';
+import 'package:keyboard_utils/keyboard_utils.dart';
 import 'package:provider/provider.dart';
+import 'package:scroll_to_index_with_offset/scroll_to_index.dart';
 
 
 class ChatDetailPage extends StatefulWidget {
@@ -12,112 +17,132 @@ class ChatDetailPage extends StatefulWidget {
 }
 
 class _ChatDetailPageState extends State<ChatDetailPage> {
-  ScrollController _scrollController;
-
+  AutoScrollController _scrollController;
+  ChatMessageUIModel _chatMessageUIModel;
+  ChatMessageModel _chatMessageModel;
+  KeyboardUtils _keyboardUtils = KeyboardUtils();
   @override
   void initState() {
-    _scrollController = ScrollController();
-    // _scrollController.addListener(() {
-    //   FocusScope.of(context).requestFocus(FocusNode());
-    // });
-
-    Future.delayed(Duration(seconds: 2)).then((value) {
-      var scrollPosition = this._scrollController.position;
-
-      if (scrollPosition.viewportDimension < scrollPosition.maxScrollExtent) {
-        _scrollController.animateTo(
-          scrollPosition.maxScrollExtent,
-          duration: new Duration(milliseconds: 250),
-          curve: Curves.easeInOut,
-        );
-      }
+    _chatMessageModel = ChatMessageModel();
+    _chatMessageUIModel = ChatMessageUIModel(chatInputTypeChanged: (type) {
+      if (type == ChatInputType.more || type == ChatInputType.keyboard || type == ChatInputType.emoji) {
+        _scrollToEnd();
+      }      
     });
-    
-
+    _scrollController = AutoScrollController(
+      viewportBoundaryGetter: () => Rect.zero,
+      axis: Axis.vertical,
+      // suggestedRowHeight: 100
+    );
 
     super.initState();
   }
 
+  _scrollToEnd() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _scrollController.scrollToIndex(_chatMessageModel.messages.length, preferPosition: AutoScrollPosition.end, offset: 0);
+    });
+  }
+
+  @override
+  void dispose() {
+    _keyboardUtils.removeAllKeyboardListeners();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        title: Text("傻姑1005"),
-      ),
-      body: Stack(
-        children: <Widget>[
-          _buildMessageList(context),
-          // Positioned(
-          //   bottom: 0,
-          //   child: 
-          ChatEditor(keyboardFocused: () {
-              var scrollPosition = this._scrollController.position;
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => _chatMessageModel,
+        ),
+        ChangeNotifierProvider(
+          create: (_) => _chatMessageUIModel,
+        ),
+      ],
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          title: Text("傻姑1005"),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () {
 
-              if (scrollPosition.viewportDimension < scrollPosition.maxScrollExtent) {
-                _scrollController.animateTo(
-                  scrollPosition.maxScrollExtent,
-                  duration: new Duration(milliseconds: 250),
-                  curve: Curves.easeInOut,
-                );
-              }
-            }),
-          // )
-        ],
+              },
+            )
+          ],
+        ),
+        body: Stack(
+          children: <Widget>[
+            _buildMessageList(context),
+            MediaQuery.removePadding(
+              context: context,
+              removeBottom: true,
+              child: Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: ChatEditor(
+                textViewHeightChanged: () {
+                  _scrollToEnd();
+                },
+              ),
+            ),
+            )
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildMessageList(BuildContext context) {
-    return MediaQuery.removePadding(
-      context: context,
-      removeTop: true,
-      removeBottom: true,
+    return Container(
       child: Scrollbar(
         child: Listener(
           onPointerDown: (_) {
-            FocusScope.of(context).requestFocus(FocusNode());
+            if (_chatMessageUIModel.isShowInputPanel) {
+              if (_chatMessageUIModel.chatInputType == ChatInputType.keyboard) {
+                FocusScope.of(context).requestFocus(FocusNode());
+              }
+              _chatMessageUIModel.setChatInputType(ChatInputType.none);
+            }            
           },
-          child: ChangeNotifierProvider(
-            create: (_) => ChatMessageModel(),
-            child: Builder(
-              builder: (c) {
-                return ListView.builder(
-                  padding: EdgeInsets.fromLTRB(0, 0, 0, 12),
-                  dragStartBehavior: DragStartBehavior.start,
-                  controller: _scrollController,
-                  itemBuilder: (c, i) {
-                    return Padding(
-                      padding: EdgeInsets.fromLTRB(0, 12, 0, 0),
+          child: Builder(
+            builder: (c) {
+              var model = c.watch<ChatMessageModel>();
+              return ListView.builder(
+                padding: EdgeInsets.fromLTRB(0, 12, 0, 0),
+                dragStartBehavior: DragStartBehavior.start,
+                controller: _scrollController,
+                itemBuilder: (c, i) {
+                  if (model.messages.length == i) {
+                    // 占位
+                    return AutoScrollTag(
+                      key: ValueKey(i),
+                      controller: _scrollController,
+                      index: i,
                       child: Container(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
-                              child: Image.asset(Constant.assetsImagesMock.named("glory_of_kings.png"), width: 50, height: 50),
-                            ),
-                            ConstrainedBox(
-                              constraints: BoxConstraints(maxWidth: 200),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.green,
-                                  borderRadius: BorderRadius.circular(3)
-                                ),
-                                child: Text("fdsfdsafsdafdsfdsafsdafdsfdsafsdafdsfdsafsdafdsfdsafsdafdsfdsafsdafdsfdsafsdafdsfdsafsdafdsfdsafsdafdsfdsafsdafdsfdsafsdafdsfdsafsdafdsfdsafsdafdsfdsafsdafdsfdsafsdafdsfdsafsda"),
-                              ),
-                            ),
-                            Expanded(child: ConstrainedBox(constraints: BoxConstraints(minWidth: 100))),
-                          ],
-                        ),
+                        height: c.watch<ChatMessageUIModel>().messageListBottomHeight,
+                        color: Colors.red,
+                      )
+                    );
+                  } else {
+                    return AutoScrollTag(
+                      key: ValueKey(i),
+                      controller: _scrollController,
+                      index: i,
+                      child: ChatMessageContainer(
+                        child: ChatMessageText(message: model.messages[i])
                       ),
                     );
-                  },
-                  itemCount: c.watch<ChatMessageModel>().messages.length
-                );
-              },
-            ) 
-          ) ,
+                  }
+                },
+                itemCount: model.messages.length + 1
+              );
+            },
+          ),
         )
       )
     );

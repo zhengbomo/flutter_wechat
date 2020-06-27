@@ -31,4 +31,7 @@ class Style {
 
   /// 红点颜色
   static const Color redBadgeColor = Color(0xFFF84647);
+
+  /// 聊天输入栏背景色
+  static const Color chatToolbarBackgroundColor = Color(0xFFF4f4f4);
 }

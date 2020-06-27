@@ -1,10 +1,7 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutterwechat/data/constants/constants.dart';
 import 'package:flutterwechat/data/providers/chat_section_model.dart';
-import 'package:flutterwechat/data/providers/main_badge_model.dart';
 import 'package:flutterwechat/data/providers/main_chat_model.dart';
 import 'package:flutterwechat/ui/components/add_menu.dart';
 import 'package:flutterwechat/ui/page/base/auto_keep_alive_state.dart';

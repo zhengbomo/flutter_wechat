@@ -65,7 +65,11 @@ class Constant {
   /// 主边距
   static const double pEdgeInset = 16.0;
 
-  /// 图标大小
+  /// Tab图标大小
   static const double tabBarIconSize = 30;
+
+  static const double chatToolbarMinHeight = 60;
+  static const double chatToolbarMaxHeight = 100;
+  static const double chatToolbarTopBottomPadding = 10;
 
 }
