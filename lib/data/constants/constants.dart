@@ -73,7 +73,17 @@ class Constant {
   /// Tab图标大小
   static const double tabBarIconSize = 30;
 
-  static const double chatToolbarMinHeight = 60;
-  static const double chatToolbarMaxHeight = 100;
+  /// 聊天输入栏最小高度
+  static const double chatToolbarMinHeight =
+      chatToolbarInputViewMinHeight + chatToolbarTopBottomPadding * 2;
+
+  /// 聊天输入栏最大高度
+  static const double chatToolbarMaxHeight =
+      chatToolbarInputViewMaxHeight + chatToolbarTopBottomPadding * 2;
+
+  /// 聊天输入栏内边距
   static const double chatToolbarTopBottomPadding = 10;
+
+  static const double chatToolbarInputViewMinHeight = 40;
+  static const double chatToolbarInputViewMaxHeight = 80;
 }

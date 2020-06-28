@@ -39,13 +39,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     super.initState();
   }
 
-  _scrollToEnd({bool animate = true}) {
+  _scrollToEnd() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      var duration = animate ? Duration(microseconds: 250) : Duration.zero;
       _scrollController.scrollToIndex(_chatMessageModel.messages.length,
-          duration: duration,
-          preferPosition: AutoScrollPosition.end,
-          offset: 0);
+          preferPosition: AutoScrollPosition.end, offset: 0);
     });
   }
 
@@ -88,8 +85,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                 left: 0,
                 right: 0,
                 child: ChatEditor(
-                  textViewHeightChanged: (init) {
-                    _scrollToEnd(animate: true);
+                  textViewHeightChanged: (_) {
+                    _scrollToEnd();
                   },
                 ),
               ),
@@ -116,7 +113,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         builder: (c) {
           var model = c.watch<ChatMessageModel>();
           return ListView.builder(
-              // reverse: true,
               padding: EdgeInsets.fromLTRB(0, 12, 0, 0),
               dragStartBehavior: DragStartBehavior.start,
               controller: _scrollController,
@@ -131,7 +127,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                         height: c
                             .watch<ChatMessageUIModel>()
                             .messageListBottomHeight,
-                        color: Colors.red,
+                        // color: Colors.red,
                       ));
                 } else {
                   return AutoScrollTag(

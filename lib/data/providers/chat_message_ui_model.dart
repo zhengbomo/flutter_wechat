@@ -26,8 +26,8 @@ class ChatMessageUIModel extends ChangeNotifier {
     return this.bottomHeight + inputToolHeight;
   }
 
-  bool setInputToolHeight(double height, {bool notify = true}) {
-    height += Constant.chatToolbarTopBottomPadding * 2;
+  // 更新输入栏高度
+  bool setInputToolHeight(double height, {bool notify: true}) {
     var fixHeight = min([
       Constant.chatToolbarMaxHeight,
       max([height, Constant.chatToolbarMinHeight])

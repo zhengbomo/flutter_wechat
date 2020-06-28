@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterwechat/data/constants/constants.dart';
+import 'package:flutterwechat/data/constants/style.dart';
 import 'package:flutterwechat/data/providers/chat_message_ui_model.dart';
 import 'package:flutterwechat/ui/page/chats/chat_input_type.dart';
-import 'package:flutterwechat/ui/view/sized_icon_button.dart';
+import 'package:flutterwechat/ui/view/svg_icon_buttton.dart';
 import 'package:keyboard_utils/keyboard_listener.dart';
 import 'package:keyboard_utils/keyboard_utils.dart';
 import 'package:provider/provider.dart';
@@ -28,8 +29,9 @@ class _ChatEditorState extends State<ChatEditor>
 
   @override
   void initState() {
-    _editingController =
-        TextEditingController(text: "mmmmmmmmmmmmmmmmmm mmmmmmmmmmmmmmmmmm");
+    _editingController = TextEditingController(
+        text:
+            "mmmmmmmmmmmmmmmmmm mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
     _subscribingId = _keyboardUtils.add(
         listener: KeyboardListener(willShowKeyboard: (height) {
       var model = context.read<ChatMessageUIModel>();
@@ -58,6 +60,8 @@ class _ChatEditorState extends State<ChatEditor>
     // 更新toolheight
     var textViewHeight =
         _textFieldKey.currentContext.findRenderObject().paintBounds.size.height;
+
+    textViewHeight += (Constant.chatToolbarTopBottomPadding * 2);
     if (textViewHeight != model.inputToolHeight) {
       model.setInputToolHeight(textViewHeight, notify: notify);
     }
@@ -75,8 +79,8 @@ class _ChatEditorState extends State<ChatEditor>
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-        // color: Style.chatToolbarBackgroundColor.withAlpha(200),
-        color: Colors.green.withAlpha(150),
+        color: Style.chatToolbarBackgroundColor.withAlpha(200),
+        // color: Colors.green.withAlpha(150),
         child: SafeArea(
             top: false,
             bottom: false,
@@ -85,18 +89,14 @@ class _ChatEditorState extends State<ChatEditor>
                 Padding(
                   key: _globalKey,
                   padding: EdgeInsets.fromLTRB(
-                      0,
+                      5,
                       Constant.chatToolbarTopBottomPadding,
-                      0,
+                      5,
                       Constant.chatToolbarTopBottomPadding),
                   child: Container(
                     child: Row(
                       children: <Widget>[
-                        SizedIconButton(
-                          height: Constant.chatToolbarMinHeight -
-                              Constant.chatToolbarTopBottomPadding * 2,
-                          width: Constant.chatToolbarMinHeight -
-                              Constant.chatToolbarTopBottomPadding * 2,
+                        _IconButton(
                           onPressed: () {
                             var model = context.read<ChatMessageUIModel>();
                             if (model.chatInputType != ChatInputType.voice) {
@@ -106,36 +106,34 @@ class _ChatEditorState extends State<ChatEditor>
                                     .requestFocus(FocusNode());
                               }
                               model.setInputToolHeight(
-                                  Constant.chatToolbarMinHeight -
-                                      Constant.chatToolbarTopBottomPadding * 2);
+                                  Constant.chatToolbarMinHeight);
                               model.setChatInputType(ChatInputType.voice);
                             } else {
                               _focusNode.requestFocus();
-                              // model.setChatInputType(ChatInputType.keyboard);
+                              // model.setChatInputType(ChatInpuqtType.keyboard);
                             }
                           },
-                          icon: Icon(context
+                          assetName: context
                                       .watch<ChatMessageUIModel>()
                                       .chatInputType ==
                                   ChatInputType.voice
-                              ? Icons.blur_off
-                              : Icons.blur_on),
+                              ? Constant.assetsImagesChatBar
+                                  .named("chat_bar_voice.svg")
+                              : Constant.assetsImagesChatBar
+                                  .named("chat_bar_keyboard.svg"),
                         ),
                         Expanded(
                             child: ConstrainedBox(
                                 constraints: BoxConstraints(
-                                    maxHeight: Constant.chatToolbarMaxHeight -
-                                        Constant.chatToolbarTopBottomPadding *
-                                            2,
-                                    minHeight: Constant.chatToolbarMinHeight -
-                                        Constant.chatToolbarTopBottomPadding *
-                                            2),
+                                    maxHeight:
+                                        Constant.chatToolbarInputViewMaxHeight,
+                                    minHeight:
+                                        Constant.chatToolbarInputViewMinHeight),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment:
                                       CrossAxisAlignment.stretch,
-                                  // index: _indexForCenterInput(context),
                                   children: <Widget>[
                                     Offstage(
                                         offstage: context
@@ -147,7 +145,7 @@ class _ChatEditorState extends State<ChatEditor>
                                           style: TextStyle(fontSize: 18),
                                           // expands: true,
                                           keyboardType: TextInputType.multiline,
-                                          maxLines: null,
+                                          maxLines: 3,
                                           minLines: 1,
                                           focusNode: _focusNode,
                                           placeholder: "ddd",
@@ -164,34 +162,36 @@ class _ChatEditorState extends State<ChatEditor>
                                       child: SizedBox(
                                         height: 40,
                                         child: FlatButton(
-                                          color: Color(0xffdcdcdc),
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5)),
+                                          color: Colors.white,
                                           onPressed: () {},
-                                          child: Text("按住说话"),
+                                          child: Text("按住说话",
+                                              style: TextStyle(
+                                                  color: Color(0xff181818))),
                                         ),
                                       ),
                                     )
                                   ],
                                 ))),
-                        SizedIconButton(
-                          height: Constant.chatToolbarMinHeight -
-                              Constant.chatToolbarTopBottomPadding * 2,
-                          width: Constant.chatToolbarMinHeight -
-                              Constant.chatToolbarTopBottomPadding * 2,
-                          onPressed: () {
-                            var model = context.read<ChatMessageUIModel>();
-                            if (model.chatInputType == ChatInputType.keyboard) {
-                              _focusNode.unfocus();
-                            }
-                            _updateTextToolHeight(model);
-                            model.setChatInputType(ChatInputType.emoji);
-                          },
-                          icon: Icon(Icons.people),
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+                          child: _IconButton(
+                            onPressed: () {
+                              var model = context.read<ChatMessageUIModel>();
+                              if (model.chatInputType ==
+                                  ChatInputType.keyboard) {
+                                _focusNode.unfocus();
+                              }
+                              _updateTextToolHeight(model);
+                              model.setChatInputType(ChatInputType.emoji);
+                            },
+                            assetName: Constant.assetsImagesChatBar
+                                .named("chat_bar_emoji.svg"),
+                          ),
                         ),
-                        SizedIconButton(
-                          height: Constant.chatToolbarMinHeight -
-                              Constant.chatToolbarTopBottomPadding * 2,
-                          width: Constant.chatToolbarMinHeight -
-                              Constant.chatToolbarTopBottomPadding * 2,
+                        _IconButton(
                           onPressed: () {
                             var model = context.read<ChatMessageUIModel>();
                             if (model.chatInputType == ChatInputType.keyboard) {
@@ -200,7 +200,8 @@ class _ChatEditorState extends State<ChatEditor>
                             _updateTextToolHeight(model);
                             model.setChatInputType(ChatInputType.more);
                           },
-                          icon: Icon(Icons.people),
+                          assetName: Constant.assetsImagesChatBar
+                              .named("chat_bar_more.svg"),
                         ),
                       ],
                     ),
@@ -230,6 +231,7 @@ class _ChatEditorState extends State<ChatEditor>
           .size
           .height;
       print("$height, $height2");
+      height += (2 * Constant.chatToolbarTopBottomPadding);
       var model = context.read<ChatMessageUIModel>();
       if (height != model.inputToolHeight) {
         // scroll to end
@@ -239,14 +241,22 @@ class _ChatEditorState extends State<ChatEditor>
       }
     });
   }
+}
 
-  int _indexForCenterInput(BuildContext context) {
-    var chatInputType = context.watch<ChatMessageUIModel>().chatInputType;
-    switch (chatInputType) {
-      case ChatInputType.voice:
-        return 1;
-      default:
-        return 0;
-    }
+class _IconButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  final String assetName;
+
+  _IconButton({this.onPressed, this.assetName});
+  @override
+  Widget build(BuildContext context) {
+    return SvgIconButton(
+      maxSize: Size(Constant.chatToolbarInputViewMinHeight,
+          Constant.chatToolbarInputViewMinHeight),
+      onPressed: onPressed,
+      iconSize: 30,
+      color: Color(0xff181818),
+      assetName: assetName,
+    );
   }
 }
