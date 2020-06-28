@@ -6,10 +6,9 @@ import 'package:flutterwechat/ui/page/chats/chat_editor.dart';
 import 'package:flutterwechat/ui/page/chats/chat_input_type.dart';
 import 'package:flutterwechat/ui/page/chats/view/chat_message_container.dart';
 import 'package:flutterwechat/ui/page/chats/view/chat_message_text.dart';
+import 'package:flutterwechat/utils/vender/scroll_to_index_with_offset/lib/scroll_to_index.dart';
 import 'package:keyboard_utils/keyboard_utils.dart';
 import 'package:provider/provider.dart';
-import 'package:scroll_to_index_with_offset/scroll_to_index.dart';
-
 
 class ChatDetailPage extends StatefulWidget {
   @override
@@ -25,9 +24,11 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   void initState() {
     _chatMessageModel = ChatMessageModel();
     _chatMessageUIModel = ChatMessageUIModel(chatInputTypeChanged: (type) {
-      if (type == ChatInputType.more || type == ChatInputType.keyboard || type == ChatInputType.emoji) {
+      if (type == ChatInputType.more ||
+          type == ChatInputType.keyboard ||
+          type == ChatInputType.emoji) {
         _scrollToEnd();
-      }      
+      }
     });
     _scrollController = AutoScrollController(
       viewportBoundaryGetter: () => Rect.zero,
@@ -38,9 +39,13 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     super.initState();
   }
 
-  _scrollToEnd() {
+  _scrollToEnd({bool animate = true}) {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _scrollController.scrollToIndex(_chatMessageModel.messages.length, preferPosition: AutoScrollPosition.end, offset: 0);
+      var duration = animate ? Duration(microseconds: 250) : Duration.zero;
+      _scrollController.scrollToIndex(_chatMessageModel.messages.length,
+          duration: duration,
+          preferPosition: AutoScrollPosition.end,
+          offset: 0);
     });
   }
 
@@ -68,9 +73,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.add),
-              onPressed: () {
-
-              },
+              onPressed: () {},
             )
           ],
         ),
@@ -81,15 +84,15 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               context: context,
               removeBottom: true,
               child: Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: ChatEditor(
-                textViewHeightChanged: () {
-                  _scrollToEnd();
-                },
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: ChatEditor(
+                  textViewHeightChanged: (init) {
+                    _scrollToEnd(animate: true);
+                  },
+                ),
               ),
-            ),
             )
           ],
         ),
@@ -99,52 +102,50 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   Widget _buildMessageList(BuildContext context) {
     return Container(
-      child: Scrollbar(
-        child: Listener(
-          onPointerDown: (_) {
-            if (_chatMessageUIModel.isShowInputPanel) {
-              if (_chatMessageUIModel.chatInputType == ChatInputType.keyboard) {
-                FocusScope.of(context).requestFocus(FocusNode());
-              }
-              _chatMessageUIModel.setChatInputType(ChatInputType.none);
-            }            
-          },
-          child: Builder(
-            builder: (c) {
-              var model = c.watch<ChatMessageModel>();
-              return ListView.builder(
-                padding: EdgeInsets.fromLTRB(0, 12, 0, 0),
-                dragStartBehavior: DragStartBehavior.start,
-                controller: _scrollController,
-                itemBuilder: (c, i) {
-                  if (model.messages.length == i) {
-                    // 占位
-                    return AutoScrollTag(
+        child: Scrollbar(
+            child: Listener(
+      onPointerDown: (_) {
+        if (_chatMessageUIModel.isShowInputPanel) {
+          if (_chatMessageUIModel.chatInputType == ChatInputType.keyboard) {
+            FocusScope.of(context).requestFocus(FocusNode());
+          }
+          _chatMessageUIModel.setChatInputType(ChatInputType.none);
+        }
+      },
+      child: Builder(
+        builder: (c) {
+          var model = c.watch<ChatMessageModel>();
+          return ListView.builder(
+              // reverse: true,
+              padding: EdgeInsets.fromLTRB(0, 12, 0, 0),
+              dragStartBehavior: DragStartBehavior.start,
+              controller: _scrollController,
+              itemBuilder: (c, i) {
+                if (model.messages.length == i) {
+                  // 占位
+                  return AutoScrollTag(
                       key: ValueKey(i),
                       controller: _scrollController,
                       index: i,
                       child: Container(
-                        height: c.watch<ChatMessageUIModel>().messageListBottomHeight,
+                        height: c
+                            .watch<ChatMessageUIModel>()
+                            .messageListBottomHeight,
                         color: Colors.red,
-                      )
-                    );
-                  } else {
-                    return AutoScrollTag(
-                      key: ValueKey(i),
-                      controller: _scrollController,
-                      index: i,
-                      child: ChatMessageContainer(
-                        child: ChatMessageText(message: model.messages[i])
-                      ),
-                    );
-                  }
-                },
-                itemCount: model.messages.length + 1
-              );
-            },
-          ),
-        )
-      )
-    );
+                      ));
+                } else {
+                  return AutoScrollTag(
+                    key: ValueKey(i),
+                    controller: _scrollController,
+                    index: i,
+                    child: ChatMessageContainer(
+                        child: ChatMessageText(message: model.messages[i])),
+                  );
+                }
+              },
+              itemCount: model.messages.length + 1);
+        },
+      ),
+    )));
   }
 }

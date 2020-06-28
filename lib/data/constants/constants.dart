@@ -10,7 +10,6 @@ class Constant {
   /// 新特性模块相关的资源
   static const String assetsImagesNewFeature = 'assets/images/new_feature/';
 
-
   /// 联系人模块相关的资源
   static const String assetsImagesContacts = 'assets/images/contacts/';
 
@@ -24,13 +23,19 @@ class Constant {
   static const String assetsImagesArrow = 'assets/images/arrow/';
 
   /// 微信模块相关的资源
-  static const AssertUtil assetsImagesMainframe = AssertUtil('assets/images/chat/');
+  static const AssertUtil assetsImagesMainframe =
+      AssertUtil('assets/images/chat/');
+
+  /// 微信聊天输入栏资源
+  static const AssertUtil assetsImagesChatBar =
+      AssertUtil('assets/images/chat/chat_bar/');
 
   /// 微信模块相关的资源
   static const AssertUtil assetsImagesMock = AssertUtil('assets/images/mock/');
 
   /// TabBar相关模块相关的资源
-  static const AssertUtil assetsImagesTabbar = AssertUtil('assets/images/tabbar/');
+  static const AssertUtil assetsImagesTabbar =
+      AssertUtil('assets/images/tabbar/');
 
   /// 关于微信相关模块相关的资源
   static const String assetsImagesAboutUs = 'assets/images/about_us/';
@@ -71,5 +76,4 @@ class Constant {
   static const double chatToolbarMinHeight = 60;
   static const double chatToolbarMaxHeight = 100;
   static const double chatToolbarTopBottomPadding = 10;
-
 }

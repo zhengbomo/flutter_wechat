@@ -7,7 +7,7 @@ class ChatMessageUIModel extends ChangeNotifier {
   final ValueChanged<ChatInputType> chatInputTypeChanged;
 
   ChatMessageUIModel({this.chatInputTypeChanged});
-  
+
   double keyboardHeight = 0;
 
   double inputToolHeight = Constant.chatToolbarMinHeight;
@@ -17,23 +17,27 @@ class ChatMessageUIModel extends ChangeNotifier {
   ChatInputType get chatInputType => _chatInputType;
 
   bool get isShowInputPanel {
-    return _chatInputType == ChatInputType.keyboard 
-      || _chatInputType == ChatInputType.emoji 
-      || _chatInputType == ChatInputType.more;
+    return _chatInputType == ChatInputType.keyboard ||
+        _chatInputType == ChatInputType.emoji ||
+        _chatInputType == ChatInputType.more;
   }
 
   double get messageListBottomHeight {
-    return this.bottomHeight + inputToolHeight
-    ;
+    return this.bottomHeight + inputToolHeight;
   }
-  
-  bool setInputToolHeight(double height) {
+
+  bool setInputToolHeight(double height, {bool notify = true}) {
     height += Constant.chatToolbarTopBottomPadding * 2;
-    var fixHeight = min([Constant.chatToolbarMaxHeight, max([height, Constant.chatToolbarMinHeight])]);
+    var fixHeight = min([
+      Constant.chatToolbarMaxHeight,
+      max([height, Constant.chatToolbarMinHeight])
+    ]);
     fixHeight = fixHeight;
     if (inputToolHeight != fixHeight) {
       inputToolHeight = fixHeight;
-      notifyListeners();
+      if (notify) {
+        notifyListeners();
+      }
       return true;
     } else {
       return false;
@@ -43,23 +47,23 @@ class ChatMessageUIModel extends ChangeNotifier {
   double get bottomHeight {
     switch (chatInputType) {
       case ChatInputType.none:
-      return 34;
+        return 34;
       case ChatInputType.keyboard:
-      return keyboardHeight;
+        return keyboardHeight;
       case ChatInputType.emoji:
-      return 250;
+        return 250;
       case ChatInputType.more:
-      return 300;
+        return 300;
       case ChatInputType.voice:
-      return 34;
+        return 34;
       default:
-      return 0;
+        return 0;
     }
   }
 
   setKeyboardHeight(double height) {
     keyboardHeight = height;
-    notifyListeners();  
+    notifyListeners();
   }
 
   setChatInputType(ChatInputType type) {
@@ -67,6 +71,6 @@ class ChatMessageUIModel extends ChangeNotifier {
       _chatInputType = type;
       notifyListeners();
       chatInputTypeChanged(type);
-    }    
-  }  
+    }
+  }
 }

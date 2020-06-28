@@ -33,6 +33,7 @@ flutter:
     - assets/images/
     - assets/images/tabbar/
     - assets/images/chat/
+    - assets/images/chat/chat_bar/
     - assets/images/mock/
 
   # fonts:
