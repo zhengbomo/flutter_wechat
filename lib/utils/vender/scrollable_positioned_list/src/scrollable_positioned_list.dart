@@ -176,8 +176,9 @@ class ItemScrollController {
     _scrollableListState._jumpTo(index: index, offset: offset);
   }
 
-  List<dynamic> getCurrentIndex({bool wholeVisible = false}) {
-    return _scrollableListState._getCurrentIndex(wholeVisible);
+  /// get first widget's [int index, double offset] in current viewport
+  List<dynamic> getCurrentIndexInfo({bool wholeVisible = false}) {
+    return _scrollableListState._getCurrentIndexInfo(wholeVisible);
   }
 
   /// Animation the list over [duration] using the given [curve] such that the
@@ -219,9 +220,7 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
       ProxyAnimation(const AlwaysStoppedAnimation<double>(1.0));
 
   int backTarget = 0;
-  double backAlignment = 0;
   int frontTarget;
-  double frontAlignment;
   Function cancelScrollCallback;
   Function endScrollCallback;
   _ListDisplay listDisplay = _ListDisplay.front;
@@ -231,7 +230,6 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
   void initState() {
     super.initState();
     frontTarget = widget.initialScrollIndex;
-    frontAlignment = widget.initialAlignment;
     widget.itemScrollController?._attach(this);
     frontItemPositionNotifier.itemPositions.addListener(_updatePositions);
     backItemPositionNotifier.itemPositions.addListener(_updatePositions);
@@ -259,7 +257,6 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
                 child: Opacity(
                   opacity: 1,
                   child: Container(
-                    color: Colors.red,
                     child: LayoutBuilder(
                       builder: (context, constraints) => PositionedList(
                         itemBuilder: widget.itemBuilder,
@@ -292,7 +289,6 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
                   builder: (context, child) => Opacity(
                     opacity: frontOpacity.value,
                     child: Container(
-                      color: Colors.blue,
                       child: LayoutBuilder(
                         builder: (context, constraints) => PositionedList(
                           itemBuilder: widget.itemBuilder,
@@ -341,7 +337,6 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
         return v;
       }
     });
-
     var offset = controller.position.viewportDimension *
         firstVisibleItem.itemLeadingEdge;
     return [firstVisibleItem.index, offset];
