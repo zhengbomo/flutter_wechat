@@ -6,7 +6,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
@@ -168,6 +167,11 @@ class ScrollablePositionedList extends StatefulWidget {
 /// Controller to jump or scroll to a particular position in a
 /// [ScrollablePositionedList].
 class ItemScrollController {
+  /// Whether any ScrollablePositionedList objects are attached this object.
+  ///
+  /// If `false`, then [jumpTo] and [scrollTo] must not be called.
+  bool get isAttached => _scrollableListState != null;
+
   _ScrollablePositionedListState _scrollableListState;
 
   /// Immediately, without animation, reconfigure the list so that item at
@@ -205,7 +209,6 @@ class ItemScrollController {
   }
 
   void _detach() {
-    assert(_scrollableListState != null);
     _scrollableListState = null;
   }
 }
@@ -316,7 +319,7 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
         ),
       );
 
-  List<dynamic> _getCurrentIndex(bool wholeVisible) {
+  List<dynamic> _getCurrentIndexInfo(bool wholeVisible) {
     final controller =
         _showFrontList ? frontScrollController : backScrollController;
     final notifier =
@@ -327,7 +330,7 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
       } else {
         return i.itemTrailingEdge > 0 && i.itemLeadingEdge < 1;
       }
-    }).toList();
+    });
     ItemPosition firstVisibleItem = visibleItems.fold(null, (v, i) {
       if (v == null) {
         return i;
