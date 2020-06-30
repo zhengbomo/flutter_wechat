@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class ChatMessageInfo<T> {
   int messageId;
   T content;
@@ -6,4 +8,6 @@ class ChatMessageInfo<T> {
   String username;
   int userType;
   DateTime date;
+  Color color;
+  double height;
 }

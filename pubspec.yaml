@@ -20,6 +20,8 @@ dependencies:
   keyboard_utils: ^1.2.3
   # scroll_to_index: ^1.0.6
   # scroll_to_index_with_offset: ^1.0.11
+  # indexed_list_view: ^1.0.9
+  random_color: ^1.0.5
 
 
 dev_dependencies:

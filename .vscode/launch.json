@@ -5,9 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Flutter",
+            "name": "laboshi",
             "request": "launch",
-            "type": "dart"
-        }
+            "type": "dart",
+            "args": [
+                "-d",
+                "laboshi"
+            ]
+        },
+        {
+            "name": "iPhone 11",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "-d",
+                "iPhone 11"
+            ]
+        },
     ]
 }
