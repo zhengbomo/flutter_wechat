@@ -56,8 +56,6 @@ class _InheritedRegistryWidget extends InheritedWidget {
   bool updateShouldNotify(InheritedWidget oldWidget) => true;
 }
 
-int mountCount = 0;
-
 class _RegisteredElement extends ProxyElement {
   _RegisteredElement(ProxyWidget widget) : super(widget);
 
@@ -68,10 +66,9 @@ class _RegisteredElement extends ProxyElement {
 
   @override
   void mount(Element parent, dynamic newSlot) {
-    // print("mount ${widget.key} ${++mountCount}");
     super.mount(parent, newSlot);
-    final _InheritedRegistryWidget _inheritedRegistryWidget =
-        inheritFromWidgetOfExactType(_InheritedRegistryWidget);
+    final _inheritedRegistryWidget =
+        dependOnInheritedWidgetOfExactType<_InheritedRegistryWidget>();
     _registryWidgetState = _inheritedRegistryWidget.state;
     _registryWidgetState.registeredElements.add(this);
     _registryWidgetState.widget.elementNotifier?.value =
@@ -81,8 +78,8 @@ class _RegisteredElement extends ProxyElement {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final _InheritedRegistryWidget _inheritedRegistryWidget =
-        inheritFromWidgetOfExactType(_InheritedRegistryWidget);
+    final _inheritedRegistryWidget =
+        dependOnInheritedWidgetOfExactType<_InheritedRegistryWidget>();
     _registryWidgetState = _inheritedRegistryWidget.state;
     _registryWidgetState.registeredElements.add(this);
     _registryWidgetState.widget.elementNotifier?.value =
@@ -91,8 +88,6 @@ class _RegisteredElement extends ProxyElement {
 
   @override
   void unmount() {
-    // print("unmount ${widget.key} ${--mountCount}");
-
     _registryWidgetState.registeredElements.remove(this);
     _registryWidgetState.widget.elementNotifier?.value =
         _registryWidgetState.registeredElements;

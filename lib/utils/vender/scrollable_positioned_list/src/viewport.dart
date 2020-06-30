@@ -4,9 +4,9 @@
 
 import 'dart:math' as math;
 
-import 'package:meta/meta.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:meta/meta.dart';
 
 /// A render object that is bigger on the inside.
 ///
@@ -23,15 +23,22 @@ class UnboundedViewport extends Viewport {
     Key center,
     double cacheExtent,
     List<Widget> slivers = const <Widget>[],
-  }) : super(
+  })  : _anchor = anchor,
+        super(
             key: key,
             axisDirection: axisDirection,
             crossAxisDirection: crossAxisDirection,
-            anchor: anchor,
             offset: offset,
             center: center,
             cacheExtent: cacheExtent,
             slivers: slivers);
+
+  // [Viewport] enforces constraints on [Viewport.anchor], so we need our own
+  // version.
+  final double _anchor;
+
+  @override
+  double get anchor => _anchor;
 
   @override
   RenderViewport createRenderObject(BuildContext context) {
@@ -64,21 +71,34 @@ class UnboundedRenderViewport extends RenderViewport {
     List<RenderSliver> children,
     RenderSliver center,
     double cacheExtent,
-  }) : super(
+  })  : _anchor = anchor,
+        super(
             axisDirection: axisDirection,
             crossAxisDirection: crossAxisDirection,
             offset: offset,
-            anchor: anchor,
             center: center,
             cacheExtent: cacheExtent,
             children: children);
 
   static const int _maxLayoutCycles = 10;
 
+  double _anchor;
+
   // Out-of-band data computed during layout.
   double _minScrollExtent;
   double _maxScrollExtent;
   bool _hasVisualOverflow = false;
+
+  @override
+  double get anchor => _anchor;
+
+  @override
+  set anchor(double value) {
+    assert(value != null);
+    if (value == _anchor) return;
+    _anchor = value;
+    markNeedsLayout();
+  }
 
   @override
   void performLayout() {
@@ -105,10 +125,10 @@ class UnboundedRenderViewport extends RenderViewport {
         break;
     }
 
-    final double centerOffsetAdjustment = center.centerOffsetAdjustment;
+    final centerOffsetAdjustment = center.centerOffsetAdjustment;
 
     double correction;
-    int count = 0;
+    var count = 0;
     do {
       assert(offset.pixels != null);
       correction = _attemptLayout(mainAxisExtent, crossAxisExtent,
@@ -117,11 +137,12 @@ class UnboundedRenderViewport extends RenderViewport {
         offset.correctBy(correction);
       } else {
         // *** Difference from [RenderViewport].
-        if (offset.applyContentDimensions(
-          _minScrollExtent + mainAxisExtent * anchor,
-          math.max(math.min(0.0, _minScrollExtent + mainAxisExtent * anchor),
-              _maxScrollExtent - mainAxisExtent * (1.0 - anchor)),
-        )) break;
+        final top = _minScrollExtent + mainAxisExtent * anchor;
+        final bottom = _maxScrollExtent - mainAxisExtent * (1.0 - anchor);
+        final maxScrollOffset = math.max(math.min(0.0, top), bottom);
+        final minScrollOffset = math.min(top, maxScrollOffset);
+        if (offset.applyContentDimensions(minScrollOffset, maxScrollOffset))
+          break;
         // *** End of difference from [RenderViewport].
       }
       count += 1;
@@ -165,24 +186,24 @@ class UnboundedRenderViewport extends RenderViewport {
     // centerOffset is the offset from the leading edge of the RenderViewport
     // to the zero scroll offset (the line between the forward slivers and the
     // reverse slivers).
-    final double centerOffset = mainAxisExtent * anchor - correctedOffset;
+    final centerOffset = mainAxisExtent * anchor - correctedOffset;
     final double reverseDirectionRemainingPaintExtent =
         centerOffset.clamp(0.0, mainAxisExtent);
     final double forwardDirectionRemainingPaintExtent =
         (mainAxisExtent - centerOffset).clamp(0.0, mainAxisExtent);
 
-    final double fullCacheExtent = mainAxisExtent + 2 * cacheExtent;
-    final double centerCacheOffset = centerOffset + cacheExtent;
+    final fullCacheExtent = mainAxisExtent + 2 * cacheExtent;
+    final centerCacheOffset = centerOffset + cacheExtent;
     final double reverseDirectionRemainingCacheExtent =
         centerCacheOffset.clamp(0.0, fullCacheExtent);
     final double forwardDirectionRemainingCacheExtent =
         (fullCacheExtent - centerCacheOffset).clamp(0.0, fullCacheExtent);
 
-    final RenderSliver leadingNegativeChild = childBefore(center);
+    final leadingNegativeChild = childBefore(center);
 
     if (leadingNegativeChild != null) {
       // negative scroll offsets
-      final double result = layoutChildSequence(
+      final result = layoutChildSequence(
         child: leadingNegativeChild,
         scrollOffset: math.max(mainAxisExtent, centerOffset) - mainAxisExtent,
         overlap: 0.0,
