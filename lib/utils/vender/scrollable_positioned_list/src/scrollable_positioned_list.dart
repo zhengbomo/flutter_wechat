@@ -52,10 +52,11 @@ class ScrollablePositionedList extends StatefulWidget {
     this.addSemanticIndexes = true,
     this.addAutomaticKeepAlives = true,
     this.addRepaintBoundaries = true,
+    this.minCacheExtent,
   })  : assert(itemCount != null),
         assert(itemBuilder != null),
-        separatorBuilder = null,
         itemPositionNotifier = itemPositionsListener,
+        separatorBuilder = null,
         super(key: key);
 
   /// Create a [ScrollablePositionedList] whose items are provided by
@@ -77,8 +78,10 @@ class ScrollablePositionedList extends StatefulWidget {
     this.addSemanticIndexes = true,
     this.addAutomaticKeepAlives = true,
     this.addRepaintBoundaries = true,
+    this.minCacheExtent,
   })  : assert(itemCount != null),
         assert(itemBuilder != null),
+        assert(separatorBuilder != null),
         itemPositionNotifier = itemPositionsListener,
         super(key: key);
 
@@ -148,6 +151,15 @@ class ScrollablePositionedList extends StatefulWidget {
   ///
   /// See [SliverChildBuilderDelegate.addRepaintBoundaries].
   final bool addRepaintBoundaries;
+
+  /// The minimum cache extent used by the underlying scroll lists.
+  /// See [ScrollView.cacheExtent].
+  ///
+  /// Note that the [ScrollablePositionedList] uses two lists to simulate long
+  /// scrolls, so using the [ScrollController.scrollTo] method may result
+  /// in builds of widgets that would otherwise already be built in the
+  /// cache extent.
+  final double minCacheExtent;
 
   @override
   State<StatefulWidget> createState() => _ScrollablePositionedListState();
