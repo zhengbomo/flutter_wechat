@@ -2,8 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterwechat/data/constants/constants.dart';
 import 'package:flutterwechat/data/constants/style.dart';
+import 'package:flutterwechat/data/providers/chat_detail_emoji_model.dart';
 import 'package:flutterwechat/data/providers/chat_message_ui_model.dart';
 import 'package:flutterwechat/ui/page/chats/chat_input_type.dart';
+import 'package:flutterwechat/ui/page/chats/view/emoji_panel/main_emoji_panel.dart';
+import 'package:flutterwechat/ui/page/chats/view/more_panel.dart';
 import 'package:flutterwechat/ui/view/svg_icon_buttton.dart';
 import 'package:keyboard_utils/keyboard_listener.dart';
 import 'package:keyboard_utils/keyboard_utils.dart';
@@ -29,9 +32,7 @@ class _ChatEditorState extends State<ChatEditor>
 
   @override
   void initState() {
-    _editingController = TextEditingController(
-        text:
-            "mmmmmmmmmmmmmmmmmm mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
+    _editingController = TextEditingController(text: "mmmmmmmmmmmmmmmmmm");
     _subscribingId = _keyboardUtils.add(
         listener: KeyboardListener(willShowKeyboard: (height) {
       var model = context.read<ChatMessageUIModel>();
@@ -79,7 +80,7 @@ class _ChatEditorState extends State<ChatEditor>
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-        color: Style.chatToolbarBackgroundColor.withAlpha(200),
+        color: Style.chatToolbarBackgroundColor.withAlpha(255),
         // color: Colors.green.withAlpha(150),
         child: SafeArea(
             top: false,
@@ -212,11 +213,30 @@ class _ChatEditorState extends State<ChatEditor>
                   duration: Duration(milliseconds: 250),
                   vsync: this,
                   child: SizedBox(
-                      height: context.watch<ChatMessageUIModel>().bottomHeight),
+                    height: context.watch<ChatMessageUIModel>().bottomHeight,
+                    child: Builder(builder: (context) {
+                      var chatType =
+                          context.watch<ChatMessageUIModel>().chatInputType;
+                      switch (chatType) {
+                        case ChatInputType.none:
+                        case ChatInputType.voice:
+                        case ChatInputType.keyboard:
+                          return Container();
+                        case ChatInputType.emoji:
+                          return MainEmojiPanel(key: emojiPanelKey);
+                        case ChatInputType.more:
+                          return MorePanel();
+                        default:
+                          return Container();
+                      }
+                    }),
+                  ),
                 ),
               ],
             )));
   }
+
+  GlobalKey emojiPanelKey = GlobalKey();
 
   _onTextChanged(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {

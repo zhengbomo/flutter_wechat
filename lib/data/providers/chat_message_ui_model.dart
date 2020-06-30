@@ -51,7 +51,7 @@ class ChatMessageUIModel extends ChangeNotifier {
       case ChatInputType.keyboard:
         return keyboardHeight;
       case ChatInputType.emoji:
-        return 250;
+        return 400;
       case ChatInputType.more:
         return 300;
       case ChatInputType.voice:

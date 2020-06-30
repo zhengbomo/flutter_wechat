@@ -18,14 +18,13 @@ dependencies:
   quiver: ^2.1.3
   provider: ^4.1.3
   keyboard_utils: ^1.2.3
-  # scroll_to_index: ^1.0.6
-  # scroll_to_index_with_offset: ^1.0.11
-  # indexed_list_view: ^1.0.9
   random_color: ^1.0.5
+  flutter_section_list_view: ^1.0.0
   scrollable_positioned_list:
     git:
       url: git@github.com:zhengbomo/flutter.widgets.git
       path: packages/scrollable_positioned_list
+      ref: d25154458f51afab22a08c8bcf029d1f3cf27f79
 
 dev_dependencies:
   flutter_test:

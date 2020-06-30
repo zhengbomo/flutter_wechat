@@ -5,7 +5,6 @@ import 'package:flutterwechat/data/providers/main_badge_model.dart';
 import 'package:flutterwechat/ui/page/main/main_page.dart';
 import 'package:provider/provider.dart';
 
-
 void main() {
   runApp(MyApp());
 }
@@ -18,17 +17,14 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         splashFactory: Shares.noInkFeatureFactory,
-        appBarTheme: AppBarTheme(
-          elevation: 1
-        ),
+        buttonTheme: ButtonThemeData(minWidth: 0),
+        appBarTheme: AppBarTheme(elevation: 1),
         primaryColor: Style.primaryColor,
         visualDensity: VisualDensity.adaptivePlatformDensity,
         scaffoldBackgroundColor: Style.pBackgroundColor,
       ),
       home: MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => MainBadgeModel())
-        ],
+        providers: [ChangeNotifierProvider(create: (_) => MainBadgeModel())],
         child: MainPage(),
       ),
     );

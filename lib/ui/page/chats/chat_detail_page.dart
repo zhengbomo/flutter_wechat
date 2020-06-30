@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutterwechat/data/providers/chat_detail_emoji_model.dart';
 import 'package:flutterwechat/data/providers/chat_message_model.dart';
 import 'package:flutterwechat/data/providers/chat_message_ui_model.dart';
 import 'package:flutterwechat/ui/page/chats/chat_editor.dart';
 import 'package:flutterwechat/ui/page/chats/chat_input_type.dart';
 import 'package:flutterwechat/ui/page/chats/view/chat_message_container.dart';
 import 'package:flutterwechat/ui/page/chats/view/chat_message_text.dart';
-import 'package:flutterwechat/utils/vender/scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:keyboard_utils/keyboard_utils.dart';
 import 'package:provider/provider.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class ChatDetailPage extends StatefulWidget {
   @override
@@ -21,11 +22,13 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   ChatMessageUIModel _chatMessageUIModel;
   ChatMessageModel _chatMessageModel;
+  ChatDetailEmojiModel _chatDetailEmojiModel;
   KeyboardUtils _keyboardUtils = KeyboardUtils();
 
   @override
   void initState() {
     _chatMessageModel = ChatMessageModel();
+    _chatDetailEmojiModel = ChatDetailEmojiModel();
     _chatMessageUIModel = ChatMessageUIModel(chatInputTypeChanged: (type) {
       if (type == ChatInputType.more ||
           type == ChatInputType.keyboard ||
@@ -62,11 +65,14 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         ChangeNotifierProvider(
           create: (_) => _chatMessageUIModel,
         ),
+        ChangeNotifierProvider(
+          create: (_) => _chatDetailEmojiModel,
+        ),
       ],
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: Text("傻姑1005"),
+          title: Text("八戒"),
           actions: <Widget>[
             IconButton(
                 icon: Icon(Icons.add),
@@ -77,15 +83,22 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               icon: Icon(Icons.add),
               onPressed: () {
                 final indexInfo =
-                    _scrollController.getCurrentIndex(wholeVisible: false);
+                    _scrollController.getCurrentIndexInfo(wholeVisible: false);
                 final int index = indexInfo[0];
                 final double offset = indexInfo[1];
 
                 final addCount = 20;
                 _chatMessageModel.insertMessage(addCount);
-
-                _scrollController.jumpTo(
-                    index: index + addCount, offset: -offset);
+                final realIndex = index + addCount;
+                _scrollController.jumpTo(index: realIndex, offset: -offset);
+                // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                //   final indexInfo = _scrollController.getCurrentIndexInfo(
+                //       wholeVisible: false);
+                //   final int index = indexInfo[0];
+                //   if (index != realIndex) {
+                //     _scrollController.jumpTo(index: realIndex, offset: -offset);
+                //   }
+                // });
               },
             )
           ],
@@ -95,7 +108,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
             _buildMessageList(context),
             MediaQuery.removePadding(
               context: context,
-              removeBottom: true,
+              removeTop: true,
+              removeBottom: false,
               child: Positioned(
                 bottom: 0,
                 left: 0,
@@ -152,13 +166,13 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     if (model.messages.length == i) {
                       // 占位
                       return Container(
-                        color: Colors.green,
+                        // color: Colors.green,
                         height: uimodel.messageListBottomHeight,
                       );
                     } else {
                       return Container(
-                        color: model.messages[i].color.withAlpha(150),
-                        height: model.messages[i].height,
+                        // color: model.messages[i].color.withAlpha(150),
+                        // height: model.messages[i].height,
                         child: ChatMessageContainer(
                             child: ChatMessageText(message: model.messages[i])),
                       );

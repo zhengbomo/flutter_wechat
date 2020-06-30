@@ -16,19 +16,32 @@ class ChatMessageContainer extends StatelessWidget {
           children: <Widget>[
             Padding(
               padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
-              child: Image.asset(Constant.assetsImagesMock.named("glory_of_kings.png"), width: 50, height: 50),
-            ),
-            ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: 200),
               child: Container(
+                width: 50,
+                height: 50,
                 decoration: BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.circular(3)
-                ),
-                child: this.child,
+                    color: Colors.orange,
+                    borderRadius: BorderRadius.circular(3)),
               ),
             ),
-            Expanded(child: ConstrainedBox(constraints: BoxConstraints(minWidth: 100))),
+            ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: 200),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(0, 0, 0, 3),
+                      child: Text(
+                        "八戒",
+                        style: TextStyle(fontSize: 13, color: Colors.black38),
+                      ),
+                    ),
+                    this.child,
+                  ],
+                )),
+            Expanded(
+                child:
+                    ConstrainedBox(constraints: BoxConstraints(minWidth: 100))),
           ],
         ),
       ),
