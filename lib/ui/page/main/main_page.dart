@@ -8,7 +8,6 @@ import 'package:flutterwechat/ui/page/main/main_tab_bar.dart';
 import 'package:flutterwechat/ui/page/me/me_page.dart';
 import 'package:provider/provider.dart';
 
-
 class MainPage extends StatefulWidget {
   @override
   _MainPageState createState() => _MainPageState();
@@ -16,19 +15,14 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   PageController _pageController;
-  int _tabIndex = 0;
 
-  final _tabWidget = [
-    MainChatPage(),
-    ContactsPage(),
-    DiscoverPage(),
-    MePage()
-  ];
+  final _tabWidget = [MainChatPage(), ContactsPage(), DiscoverPage(), MePage()];
 
   void initState() {
     super.initState();
 
-    this._pageController = PageController(initialPage: this._tabIndex, keepPage: true);
+    var index = context.read<MainBadgeModel>().selectedIndex;
+    this._pageController = PageController(initialPage: index, keepPage: true);
   }
 
   @override
@@ -50,31 +44,31 @@ class _MainPageState extends State<MainPage> {
     // context.select((MainBadgeModel m) => m.selectedIndex)
 
     return Scaffold(
-      bottomNavigationBar: MainTabBar(),
-      body: Selector(builder: (context, int index, child) {
-        if (_pageController.hasClients) {
-          _pageController.jumpToPage(index);
-        }        
-        return child;
-      }, selector: (context, MainBadgeModel model) {
-        return model.selectedIndex;
-      }, child: PageView( 
-        children: this._tabWidget,
-        controller: _pageController,
-        // onPageChanged: _onPageChanged,
-        physics: NeverScrollableScrollPhysics(), // 禁止滑动
-      ))
-    );
+        bottomNavigationBar: MainTabBar(),
+        body: Selector(
+            builder: (context, int index, child) {
+              if (_pageController.hasClients) {
+                _pageController.jumpToPage(index);
+              }
+              return child;
+            },
+            selector: (context, MainBadgeModel model) {
+              return model.selectedIndex;
+            },
+            child: PageView(
+              children: this._tabWidget,
+              controller: _pageController,
+              // onPageChanged: _onPageChanged,
+              physics: NeverScrollableScrollPhysics(), // 禁止滑动
+            )));
   }
-
 }
-
 
 class MyPageView extends PageView {
   set currentPage(int page) {
     this.controller.animateToPage(page, duration: null, curve: null);
   }
- 
+
   // MyPageView({
   //   Key key,
   //   PageController controller,

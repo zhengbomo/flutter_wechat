@@ -24,7 +24,10 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Style.pBackgroundColor,
       ),
       home: MultiProvider(
-        providers: [ChangeNotifierProvider(create: (_) => MainBadgeModel())],
+        providers: [
+          ChangeNotifierProvider(
+              create: (_) => MainBadgeModel(selectedIndex: 1))
+        ],
         child: MainPage(),
       ),
     );

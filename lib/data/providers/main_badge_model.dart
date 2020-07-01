@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
-
 class MainBadgeModel with ChangeNotifier, DiagnosticableTreeMixin {
   String messageBadge;
   String contactBadge;
@@ -38,6 +37,7 @@ class MainBadgeModel with ChangeNotifier, DiagnosticableTreeMixin {
       notifyListeners();
     }
   }
+
   void setMeBadge(String badge) {
     if (meBadge != badge) {
       meBadge = badge;
