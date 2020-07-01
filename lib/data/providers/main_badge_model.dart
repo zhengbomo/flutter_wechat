@@ -8,7 +8,16 @@ class MainBadgeModel with ChangeNotifier, DiagnosticableTreeMixin {
   String meBadge;
   int selectedIndex;
 
+  bool isShowBottomTabBar = true;
+
   MainBadgeModel({this.selectedIndex = 0});
+
+  void showBottomTabBar(bool show) {
+    if (isShowBottomTabBar != show) {
+      isShowBottomTabBar = show;
+      notifyListeners();
+    }
+  }
 
   void setSelectedIndex(int index) {
     if (selectedIndex != index) {

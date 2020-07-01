@@ -86,4 +86,10 @@ class Constant {
 
   static const double chatToolbarInputViewMinHeight = 40;
   static const double chatToolbarInputViewMaxHeight = 80;
+
+  /// 列表上的搜索框高度
+  static const double listSearchBarHeight = 44;
+
+  /// bootomNavigationBar高度
+  static const double bootomNavigationBarHeight = 50;
 }

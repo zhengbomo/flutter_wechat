@@ -119,9 +119,9 @@ class _ChatEditorState extends State<ChatEditor>
                                       .chatInputType ==
                                   ChatInputType.voice
                               ? Constant.assetsImagesChatBar
-                                  .named("chat_bar_voice.svg")
+                                  .named("chat_bar_keyboard.svg")
                               : Constant.assetsImagesChatBar
-                                  .named("chat_bar_keyboard.svg"),
+                                  .named("chat_bar_voice.svg"),
                         ),
                         Expanded(
                             child: ConstrainedBox(
@@ -181,25 +181,40 @@ class _ChatEditorState extends State<ChatEditor>
                           child: _IconButton(
                             onPressed: () {
                               var model = context.read<ChatMessageUIModel>();
-                              if (model.chatInputType ==
-                                  ChatInputType.keyboard) {
-                                _focusNode.unfocus();
+                              if (model.chatInputType == ChatInputType.emoji) {
+                                _focusNode.requestFocus();
+                              } else {
+                                if (model.chatInputType ==
+                                    ChatInputType.keyboard) {
+                                  _focusNode.unfocus();
+                                }
+                                _updateTextToolHeight(model);
+                                model.setChatInputType(ChatInputType.emoji);
                               }
-                              _updateTextToolHeight(model);
-                              model.setChatInputType(ChatInputType.emoji);
                             },
-                            assetName: Constant.assetsImagesChatBar
-                                .named("chat_bar_emoji.svg"),
+                            assetName: context
+                                        .watch<ChatMessageUIModel>()
+                                        .chatInputType ==
+                                    ChatInputType.emoji
+                                ? Constant.assetsImagesChatBar
+                                    .named("chat_bar_keyboard.svg")
+                                : Constant.assetsImagesChatBar
+                                    .named("chat_bar_emoji.svg"),
                           ),
                         ),
                         _IconButton(
                           onPressed: () {
                             var model = context.read<ChatMessageUIModel>();
-                            if (model.chatInputType == ChatInputType.keyboard) {
-                              _focusNode.unfocus();
+                            if (model.chatInputType == ChatInputType.more) {
+                              _focusNode.requestFocus();
+                            } else {
+                              if (model.chatInputType ==
+                                  ChatInputType.keyboard) {
+                                _focusNode.unfocus();
+                              }
+                              _updateTextToolHeight(model);
+                              model.setChatInputType(ChatInputType.more);
                             }
-                            _updateTextToolHeight(model);
-                            model.setChatInputType(ChatInputType.more);
                           },
                           assetName: Constant.assetsImagesChatBar
                               .named("chat_bar_more.svg"),

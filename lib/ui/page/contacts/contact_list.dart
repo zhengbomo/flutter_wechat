@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterwechat/data/constants/basic.dart';
+import 'package:flutterwechat/ui/view/search_bar.dart';
 
 class ContactList extends StatefulWidget {
-  final TwoValueCallback<DragBehavior, double> dragOffsetChanged;
+  final ThreeValueCallback<DragBehavior, double, bool> dragOffsetChanged;
   final ValueChanged<bool> textFieldFocusChanged;
 
   ContactList(
@@ -24,6 +25,7 @@ class _ContactListState extends State<ContactList> {
   @override
   void initState() {
     _focusNode.addListener(() {
+      widget.textFieldFocusChanged(_focusNode.hasFocus);
       if (_focusNode.hasFocus) {
         _scrollController.animateTo(0,
             duration: Duration(milliseconds: 250), curve: Curves.easeInOut);
@@ -32,8 +34,8 @@ class _ContactListState extends State<ContactList> {
       }
     });
     Future.delayed(Duration(seconds: 1)).then((_) {
-      _scrollController.animateTo(100,
-          duration: Duration(milliseconds: 250), curve: Curves.easeInOut);
+      // _scrollController.animateTo(100,
+      // duration: Duration(milliseconds: 250), curve: Curves.easeInOut);
     });
     super.initState();
   }
@@ -42,7 +44,7 @@ class _ContactListState extends State<ContactList> {
   Widget build(BuildContext context) {
     return MediaQuery.removePadding(
       removeTop: true,
-      removeBottom: true,
+      removeBottom: false,
       context: context,
       child: NotificationListener<ScrollNotification>(
         onNotification: (notification) {
@@ -51,20 +53,23 @@ class _ContactListState extends State<ContactList> {
             // print("changing ${_focusNode.hasFocus}");
             // 手动滑动
             if (_hasDragDetail) {
-              widget.dragOffsetChanged(DragBehavior.dragChanging, offset);
+              widget.dragOffsetChanged(DragBehavior.dragChanging, offset,
+                  notification.dragDetails != null);
             }
           } else if (notification is ScrollEndNotification) {
             // print("end ${_focusNode.hasFocus}");
             if (_hasDragDetail) {
-              widget.dragOffsetChanged(DragBehavior.dragEnd, offset);
+              widget.dragOffsetChanged(DragBehavior.dragEnd, offset,
+                  notification.dragDetails != null);
             }
             _hasDragDetail = false;
           } else if (notification is ScrollStartNotification) {
-            print("start ${_focusNode.hasFocus}, ${notification.context}");
+            // print("start ${_focusNode.hasFocus}, ${notification.context}");
             final ScrollStartNotification startNotification = notification;
             if (startNotification.dragDetails != null) {
               _hasDragDetail = true;
-              widget.dragOffsetChanged(DragBehavior.dragStart, offset);
+              widget.dragOffsetChanged(DragBehavior.dragStart, offset,
+                  notification.dragDetails != null);
             }
           } else if (notification is UserScrollNotification) {
             // 方向变化时候触发
@@ -76,34 +81,27 @@ class _ContactListState extends State<ContactList> {
         },
         child: Scrollbar(
           child: CustomScrollView(
+            physics: _focusNode.hasFocus
+                ? NeverScrollableScrollPhysics()
+                : AlwaysScrollableScrollPhysics(),
             controller: _scrollController,
             slivers: <Widget>[
               SliverToBoxAdapter(
-                child: Container(
-                  padding: EdgeInsets.all(12),
-                  child: NotificationListener(
-                    onNotification: (notification) {
-                      return false;
-                    },
-                    child: CupertinoTextField(
-                      scrollPhysics: NeverScrollableScrollPhysics(),
-                      maxLines: 1,
-                      controller: _textEditingController,
-                      focusNode: _focusNode,
-                      placeholder: "搜索",
-                    ),
-                  ),
-                ),
+                child: SearchBar(
+                    focusNode: _focusNode,
+                    textEditingController: _textEditingController),
               ),
-              SliverList(
-                  delegate: SliverChildBuilderDelegate((context, i) {
-                return Container(
-                  margin: EdgeInsets.all(8),
-                  height: 100,
-                  color: Colors.red,
-                  child: Text("$i"),
-                );
-              }, childCount: 10)),
+              SliverSafeArea(
+                sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate((context, i) {
+                  return Container(
+                    margin: EdgeInsets.all(8),
+                    height: 100,
+                    color: Colors.red,
+                    child: Text("$i"),
+                  );
+                }, childCount: 10)),
+              )
             ],
           ),
         ),
