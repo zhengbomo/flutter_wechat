@@ -5,24 +5,25 @@ import 'package:flutter/material.dart';
 import 'package:flutterwechat/data/constants/constants.dart';
 
 class SearchBar extends StatefulWidget {
-  final TextEditingController textEditingController;
   final FocusNode focusNode;
+  final VoidCallback cancelCallback;
 
-  SearchBar({@required this.textEditingController, @required this.focusNode});
+  SearchBar({@required this.focusNode, @required this.cancelCallback});
 
   @override
   _SearchBarState createState() => _SearchBarState();
 }
 
-class _SearchBarState extends State<SearchBar> {
-  final double _cancelWidth = 60;
+const double _cancelWidth = 60;
 
+class _SearchBarState extends State<SearchBar> {
+  TextEditingController _textEditingController =
+      TextEditingController(text: "");
   String _hintText = "";
 
   bool _hasFocus = false;
 
-  double _cancelRight = 8;
-  double _iconPadding = 30;
+  double _cancelRight = -_cancelWidth;
 
   double get _textFieldRight => _cancelWidth + 8 + _cancelRight;
 
@@ -31,11 +32,8 @@ class _SearchBarState extends State<SearchBar> {
     widget.focusNode.addListener(() {
       _hasFocus = widget.focusNode.hasFocus;
       if (_hasFocus) {
-        onFocus();
-      } else {
-        onUnFocus();
+        _onFocus();
       }
-      // setState(() {});
     });
     super.initState();
   }
@@ -82,7 +80,7 @@ class _SearchBarState extends State<SearchBar> {
                               hintText: _hintText),
                           scrollPhysics: NeverScrollableScrollPhysics(),
                           maxLines: 1,
-                          controller: widget.textEditingController,
+                          controller: _textEditingController,
                           focusNode: widget.focusNode,
                         ),
                       ),
@@ -101,6 +99,8 @@ class _SearchBarState extends State<SearchBar> {
                     child: Text("取消"),
                     onPressed: () {
                       widget.focusNode.unfocus();
+                      _onUnFocus();
+                      widget.cancelCallback();
                     },
                   ),
                 ),
@@ -114,7 +114,9 @@ class _SearchBarState extends State<SearchBar> {
                   },
                   top: 0,
                   bottom: 0,
-                  left: _iconPadding,
+                  left: _hasFocus
+                      ? 16
+                      : (MediaQuery.of(context).size.width - 50) * 0.5,
                   curve: Curves.easeInOut,
                   duration: Duration(milliseconds: 250),
                   child: IgnorePointer(
@@ -152,18 +154,16 @@ class _SearchBarState extends State<SearchBar> {
     );
   }
 
-  onFocus() {
+  _onFocus() {
     setState(() {
-      _iconPadding = 8.0 + 8;
       _cancelRight = 8;
     });
   }
 
-  onUnFocus() {
+  _onUnFocus() {
     print("unfocus");
     setState(() {
       _hintText = "";
-      _iconPadding = (MediaQuery.of(context).size.width - 50) * 0.5;
       _cancelRight = -_cancelWidth;
     });
   }
