@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutterwechat/data/constants/constants.dart';
 import 'package:flutterwechat/data/constants/style.dart';
@@ -80,7 +82,7 @@ class _ChatSectionListState extends State<ChatSectionList> {
                     width: 50,
                     height: 50,
                   ),
-                  badgeView,
+                  if (badgeView != null) badgeView,
                 ],
               )),
           Expanded(
@@ -93,7 +95,7 @@ class _ChatSectionListState extends State<ChatSectionList> {
                   children: <Widget>[
                     Expanded(
                       child: Text(
-                        "傻古1222",
+                        info.title,
                         style: TextStyle(
                             fontSize: 18,
                             color: Colors.black,
@@ -104,7 +106,7 @@ class _ChatSectionListState extends State<ChatSectionList> {
                     ),
                     Padding(
                       padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
-                      child: Text("下午2:24",
+                      child: Text(info.date.toString(),
                           style: TextStyle(
                               fontSize: 12,
                               color: Colors.black26,
@@ -117,7 +119,7 @@ class _ChatSectionListState extends State<ChatSectionList> {
                 children: <Widget>[
                   Expanded(
                     child: Text(
-                      "下午吃什么拉",
+                      info.desc,
                       style: TextStyle(
                           fontSize: 14,
                           color: Colors.black38,
@@ -126,13 +128,14 @@ class _ChatSectionListState extends State<ChatSectionList> {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  Padding(
-                      padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
-                      child: Image.asset(
-                          Constant.assetsImagesMainframe
-                              .named("message_disable_notify_icon.png"),
-                          width: 15,
-                          color: Colors.black)),
+                  if (info.isMute)
+                    Padding(
+                        padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                        child: Image.asset(
+                            Constant.assetsImagesMainframe
+                                .named("message_disable_notify_icon.png"),
+                            width: 15,
+                            color: Colors.black)),
                 ],
               )
             ],

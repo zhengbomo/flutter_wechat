@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterwechat/ui/page/contacts/applet_panel.dart';
+import 'package:flutterwechat/ui/page/main/search_panel.dart';
 import 'package:provider/provider.dart';
 import 'package:flutterwechat/data/constants/constants.dart';
 import 'package:flutterwechat/data/providers/main_badge_model.dart';
@@ -64,6 +65,49 @@ class _ContactsPageState extends AutoKeepAliveState<ContactsPage> {
         child: Container(
           constraints: BoxConstraints.expand(),
           child: Stack(overflow: Overflow.visible, children: <Widget>[
+            // 导航栏
+            AnimatedPositioned(
+              onEnd: () {
+                if (_isRefreshing) {
+                  _isRefreshing = false;
+                  print("-- 结束动画 ${DateTime.now()}");
+                }
+              },
+              left: 0,
+              right: 0,
+              top: _appBarTop,
+              curve: Curves.easeInOut,
+              duration: Duration(milliseconds: _duration),
+              child: Offstage(
+                offstage: false,
+                child: AppBar(
+                  centerTitle: true,
+                  title: Text("通讯录"),
+                  actions: <Widget>[
+                    IconButton(
+                      icon: Icon(Icons.remove),
+                      onPressed: () {
+                        _listMode = ListMode.normal;
+                        _duration = 250;
+                        setState(() {
+                          _appBarTop = 0;
+                          _listViewTop = kToolbarHeight;
+                        });
+                        context.read<MainBadgeModel>().showBottomTabBar(true);
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.add),
+                      onPressed: () {
+                        var model = context.read<MainBadgeModel>();
+                        model.showBottomTabBar(!model.isShowBottomTabBar);
+                      },
+                    )
+                  ],
+                ),
+              ),
+            ),
+
             // 列表
             AnimatedPositioned(
               left: 0,
@@ -74,7 +118,9 @@ class _ContactsPageState extends AutoKeepAliveState<ContactsPage> {
               curve: Curves.easeInOut,
               duration: Duration(milliseconds: _duration),
               child: ContactList(
+                showSearchBar: _listMode != ListMode.applet,
                 onEdit: () {
+                  // 开启搜索
                   _listMode = ListMode.search;
                   _duration = 250;
                   setState(() {
@@ -83,7 +129,7 @@ class _ContactsPageState extends AutoKeepAliveState<ContactsPage> {
                     _listViewTop = 0;
                   });
                   // 显示TabBar
-                  var model = context.read<MainBadgeModel>();
+                  final model = context.read<MainBadgeModel>();
                   model.showBottomTabBar(false);
                 },
                 dragOffsetChanged: (DragBehavior t1, double offset, draging) {
@@ -173,68 +219,19 @@ class _ContactsPageState extends AutoKeepAliveState<ContactsPage> {
               ),
             ),
 
-            // 导航栏
-            AnimatedPositioned(
-              onEnd: () {
-                if (_isRefreshing) {
-                  _isRefreshing = false;
-                  print("-- 结束动画 ${DateTime.now()}");
-                }
-              },
-              left: 0,
-              right: 0,
-              top: _appBarTop,
-              curve: Curves.easeInOut,
-              duration: Duration(milliseconds: _duration),
-              child: Offstage(
-                offstage: false,
-                child: AppBar(
-                  centerTitle: true,
-                  title: Text("通讯录"),
-                  actions: <Widget>[
-                    IconButton(
-                      icon: Icon(Icons.remove),
-                      onPressed: () {
-                        _listMode = ListMode.normal;
-                        _duration = 250;
-                        setState(() {
-                          _appBarTop = 0;
-                          _listViewTop = kToolbarHeight;
-                        });
-                        context.read<MainBadgeModel>().showBottomTabBar(true);
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.add),
-                      onPressed: () {
-                        var model = context.read<MainBadgeModel>();
-                        model.showBottomTabBar(!model.isShowBottomTabBar);
-                        // _duration = 250;
-                        // setState(() {
-                        //   _appBarTop = -kToolbarHeight +
-                        //       query.padding.top;
-                        //   // _listViewTop = _appBarTop;
-                        // });
-                      },
-                    )
-                  ],
-                ),
-              ),
-            ),
-
             // 搜索
             AnimatedPositioned(
               left: 0,
               right: 0,
-              top: _appBarHeight + _listViewTop + Constant.listSearchBarHeight,
+              top: Constant.listSearchBarHeight +
+                  _listViewTop +
+                  query.padding.top,
               bottom: 0,
               curve: Curves.easeInOut,
               duration: Duration(milliseconds: _duration),
               child: Offstage(
                 offstage: _listMode != ListMode.search,
-                child: Container(
-                  color: Colors.green,
-                ),
+                child: SearchPanel(),
               ),
             ),
 

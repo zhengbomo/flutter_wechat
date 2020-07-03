@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutterwechat/data/constants/basic.dart';
 import 'package:flutterwechat/ui/view/animted_scale.dart';
@@ -42,7 +44,7 @@ class _AppletPanelState extends State<AppletPanel> {
         child: AnimatedOpacity(
           duration:
               widget.animated ? Duration(milliseconds: 250) : Duration.zero,
-          opacity: widget.offset,
+          opacity: max(0, widget.offset - 0.2) / 0.8,
           child: Container(
             decoration: BoxDecoration(
                 gradient: LinearGradient(

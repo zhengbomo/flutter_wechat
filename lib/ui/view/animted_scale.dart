@@ -49,8 +49,6 @@ class _AnimatedScaleState extends ImplicitlyAnimatedWidgetState<AnimatedScale> {
 
   @override
   void didUpdateTweens() {
-    print("dd");
-
     animation.removeListener(_handler);
     animation.addListener(_handler);
 

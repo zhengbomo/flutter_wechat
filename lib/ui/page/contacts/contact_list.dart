@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterwechat/data/constants/basic.dart';
+import 'package:flutterwechat/data/constants/constants.dart';
 import 'package:flutterwechat/data/constants/style.dart';
 import 'package:flutterwechat/ui/view/search_bar.dart';
 
 class ContactList extends StatefulWidget {
+  final bool showSearchBar;
   final ThreeValueCallback<DragBehavior, double, bool> dragOffsetChanged;
   final VoidCallback onEdit;
   final VoidCallback cancelCallback;
@@ -12,6 +14,7 @@ class ContactList extends StatefulWidget {
   ContactList(
       {@required this.dragOffsetChanged,
       @required this.onEdit,
+      this.showSearchBar = true,
       @required this.scrollController,
       @required this.cancelCallback});
 
@@ -47,7 +50,7 @@ class _ContactListState extends State<ContactList> {
       removeBottom: false,
       context: context,
       child: Container(
-        color: Style.primaryColor,
+        // color: Style.primaryColor,
         child: NotificationListener<ScrollNotification>(
           onNotification: (notification) {
             var offset = notification.metrics.pixels;
@@ -89,15 +92,19 @@ class _ContactListState extends State<ContactList> {
               controller: widget.scrollController,
               slivers: <Widget>[
                 SliverToBoxAdapter(
-                  child: SearchBar(
-                      cancelCallback: widget.cancelCallback,
-                      focusNode: _focusNode),
-                ),
+                    child: SizedBox(
+                        height: Constant.listSearchBarHeight,
+                        child: Offstage(
+                          offstage: !widget.showSearchBar,
+                          child: SearchBar(
+                              cancelCallback: widget.cancelCallback,
+                              focusNode: _focusNode),
+                        ))),
                 SliverSafeArea(
                   sliver: SliverList(
                       delegate: SliverChildBuilderDelegate((context, i) {
                     return Container(
-                      margin: EdgeInsets.all(8),
+                      margin: EdgeInsets.fromLTRB(8, 0, 8, 8),
                       height: 100,
                       color: Colors.red,
                       child: Text("$i"),
