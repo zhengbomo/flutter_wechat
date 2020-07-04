@@ -2,12 +2,14 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterwechat/data/constants/constants.dart';
+import 'package:flutterwechat/data/constants/style.dart';
 
 class SearchBar extends StatefulWidget {
-  final FocusNode focusNode;
+  final VoidCallback beginEdit;
   final VoidCallback cancelCallback;
 
-  SearchBar({@required this.focusNode, @required this.cancelCallback});
+  SearchBar({@required this.beginEdit, @required this.cancelCallback});
 
   @override
   _SearchBarState createState() => _SearchBarState();
@@ -16,11 +18,13 @@ class SearchBar extends StatefulWidget {
 const double _cancelWidth = 60;
 
 class _SearchBarState extends State<SearchBar> {
+  FocusNode _focusNode = FocusNode();
+
   TextEditingController _textEditingController =
       TextEditingController(text: "");
   String _hintText = "";
 
-  bool _hasFocus = false;
+  bool _isEditing = false;
 
   double _cancelRight = -_cancelWidth;
 
@@ -28,27 +32,28 @@ class _SearchBarState extends State<SearchBar> {
 
   @override
   void initState() {
-    widget.focusNode.addListener(_onFocusChanged);
+    _focusNode.addListener(_onFocusChanged);
     super.initState();
   }
 
   _onFocusChanged() {
-    _hasFocus = widget.focusNode.hasFocus;
-    if (_hasFocus) {
+    if (_focusNode.hasFocus) {
+      _isEditing = true;
       _onFocus();
     }
   }
 
   @override
   void dispose() {
-    widget.focusNode.removeListener(_onFocusChanged);
+    _focusNode.removeListener(_onFocusChanged);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 5, bottom: 5),
+      color: Style.primaryColor,
+      padding: EdgeInsets.only(top: 5, bottom: 5),
       child: Stack(
         alignment: Alignment.center,
         fit: StackFit.passthrough,
@@ -85,7 +90,7 @@ class _SearchBarState extends State<SearchBar> {
                     scrollPhysics: NeverScrollableScrollPhysics(),
                     maxLines: 1,
                     controller: _textEditingController,
-                    focusNode: widget.focusNode,
+                    focusNode: _focusNode,
                   ),
                 ),
               ),
@@ -102,15 +107,17 @@ class _SearchBarState extends State<SearchBar> {
               padding: EdgeInsets.zero,
               child: Text("取消"),
               onPressed: () {
-                widget.focusNode.unfocus();
-                _onUnFocus();
+                if (_focusNode.hasFocus) {
+                  _focusNode.unfocus();
+                }
+                _onCancel();
                 widget.cancelCallback();
               },
             ),
           ),
           AnimatedPositioned(
             onEnd: () {
-              if (_hasFocus) {
+              if (_isEditing) {
                 setState(() {
                   _hintText = "搜索";
                 });
@@ -118,8 +125,9 @@ class _SearchBarState extends State<SearchBar> {
             },
             top: 0,
             bottom: 0,
-            left:
-                _hasFocus ? 16 : (MediaQuery.of(context).size.width - 50) * 0.5,
+            left: _isEditing
+                ? 16
+                : (MediaQuery.of(context).size.width - 50) * 0.5,
             curve: Curves.easeInOut,
             duration: Duration(milliseconds: 250),
             child: IgnorePointer(
@@ -158,10 +166,12 @@ class _SearchBarState extends State<SearchBar> {
     setState(() {
       _cancelRight = 8;
     });
+    widget.beginEdit();
   }
 
-  _onUnFocus() {
-    print("unfocus");
+  _onCancel() {
+    _textEditingController.text = "";
+    _isEditing = false;
     setState(() {
       _hintText = "";
       _cancelRight = -_cancelWidth;

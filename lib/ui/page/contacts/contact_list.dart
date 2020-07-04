@@ -23,19 +23,10 @@ class ContactList extends StatefulWidget {
 }
 
 class _ContactListState extends State<ContactList> {
-  FocusNode _focusNode = FocusNode();
-
   bool _hasDragDetail = false;
 
   @override
   void initState() {
-    _focusNode.addListener(() {
-      if (_focusNode.hasFocus) {
-        widget.onEdit();
-        widget.scrollController.animateTo(0,
-            duration: Duration(milliseconds: 250), curve: Curves.easeInOut);
-      }
-    });
     Future.delayed(Duration(seconds: 1)).then((_) {
       // _scrollController.animateTo(100,
       // duration: Duration(milliseconds: 250), curve: Curves.easeInOut);
@@ -86,9 +77,7 @@ class _ContactListState extends State<ContactList> {
           },
           child: Scrollbar(
             child: CustomScrollView(
-              physics: _focusNode.hasFocus
-                  ? NeverScrollableScrollPhysics()
-                  : AlwaysScrollableScrollPhysics(),
+              physics: AlwaysScrollableScrollPhysics(),
               controller: widget.scrollController,
               slivers: <Widget>[
                 SliverToBoxAdapter(
@@ -97,8 +86,14 @@ class _ContactListState extends State<ContactList> {
                         child: Offstage(
                           offstage: !widget.showSearchBar,
                           child: SearchBar(
-                              cancelCallback: widget.cancelCallback,
-                              focusNode: _focusNode),
+                            beginEdit: () {
+                              widget.onEdit();
+                              widget.scrollController.animateTo(0,
+                                  duration: Duration(milliseconds: 250),
+                                  curve: Curves.easeInOut);
+                            },
+                            cancelCallback: widget.cancelCallback,
+                          ),
                         ))),
                 SliverSafeArea(
                   sliver: SliverList(

@@ -20,6 +20,8 @@ dependencies:
   keyboard_utils: ^1.2.3
   random_color: ^1.0.5
   flutter_section_list_view: ^1.0.0
+  azlistview: ^0.1.2
+
   scrollable_positioned_list:
     git:
       url: git@github.com:zhengbomo/flutter.widgets.git
