@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
 class MainBadgeModel with ChangeNotifier, DiagnosticableTreeMixin {
-  String messageBadge;
-  String contactBadge;
+  String messageBadge = "3";
+  String contactBadge = "";
   String discoveryBadge;
   String meBadge;
   int selectedIndex;

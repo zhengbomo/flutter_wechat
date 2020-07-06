@@ -17,30 +17,44 @@ class SectionListView extends StatelessWidget {
 
   /// Mandatory callback method to get the row widget
   final RowsBuilder rowWidget;
+  final Widget header;
 
   SectionListView({
-    this.numberOfSection,
     @required this.numberOfRowsInSection,
-    this.sectionWidget,
     @required this.rowWidget,
-  }) : assert(!(numberOfRowsInSection == null || rowWidget == null),
-            'numberOfRowsInSection and rowWidget are mandatory');
+    @required this.header,
+    this.sectionWidget,
+    NumberOfSectionCallBack numberOfSection,
+  })  : assert(!(numberOfRowsInSection == null || rowWidget == null),
+            'numberOfRowsInSection and rowWidget are mandatory'),
+        this.numberOfSection = numberOfSection ?? (() => 1);
 
   @override
   Widget build(BuildContext context) {
-    var sectionCount = this.numberOfSection();
+    final sectionCount = this.numberOfSection();
 
-    return ListView.builder(
-      itemCount: _itemCount(sectionCount),
-      itemBuilder: (context, index) {
-        final indexPath = _indexPathFor(sectionCount, index);
-        if (indexPath.row == -1) {
-          return this.sectionWidget(context, indexPath.section);
-        } else {
-          return this.rowWidget(context, indexPath.section, indexPath.row);
-        }
-      },
-      key: this.key,
+    return Scrollbar(
+      child: ListView.builder(
+        itemCount: _itemCount(sectionCount) + 1,
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return this.header ?? SizedBox(width: 0, height: 0);
+          } else {
+            final indexPath = _indexPathFor(sectionCount, index - 1);
+            if (indexPath.row == -1) {
+              if (this.sectionWidget != null) {
+                final section = this.sectionWidget(context, indexPath.section);
+                return section ?? SizedBox.fromSize(size: Size(0, 0));
+              } else {
+                return SizedBox.fromSize(size: Size(0, 0));
+              }
+            } else {
+              return this.rowWidget(context, indexPath.section, indexPath.row);
+            }
+          }
+        },
+        key: this.key,
+      ),
     );
   }
 
@@ -51,7 +65,6 @@ class SectionListView extends StatelessWidget {
   }
 
   _IndexPath _indexPathFor(int sectionCount, int index) {
-    int row = 0;
     int section = 0;
     var currentIndex = index;
     for (int i = 0; i < sectionCount; i++) {
@@ -61,8 +74,8 @@ class SectionListView extends StatelessWidget {
         return _IndexPath(section: section, row: -1);
       } else if ((currentIndex - 1) <= (rows - 1)) {
         // row
-        return _IndexPath(section: section, row: row);
-      } else if (currentIndex == rows) {
+        return _IndexPath(section: section, row: currentIndex - 1);
+      } else {
         // next section
         section += 1;
         currentIndex -= (rows + 1);
@@ -77,4 +90,9 @@ class _IndexPath {
   _IndexPath({this.section, this.row});
   int section = 0;
   int row = 0;
+
+  @override
+  String toString() {
+    return "section=$section, row=$row";
+  }
 }

@@ -9,7 +9,6 @@ class MomentPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      // appBar: AppBar(),
       body: Stack(
         children: <Widget>[
           MediaQuery.removePadding(

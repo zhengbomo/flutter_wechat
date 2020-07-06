@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutterwechat/data/constants/shares.dart';
 import 'package:flutterwechat/data/constants/style.dart';
-import 'package:flutterwechat/data/providers/list_search_bar_model.dart';
 import 'package:flutterwechat/data/providers/main_badge_model.dart';
-import 'package:flutterwechat/ui/page/moment_page.dart';
-import 'package:flutterwechat/ui/page/test_page.dart';
+import 'package:flutterwechat/ui/page/main/main_page.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -18,9 +16,20 @@ class MyApp extends StatelessWidget {
       title: 'wechat',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        textTheme: TextTheme(
+            button: TextStyle(fontWeight: FontWeight.w500, fontSize: 16)),
         splashFactory: Shares.noInkFeatureFactory,
-        buttonTheme: ButtonThemeData(minWidth: 0, height: 0),
-        appBarTheme: AppBarTheme(elevation: 1),
+        buttonTheme: ButtonThemeData(
+          minWidth: 0,
+          height: 0,
+        ),
+        appBarTheme: AppBarTheme(
+          elevation: 1,
+          textTheme: TextTheme(
+            headline6: TextStyle(
+                fontSize: 18, color: Colors.black, fontWeight: FontWeight.w500),
+          ),
+        ),
         primaryColor: Style.primaryColor,
         visualDensity: VisualDensity.adaptivePlatformDensity,
         scaffoldBackgroundColor: Style.pBackgroundColor,
@@ -28,9 +37,9 @@ class MyApp extends StatelessWidget {
       home: MultiProvider(
         providers: [
           ChangeNotifierProvider(
-              create: (_) => MainBadgeModel(selectedIndex: 1))
+              create: (_) => MainBadgeModel(selectedIndex: 2))
         ],
-        child: MomentPage(),
+        child: MainPage(),
       ),
     );
   }

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 // 本 app 颜色
 class Style {
   /// 主要 Primary 次要 secondary 不重要 minor
-  static const Color primaryColor = Color(0xffeaeaea);
+  static const Color primaryColor = Color(0xffededed);
 
   static const Color bottomTabbarTintColor = Color(0xFF08B854);
 
