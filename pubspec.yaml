@@ -41,6 +41,10 @@ flutter:
     - assets/images/chat/
     - assets/images/chat/chat_bar/
     - assets/images/mock/
+    - assets/images/discover/
+    - assets/images/me/
+    - assets/images/contact/
+    - assets/images/common/
 
   # fonts:
   #   - family: Schyler

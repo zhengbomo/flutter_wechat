@@ -30,6 +30,17 @@ class Constant {
   static const AssertUtil assetsImagesChatBar =
       AssertUtil('assets/images/chat/chat_bar/');
 
+  /// 发现模块资源
+  static const AssertUtil assetsImagesDiscover =
+      AssertUtil('assets/images/discover/');
+
+  /// 通用模块资源
+  static const AssertUtil assetsImagesCommon =
+      AssertUtil('assets/images/common/');
+
+  /// 我的模块资源
+  static const AssertUtil assetsImagesMe = AssertUtil('assets/images/me/');
+
   /// 微信模块相关的资源
   static const AssertUtil assetsImagesMock = AssertUtil('assets/images/mock/');
 
@@ -45,9 +56,6 @@ class Constant {
 
   /// 背景相关模块相关的资源
   static const String assetsImagesBg = 'assets/images/bg/';
-
-  /// 发现模块资源
-  static const String assetsImagesDiscover = 'assets/images/discover/';
 
   /// 我模块资源
   static const String assetsImagesProfile = 'assets/images/profile/';
@@ -92,4 +100,10 @@ class Constant {
 
   /// bootomNavigationBar高度
   static const double bootomNavigationBarHeight = 50;
+
+  /// normalcell的icon大小
+  static const double normalCellIconSize = 24;
+
+  /// normalcell的高度
+  static const double normalCellHeight = 56;
 }

@@ -10,12 +10,7 @@ import 'package:flutterwechat/ui/view/badge_icon.dart';
 import 'package:provider/provider.dart';
 import 'package:quiver/iterables.dart';
 
-class MainTabBar extends StatefulWidget {
-  @override
-  _MainTabBarState createState() => _MainTabBarState();
-}
-
-class _MainTabBarState extends State<MainTabBar> {
+class MainTabBar extends StatelessWidget {
   final _tabs = [
     TabBarItem(
         "微信",
@@ -32,11 +27,6 @@ class _MainTabBarState extends State<MainTabBar> {
     TabBarItem("我", Constant.assetsImagesTabbar.named("icons_filled_me.svg"),
         Constant.assetsImagesTabbar.named("icons_outlined_me.svg")),
   ];
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {

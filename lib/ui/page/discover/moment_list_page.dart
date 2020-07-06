@@ -43,7 +43,7 @@ class _MomentListPageState extends State<MomentListPage> {
                 opacity: 1,
                 child: AppBar(
                   elevation: 0,
-                  backgroundColor: Colors.red.withAlpha(240),
+                  backgroundColor: Colors.transparent,
                   title: Text(
                     "朋友圈",
                     style: TextStyle(color: Colors.white),
@@ -68,7 +68,7 @@ class _MomentListPageState extends State<MomentListPage> {
 
   Widget _createHeader() {
     return Container(
-      height: 300,
+      height: 320,
       child: Stack(
         children: <Widget>[
           Positioned(

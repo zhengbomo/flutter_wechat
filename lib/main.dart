@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterwechat/data/constants/shares.dart';
 import 'package:flutterwechat/data/constants/style.dart';
 import 'package:flutterwechat/data/providers/main_badge_model.dart';
+import 'package:flutterwechat/ui/components/navigator_service.dart';
 import 'package:flutterwechat/ui/page/main/main_page.dart';
 import 'package:provider/provider.dart';
 
@@ -14,6 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'wechat',
+      navigatorKey: NavigatorService.navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         textTheme: TextTheme(
@@ -24,7 +26,7 @@ class MyApp extends StatelessWidget {
           height: 0,
         ),
         appBarTheme: AppBarTheme(
-          elevation: 1,
+          elevation: 0,
           textTheme: TextTheme(
             headline6: TextStyle(
                 fontSize: 18, color: Colors.black, fontWeight: FontWeight.w500),
@@ -37,7 +39,7 @@ class MyApp extends StatelessWidget {
       home: MultiProvider(
         providers: [
           ChangeNotifierProvider(
-              create: (_) => MainBadgeModel(selectedIndex: 2))
+              create: (_) => MainBadgeModel(selectedIndex: 3))
         ],
         child: MainPage(),
       ),

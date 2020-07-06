@@ -1,9 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterwechat/data/constants/style.dart';
-import 'package:flutterwechat/ui/components/normal_cell_info.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:flutterwechat/data/constants/constants.dart';
+import 'package:flutterwechat/ui/components/avatar.dart';
+import 'package:flutterwechat/ui/components/navigator_service.dart';
+import 'package:flutterwechat/ui/components/normal_cell.dart';
+import 'package:flutterwechat/ui/components/normal_section.dart';
 import 'package:flutterwechat/ui/components/section_list_view.dart';
 import 'package:flutterwechat/ui/page/base/auto_keep_alive_state.dart';
+import 'package:flutterwechat/ui/page/discover/moment_list_page.dart';
 
 class DiscoverPage extends StatefulWidget {
   @override
@@ -12,61 +17,139 @@ class DiscoverPage extends StatefulWidget {
 
 class _DiscoverPageState extends AutoKeepAliveState<DiscoverPage> {
   var _items = List<List<NormalCellInfo>>();
-  bool _isOn = false;
-  @override
-  void initState() {
+
+  _setupItem() {
+    _items.clear();
     _items.add([
       NormalCellInfo(
         title: "朋友圈",
-        icon: Icon(Icons.android),
-        leading: Container(
-          color: Colors.red,
+        icon: SvgPicture.asset(
+          Constant.assetsImagesDiscover
+              .named("icons_outlined_colorful_moment.svg"),
+          width: Constant.normalCellIconSize,
+        ),
+        trailing: Container(
+          // color: Colors.red,
           margin: EdgeInsets.only(right: 12),
-          width: 40,
-          height: 40,
-          child: CircleAvatar(
-            radius: 3,
-            backgroundColor: Colors.blue,
+          width: 30,
+          height: 30,
+          child: Stack(
+            overflow: Overflow.visible,
+            children: <Widget>[
+              Avatar(
+                borderRadius: 3,
+                color: Colors.red,
+                size: 40,
+              ),
+              Positioned(
+                right: -3,
+                top: -3,
+                child: CircleAvatar(
+                  radius: 5,
+                  backgroundColor: Colors.blue,
+                ),
+              )
+            ],
           ),
+        ),
+        onPressed: () {
+          NavigatorService.push(MomentListPage());
+        },
+      ),
+    ]);
+
+    _items.add([
+      NormalCellInfo(
+        title: "扫一扫",
+        icon: SvgPicture.asset(
+          Constant.assetsImagesDiscover.named("icons_outlined_scan.svg"),
+          color: Color(0xFF3d83e6),
+          width: Constant.normalCellIconSize,
         ),
         onPressed: () {},
       ),
-      NormalCellInfo(title: "扫一扫", icon: Icon(Icons.iso), onPressed: () {})
+      NormalCellInfo(
+        title: "摇一摇",
+        icon: SvgPicture.asset(
+          Constant.assetsImagesDiscover.named("icons_outlined_shake.svg"),
+          color: Color(0xFF3d83e6),
+          width: Constant.normalCellIconSize,
+        ),
+        onPressed: () {},
+      )
     ]);
 
     _items.add([
-      NormalCellInfo(title: "看一看", icon: Icon(Icons.looks)),
-      NormalCellInfo(title: "瞧一瞧"),
-      NormalCellInfo(title: "看一看", icon: Icon(Icons.looks), showArrow: false),
       NormalCellInfo(
-        title: "瞧一瞧",
-        icon: Icon(Icons.receipt),
-        showArrow: false,
-        leading: StatefulBuilder(builder: (context, setState) {
-          return CupertinoSwitch(
-            value: _isOn,
-            onChanged: (v) {
-              setState(() {
-                _isOn = !_isOn;
-              });
-            },
-          );
-        }),
+        title: "看一看",
+        icon: SvgPicture.asset(
+          Constant.assetsImagesDiscover.named("icons_outlined_news.svg"),
+          color: Color(0xFFF6C543),
+          width: Constant.normalCellIconSize,
+        ),
+        onPressed: () {},
+      ),
+      NormalCellInfo(
+        title: "搜一搜",
+        icon: SvgPicture.asset(
+          Constant.assetsImagesDiscover.named("icons_outlined_searchlogo.svg"),
+          color: Color(0xfff94747),
+          width: Constant.normalCellIconSize,
+        ),
+        onPressed: () {},
       ),
     ]);
 
     _items.add([
-      NormalCellInfo(title: "看一看", icon: Icon(Icons.looks)),
-      NormalCellInfo(title: "瞧一瞧", icon: Icon(Icons.receipt)),
-      NormalCellInfo(title: "看一看", icon: Icon(Icons.looks)),
-      NormalCellInfo(title: "瞧一瞧", icon: Icon(Icons.receipt)),
-      NormalCellInfo(title: "看一看", icon: Icon(Icons.looks)),
-      NormalCellInfo(title: "瞧一瞧", icon: Icon(Icons.receipt)),
-      NormalCellInfo(title: "看一看", icon: Icon(Icons.looks)),
-      NormalCellInfo(title: "瞧一瞧", icon: Icon(Icons.receipt)),
-      NormalCellInfo(title: "看一看", icon: Icon(Icons.looks)),
-      NormalCellInfo(title: "瞧一瞧", icon: Icon(Icons.receipt)),
+      NormalCellInfo(
+        title: "附近的人",
+        icon: SvgPicture.asset(
+          Constant.assetsImagesDiscover.named("icons_outlined_nearby.svg"),
+          color: Color(0xFF3d83e6),
+          width: Constant.normalCellIconSize,
+        ),
+        onPressed: () {},
+      ),
     ]);
+
+    _items.add([
+      NormalCellInfo(
+        title: "购物",
+        icon: SvgPicture.asset(
+          Constant.assetsImagesDiscover.named("icons_outlined_shop.svg"),
+          color: Color(0xFFE75E58),
+          width: Constant.normalCellIconSize,
+        ),
+        onPressed: () {},
+      ),
+      NormalCellInfo(
+        title: "游戏",
+        icon: SvgPicture.asset(
+          Constant.assetsImagesDiscover
+              .named("icons_outlined_colorful_game.svg"),
+          // color: Color(0xFF3d83e6),
+          width: Constant.normalCellIconSize,
+        ),
+        onPressed: () {},
+      ),
+    ]);
+
+    _items.add([
+      NormalCellInfo(
+        title: "小程序",
+        icon: SvgPicture.asset(
+          Constant.assetsImagesDiscover.named("icons_outlined_miniprogram.svg"),
+          color: Color(0xFF6467e8),
+          width: Constant.normalCellIconSize,
+        ),
+        onPressed: () {},
+      ),
+    ]);
+  }
+
+  @override
+  void initState() {
+    _setupItem();
     super.initState();
   }
 
@@ -75,60 +158,22 @@ class _DiscoverPageState extends AutoKeepAliveState<DiscoverPage> {
     super.build(context);
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         title: Text("发现"),
       ),
       body: Container(
         child: SectionListView(
-          header: Container(
-            color: Colors.red,
-            height: 100,
-          ),
           numberOfSection: () => _items.length,
           numberOfRowsInSection: (section) => _items[section].length,
           rowWidget: (context, section, row) {
             NormalCellInfo cellInfo = _items[section][row];
-            return SizedBox(
-              height: 60,
-              child: FlatButton(
-                color: Colors.white,
-                child: Column(
-                  children: <Widget>[
-                    Expanded(
-                      child: Row(
-                        children: <Widget>[
-                          if (cellInfo.icon != null) cellInfo.icon,
-                          Expanded(
-                            child: Padding(
-                              child: Text(cellInfo.title),
-                              padding: EdgeInsets.only(
-                                  left: cellInfo.icon != null ? 12 : 0,
-                                  right: 12),
-                            ),
-                          ),
-                          if (cellInfo.leading != null) cellInfo.leading,
-                          if (cellInfo.showArrow)
-                            Icon(Icons.keyboard_arrow_right),
-                        ],
-                      ),
-                    ),
-                    Divider(
-                      height: 1,
-                      indent: 36,
-                    )
-                  ],
-                ),
-                onPressed: () {},
-              ),
-            );
+            return NormalCell(cellInfo: cellInfo);
           },
           sectionWidget: (context, section) {
             if (section == 0) {
               return null;
             } else {
-              return Container(
-                height: 10,
-                color: Style.primaryColor,
-              );
+              return NormlSection();
             }
           },
         ),

@@ -22,7 +22,7 @@ class SectionListView extends StatelessWidget {
   SectionListView({
     @required this.numberOfRowsInSection,
     @required this.rowWidget,
-    @required this.header,
+    this.header,
     this.sectionWidget,
     NumberOfSectionCallBack numberOfSection,
   })  : assert(!(numberOfRowsInSection == null || rowWidget == null),
