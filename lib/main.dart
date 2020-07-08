@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         textTheme: TextTheme(
-            button: TextStyle(fontWeight: FontWeight.w500, fontSize: 16)),
+            button: TextStyle(fontWeight: FontWeight.w400, fontSize: 16)),
         splashFactory: Shares.noInkFeatureFactory,
         buttonTheme: ButtonThemeData(
           minWidth: 0,

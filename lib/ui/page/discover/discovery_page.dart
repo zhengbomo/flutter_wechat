@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutterwechat/data/constants/constants.dart';
+import 'package:flutterwechat/data/constants/style.dart';
+import 'package:flutterwechat/ui/components/action_sheet.dart';
 import 'package:flutterwechat/ui/components/avatar.dart';
 import 'package:flutterwechat/ui/components/navigator_service.dart';
 import 'package:flutterwechat/ui/components/normal_cell.dart';
@@ -166,6 +168,62 @@ class _DiscoverPageState extends AutoKeepAliveState<DiscoverPage> {
       appBar: AppBar(
         elevation: 0,
         title: Text("发现"),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              ActionSheet(
+                itemCount: 2,
+                itemBuilder: (c, i) {
+                  if (i == 0) {
+                    return SizedBox(
+                      height: 70,
+                      child: FlatButton(
+                        padding: EdgeInsets.zero,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Text(
+                              "拍摄",
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.w400),
+                            ),
+                            Text(
+                              "照片或视频",
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black26,
+                                  fontWeight: FontWeight.w400),
+                            )
+                          ],
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                    );
+                  } else {
+                    return SizedBox(
+                      height: 60,
+                      child: FlatButton(
+                        padding: EdgeInsets.zero,
+                        child: Text(
+                          "从手机相册选择",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w400),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                    );
+                  }
+                },
+              ).show(context);
+            },
+          )
+        ],
       ),
       body: Container(
         child: SectionListView(
@@ -175,13 +233,7 @@ class _DiscoverPageState extends AutoKeepAliveState<DiscoverPage> {
             NormalCellInfo cellInfo = _items[section][row];
             return NormalCell(cellInfo: cellInfo);
           },
-          sectionWidget: (context, section) {
-            if (section == 0) {
-              return null;
-            } else {
-              return NormlSection();
-            }
-          },
+          ignoreFirstSectionHeader: true,
         ),
       ),
     );

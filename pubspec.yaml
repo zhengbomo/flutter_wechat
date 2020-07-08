@@ -25,6 +25,8 @@ dependencies:
   # ezanimation: ^0.4.0
   # 富文本
   extended_text: ^3.0.1
+  # 录音插件
+  flutter_plugin_record: ^0.1.7
 
 
 
@@ -46,6 +48,7 @@ flutter:
     - assets/images/tabbar/
     - assets/images/chat/
     - assets/images/chat/chat_bar/
+    - assets/images/chat/voice_volume/    
     - assets/images/mock/
     - assets/images/discover/
     - assets/images/me/

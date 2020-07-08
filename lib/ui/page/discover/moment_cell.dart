@@ -21,9 +21,11 @@ class MomentCell extends StatelessWidget {
 
     var spans = List<InlineSpan>();
     spans.add(WidgetSpan(
+      alignment: PlaceholderAlignment.middle,
       child: Container(
         width: 20,
         height: 20,
+        margin: EdgeInsets.only(right: 5),
         child: SvgPicture.asset(
             Constant.assetsImagesDiscover.named("icons_outlined_like.svg"),
             width: 18,
@@ -42,7 +44,8 @@ class MomentCell extends StatelessWidget {
       }
     }
 
-    return Text.rich(TextSpan(style: TextStyle(color: color), children: spans));
+    return Text.rich(TextSpan(
+        style: TextStyle(color: color, fontSize: 16), children: spans));
   }
 
   Widget _commentList() {
@@ -66,7 +69,7 @@ class MomentCell extends StatelessWidget {
     return RichText(
       text: TextSpan(
         text: "",
-        style: TextStyle(color: color),
+        style: TextStyle(color: color, height: 1.5, fontSize: 16),
         children: spans,
       ),
     );
@@ -178,7 +181,7 @@ class MomentCell extends StatelessWidget {
                                 child: _likeText(),
                               ),
                               Divider(
-                                height: 1,
+                                height: 5,
                               ),
                               Container(
                                 child: _commentList(),

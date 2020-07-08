@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutterwechat/data/constants/constants.dart';
 import 'package:flutterwechat/data/constants/style.dart';
+import 'package:flutterwechat/ui/components/action_sheet.dart';
 import 'package:flutterwechat/ui/components/avatar.dart';
 import 'package:flutterwechat/ui/page/discover/moment_cell.dart';
 import 'package:flutterwechat/ui/page/discover/moment_list_provider.dart';
@@ -125,22 +126,7 @@ class MomentListPage extends StatelessWidget {
                                       : Colors.black,
                                 ),
                                 onPressed: () {
-                                  final model = bottomHeightProvider;
-                                  if (model.value >= 50) {
-                                    model.setValue(0);
-                                  } else {
-                                    final newHeight =
-                                        MediaQuery.of(context).padding.bottom +
-                                            min(50, 50);
-                                    model.setValue(newHeight + keyboardHeight);
-                                  }
-                                  WidgetsBinding.instance
-                                      .addPostFrameCallback((timeStamp) {
-                                    // _scrollController.scrollTo(
-                                    //     index: 7,
-                                    //     curve: Curves.easeInOut,
-                                    //     duration: Duration(milliseconds: 250));
-                                  });
+                                  _publishChoose(context);
                                 },
                               )
                             ],
@@ -250,5 +236,55 @@ class MomentListPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  _publishChoose(BuildContext context) {
+    ActionSheet(
+      itemCount: 2,
+      itemBuilder: (c, i) {
+        if (i == 0) {
+          return SizedBox(
+            height: 70,
+            child: FlatButton(
+              padding: EdgeInsets.zero,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    "拍摄",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
+                  ),
+                  Text(
+                    "照片或视频",
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black26,
+                        fontWeight: FontWeight.w400),
+                  )
+                ],
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          );
+        } else {
+          return SizedBox(
+            height: 60,
+            child: FlatButton(
+              padding: EdgeInsets.zero,
+              child: Text(
+                "从手机相册选择",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          );
+        }
+      },
+    ).show(context);
   }
 }
