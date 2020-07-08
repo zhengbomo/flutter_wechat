@@ -22,5 +22,15 @@
                 "iPhone 11"
             ]
         },
+        {
+            "name": "Google Nexus 5",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "-d",
+                "Google Nexus 5"
+            ]
+        },
+        
     ]
 }

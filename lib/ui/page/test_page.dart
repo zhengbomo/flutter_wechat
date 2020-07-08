@@ -1,8 +1,8 @@
-import 'package:azlistview/azlistview.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterwechat/data/constants/shares.dart';
-import 'package:flutterwechat/ui/components/search_list_page.dart';
-import 'package:flutterwechat/ui/page/main/search_panel.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:flutterwechat/data/constants/constants.dart';
 
 class TestPage extends StatefulWidget {
   @override
@@ -10,154 +10,74 @@ class TestPage extends StatefulWidget {
 }
 
 class _TestPageState extends State<TestPage> {
-  int _suspensionHeight = 40;
-  int _itemHeight = 60;
-  String _suspensionTag = "";
+  // final ges = TapGestureRecognizer();
+  // ges.onTap = () {};
+  List<String> _likes = ["小白"];
 
-  List<ContactInfo> _contacts = List();
+  Widget _likeText() {
+    var spans = List<InlineSpan>();
+    spans.add(WidgetSpan(
+      child: SvgPicture.asset(
+          Constant.assetsImagesDiscover.named("icons_outlined_like.svg"),
+          width: 18),
+    ));
+    for (var i = 0; i < _likes.length; i++) {
+      spans.add(
+        TextSpan(
+          text: _likes[i],
+          // recognizer: TapGestureRecognizer()
+          //   ..onTap = () {
+          //     print("tap");
+          //   },
+        ),
+      );
+      if (i < _likes.length - 1) {
+        spans.add(TextSpan(text: ", "));
+      }
+    }
+    return Text.rich(TextSpan(
+      children: spans,
+    ));
+  }
 
   @override
-  void initState() {
-    List.generate(1, (index) {
-      _contacts.add(ContactInfo(name: "八戒", index: "B"));
-      _contacts.add(ContactInfo(name: "沙和尚", index: "S"));
-      _contacts.add(ContactInfo(name: "唐僧", index: "T"));
-      _contacts.add(ContactInfo(name: "孙悟空", index: "S"));
-      _contacts.add(ContactInfo(name: "悟净", index: "W"));
-      _contacts.add(ContactInfo(name: "悟能", index: "W"));
-      _contacts.add(ContactInfo(name: "悟空", index: "W"));
-      return null;
-    });
-    _contacts.sort((a, b) => a.index.compareTo(b.index));
-
-    super.initState();
+  void dispose() {
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SearchListPage(
-      appbar: AppBar(
-        title: Text("通讯录"),
-      ),
-      builder: (context, searchBar) {
-        print("dddd");
-        return Container(
-          color: Colors.white,
-          child: AzListView(
-            physics: AlwaysScrollableScrollPhysics(),
-            header: AzListViewHeader(
-              builder: (context) {
-                return searchBar;
-              },
-              height: 50,
-            ),
-            data: _contacts,
-            // topData: _hotCityList,
-            itemBuilder: (context, model) => _buildListItem(model),
-            suspensionWidget: _buildSusWidget(_suspensionTag),
-
-            isUseRealIndex: true,
-            indexBarBuilder: (context, tags, onTouch) {
-              return IndexBar(
-                touchDownColor: null,
-                data: tags,
-                width: 36,
-                onTouch: onTouch,
-              );
-            },
-            itemHeight: _itemHeight,
-            suspensionHeight: _suspensionHeight,
-            onSusTagChanged: _onSusTagChanged,
-            //showCenterTip: false,
-          ),
-        );
-      },
-      searchPanel: SearchPanel(),
-    );
-  }
-
-  void _onSusTagChanged(String tag) {
-    setState(() {
-      _suspensionTag = tag;
-    });
-  }
-
-  Widget _buildSusWidget(String susTag) {
-    return Container(
-      height: _suspensionHeight.toDouble(),
-      padding: const EdgeInsets.only(left: 15.0),
-      color: Color(0xfff3f4f5),
-      alignment: Alignment.centerLeft,
-      child: Text(
-        '$susTag',
-        softWrap: false,
-        style: TextStyle(
-          fontSize: 14.0,
-          color: Color(0xff999999),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildListItem(ContactInfo model) {
-    String susTag = model.getSuspensionTag();
-    return Column(
-      children: <Widget>[
-        Offstage(
-          offstage: model.isShowSuspension != true,
-          child: _buildSusWidget(susTag),
-        ),
-        Container(
-          // style: ListTileStyle.drawer,
-          // color: Colors.white,
-          child: FlatButton(
-            padding: EdgeInsets.zero,
-            child: Column(
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.fromLTRB(12, 8, 12, 8),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.only(right: 12),
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(3),
-                          color: model.avatar,
-                        ),
-                      ),
-                      Text(model.name)
-                    ],
-                  ),
-                ),
-                Divider(
-                  height: 1,
-                ),
+    return Scaffold(
+      appBar: AppBar(),
+      body: Container(
+        child: ListView.builder(
+          itemBuilder: (context, i) {
+            return Text.rich(TextSpan(
+              children: <InlineSpan>[
+                TextSpan(
+                    text: 'Flutter is',
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        print("first");
+                      }),
+                WidgetSpan(
+                    child: SizedBox(
+                  width: 120,
+                  height: 50,
+                  child: Card(child: Center(child: Text('Hello World!'))),
+                )),
+                ..._likes.map((e) => TextSpan(
+                    text: '$e',
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        print("second");
+                      }))
               ],
-            ),
-            onPressed: () {
-              print("OnItemClick: $model");
-            },
-          ),
+            ));
+          },
+          itemCount: 100,
         ),
-      ],
+      ),
     );
   }
-}
-
-class ContactInfo extends ISuspensionBean {
-  String name;
-  String index;
-  Color avatar;
-
-  ContactInfo({
-    this.name,
-    this.index,
-    Color avatar,
-  }) : this.avatar = avatar ?? Shares.randomColor.randomColor();
-
-  @override
-  String getSuspensionTag() => this.index;
 }

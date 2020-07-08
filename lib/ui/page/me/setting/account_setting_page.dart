@@ -19,7 +19,10 @@ class _AccountSettingPageState extends State<AccountSettingPage> {
         title: "微信号",
         trailing: Padding(
           padding: EdgeInsets.only(right: 12),
-          child: Text("bomo00"),
+          child: Text(
+            "bomo00",
+            style: TextStyle(fontWeight: FontWeight.w400),
+          ),
         ),
         onPressed: () {},
       ),
@@ -37,7 +40,10 @@ class _AccountSettingPageState extends State<AccountSettingPage> {
                   size: 18,
                 ),
               ),
-              Text("18102620462"),
+              Text(
+                "18102620462",
+                style: TextStyle(fontWeight: FontWeight.w400),
+              ),
             ],
           ),
         ),
@@ -90,6 +96,12 @@ class _AccountSettingPageState extends State<AccountSettingPage> {
       ),
       "如果遇到账号信息泄露、忘记密码、诈骗等账号安全问题，可前往微信安全中心"
     ]);
+
+    _items.add([
+      SizedBox(
+        height: 100,
+      ),
+    ]);
   }
 
   @override
@@ -110,14 +122,14 @@ class _AccountSettingPageState extends State<AccountSettingPage> {
                 return NormalCell(cellInfo: cellInfo);
               } else if (cellInfo is String) {
                 return NormalLabelCell(cellInfo);
+              } else if (cellInfo is Widget) {
+                return cellInfo;
               } else {
                 assert(false);
                 return SizedBox(height: 0, width: 0);
               }
             },
-            sectionWidget: (context, section) {
-              return NormlSection();
-            },
+            ignoreFirstSectionHeader: true,
           ),
         ),
       ),

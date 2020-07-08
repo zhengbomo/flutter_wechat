@@ -4,6 +4,7 @@ import 'package:flutterwechat/data/constants/style.dart';
 import 'package:flutterwechat/data/providers/main_badge_model.dart';
 import 'package:flutterwechat/ui/components/navigator_service.dart';
 import 'package:flutterwechat/ui/page/main/main_page.dart';
+import 'package:flutterwechat/ui/page/test_page.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -39,7 +40,8 @@ class MyApp extends StatelessWidget {
       home: MultiProvider(
         providers: [
           ChangeNotifierProvider(
-              create: (_) => MainBadgeModel(selectedIndex: 3))
+            create: (_) => MainBadgeModel(selectedIndex: 2),
+          )
         ],
         child: MainPage(),
       ),

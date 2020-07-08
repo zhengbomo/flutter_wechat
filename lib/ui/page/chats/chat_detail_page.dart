@@ -26,26 +26,29 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   KeyboardUtils _keyboardUtils = KeyboardUtils();
 
   @override
-  void initState() {
+  void didChangeDependencies() {
     _chatMessageModel = ChatMessageModel();
     _chatDetailEmojiModel = ChatDetailEmojiModel();
-    _chatMessageUIModel = ChatMessageUIModel(chatInputTypeChanged: (type) {
-      if (type == ChatInputType.more ||
-          type == ChatInputType.keyboard ||
-          type == ChatInputType.emoji) {
-        _scrollToEnd();
-      }
-    });
-
-    super.initState();
+    _chatMessageUIModel = ChatMessageUIModel(
+        buildContext: context,
+        chatInputTypeChanged: (type) {
+          if (type == ChatInputType.more ||
+              type == ChatInputType.keyboard ||
+              type == ChatInputType.emoji) {
+            _scrollToEnd();
+          }
+        });
+    super.didChangeDependencies();
   }
 
   _scrollToEnd() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       // _scrollController.jumpTo(index: _chatMessageModel.messages.length - 1);
       _scrollController.scrollTo(
-          index: _chatMessageModel.messages.length - 1,
-          duration: Duration(milliseconds: 250));
+        index: _chatMessageModel.messages.length - 1,
+        duration: Duration(milliseconds: 250),
+        offset: -500,
+      );
     });
   }
 
@@ -57,6 +60,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    print("build");
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -105,7 +109,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         ),
         body: Stack(
           children: <Widget>[
-            _buildMessageList(context),
+            Builder(builder: (context) => _buildMessageList(context)),
             MediaQuery.removePadding(
               context: context,
               removeTop: true,
@@ -134,11 +138,12 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         child: Scrollbar(
             child: Listener(
       onPointerDown: (_) {
-        if (_chatMessageUIModel.isShowInputPanel) {
-          if (_chatMessageUIModel.chatInputType == ChatInputType.keyboard) {
+        final model = context.read<ChatMessageUIModel>();
+        if (model.isShowInputPanel) {
+          if (model.chatInputType == ChatInputType.keyboard) {
             FocusScope.of(context).requestFocus(FocusNode());
           }
-          _chatMessageUIModel.setChatInputType(ChatInputType.none);
+          model.setChatInputType(ChatInputType.none);
         }
       },
       child: Builder(
@@ -146,42 +151,32 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           final model = c.watch<ChatMessageModel>();
           final uimodel = c.watch<ChatMessageUIModel>();
           return MediaQuery.removePadding(
-              removeBottom: true,
-              context: c,
-              // onPointerMove: (d) {
-              //   print('move');
-              // },
-              // onPointerDown: (d) {
-              //   print('down');
-              // },
-              // onPointerUp: (d) {
-              //   print('up');
-              // },
-              // onPointerCancel: (d) {
-              //   print('cancel');
-              // },
-              child: ScrollablePositionedList.builder(
-                  itemCount: model.messages.length + 1,
-                  itemBuilder: (context, i) {
-                    if (model.messages.length == i) {
-                      // 占位
-                      return Container(
-                        // color: Colors.green,
-                        height: uimodel.messageListBottomHeight,
-                      );
-                    } else {
-                      return Container(
-                        // color: model.messages[i].color.withAlpha(150),
-                        // height: model.messages[i].height,
-                        child: ChatMessageContainer(
-                            child: ChatMessageText(message: model.messages[i])),
-                      );
-                    }
-                  },
-                  itemScrollController: _scrollController,
-                  itemPositionsListener: itemPositionsListener,
-                  reverse: false,
-                  scrollDirection: Axis.vertical));
+            removeBottom: true,
+            context: c,
+            child: ScrollablePositionedList.builder(
+              itemCount: model.messages.length + 1,
+              itemBuilder: (context, i) {
+                if (model.messages.length == i) {
+                  // 占位
+                  return Container(
+                    // color: Colors.green,
+                    height: uimodel.messageListBottomHeight,
+                  );
+                } else {
+                  return Container(
+                    // color: model.messages[i].color.withAlpha(150),
+                    // height: model.messages[i].height,
+                    child: ChatMessageContainer(
+                        child: ChatMessageText(message: model.messages[i])),
+                  );
+                }
+              },
+              itemScrollController: _scrollController,
+              itemPositionsListener: itemPositionsListener,
+              reverse: false,
+              scrollDirection: Axis.vertical,
+            ),
+          );
         },
       ),
     )));

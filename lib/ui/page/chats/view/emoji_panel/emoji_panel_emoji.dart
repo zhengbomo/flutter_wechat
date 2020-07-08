@@ -29,7 +29,7 @@ class _EmojiPanelEmojiState extends State<EmojiPanelEmoji> {
                   print("😁");
                 },
                 icon: Icon(Icons.account_circle,
-                    size: 40, color: Colors.orangeAccent));
+                    size: 30, color: Colors.orangeAccent));
           },
           childCount: 4,
         ),
@@ -50,7 +50,7 @@ class _EmojiPanelEmojiState extends State<EmojiPanelEmoji> {
           delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) {
               return Icon(Icons.account_circle,
-                  size: 40, color: Colors.orangeAccent);
+                  size: 30, color: Colors.orangeAccent);
             },
             childCount: 70,
           ),

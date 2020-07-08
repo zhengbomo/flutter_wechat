@@ -9,8 +9,10 @@ import 'package:flutterwechat/ui/components/normal_section.dart';
 import 'package:flutterwechat/ui/components/section_list_view.dart';
 import 'package:flutterwechat/ui/page/base/auto_keep_alive_state.dart';
 import 'package:flutterwechat/ui/page/discover/moment_list_page.dart';
+import 'package:flutterwechat/ui/page/test_page.dart';
 
 class DiscoverPage extends StatefulWidget {
+  const DiscoverPage();
   @override
   _DiscoverPageState createState() => _DiscoverPageState();
 }
@@ -53,7 +55,8 @@ class _DiscoverPageState extends AutoKeepAliveState<DiscoverPage> {
           ),
         ),
         onPressed: () {
-          NavigatorService.push(MomentListPage());
+          final page = MomentListPage();
+          NavigatorService.push(page);
         },
       ),
     ]);
@@ -66,7 +69,9 @@ class _DiscoverPageState extends AutoKeepAliveState<DiscoverPage> {
           color: Color(0xFF3d83e6),
           width: Constant.normalCellIconSize,
         ),
-        onPressed: () {},
+        onPressed: () {
+          NavigatorService.push(TestPage());
+        },
       ),
       NormalCellInfo(
         title: "摇一摇",
@@ -157,6 +162,7 @@ class _DiscoverPageState extends AutoKeepAliveState<DiscoverPage> {
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         elevation: 0,
         title: Text("发现"),

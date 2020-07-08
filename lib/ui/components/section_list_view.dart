@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterwechat/ui/components/normal_section.dart';
 
 typedef int NumberOfRowsCallBack(int section);
 typedef int NumberOfSectionCallBack();
@@ -15,6 +16,8 @@ class SectionListView extends StatelessWidget {
   /// Callback method to get the section widget
   final SectionBuilder sectionWidget;
 
+  final bool ignoreFirstSectionHeader;
+
   /// Mandatory callback method to get the row widget
   final RowsBuilder rowWidget;
   final Widget header;
@@ -23,11 +26,13 @@ class SectionListView extends StatelessWidget {
     @required this.numberOfRowsInSection,
     @required this.rowWidget,
     this.header,
-    this.sectionWidget,
+    this.ignoreFirstSectionHeader = false,
+    SectionBuilder sectionWidget,
     NumberOfSectionCallBack numberOfSection,
   })  : assert(!(numberOfRowsInSection == null || rowWidget == null),
             'numberOfRowsInSection and rowWidget are mandatory'),
-        this.numberOfSection = numberOfSection ?? (() => 1);
+        this.numberOfSection = numberOfSection ?? (() => 1),
+        this.sectionWidget = ((_, __) => NormlSection());
 
   @override
   Widget build(BuildContext context) {
@@ -42,11 +47,13 @@ class SectionListView extends StatelessWidget {
           } else {
             final indexPath = _indexPathFor(sectionCount, index - 1);
             if (indexPath.row == -1) {
-              if (this.sectionWidget != null) {
+              if (this.sectionWidget == null ||
+                  (indexPath.section == 0 && this.ignoreFirstSectionHeader)) {
+                // ignore first section header
+                return SizedBox.fromSize(size: Size(0, 0));
+              } else {
                 final section = this.sectionWidget(context, indexPath.section);
                 return section ?? SizedBox.fromSize(size: Size(0, 0));
-              } else {
-                return SizedBox.fromSize(size: Size(0, 0));
               }
             } else {
               return this.rowWidget(context, indexPath.section, indexPath.row);

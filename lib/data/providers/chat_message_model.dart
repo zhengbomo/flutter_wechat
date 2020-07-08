@@ -10,7 +10,7 @@ class ChatMessageModel extends ChangeNotifier {
   var _randomColor = RandomColor();
   ChatMessageModel() {
     messages.addAll(List.generate(
-        20,
+        10,
         (index) => ChatMessageInfo<String>()
           ..messageId = index + 1
           ..content = randomContent()

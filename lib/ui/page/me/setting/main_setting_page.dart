@@ -101,9 +101,7 @@ class _MainSettingState extends State<MainSetting> {
                 return SizedBox(height: 0, width: 0);
               }
             },
-            sectionWidget: (context, section) {
-              return NormlSection();
-            },
+            ignoreFirstSectionHeader: true,
           ),
         ),
       ),

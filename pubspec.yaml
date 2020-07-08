@@ -21,6 +21,12 @@ dependencies:
   random_color: ^1.0.5
   flutter_section_list_view: ^1.0.0
   azlistview: ^0.1.2
+  # 动画工具
+  # ezanimation: ^0.4.0
+  # 富文本
+  extended_text: ^3.0.1
+
+
 
   scrollable_positioned_list:
     git:

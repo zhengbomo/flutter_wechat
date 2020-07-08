@@ -13,6 +13,7 @@ class LinkButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FlatButton(
+      textColor: Color(0xff364f80),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       padding: this.padding,
       child: this.child,

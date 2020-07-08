@@ -9,6 +9,7 @@ import 'package:flutterwechat/ui/page/me/me_page.dart';
 import 'package:provider/provider.dart';
 
 class MainPage extends StatefulWidget {
+  const MainPage();
   @override
   _MainPageState createState() => _MainPageState();
 }
@@ -16,7 +17,12 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   PageController _pageController;
 
-  final _tabWidget = [MainChatPage(), ContactsPage(), DiscoverPage(), MePage()];
+  final _tabWidget = [
+    MainChatPage(),
+    ContactsPage(),
+    DiscoverPage(),
+    MePage(),
+  ];
 
   void initState() {
     super.initState();
@@ -28,6 +34,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       bottomNavigationBar: MainTabBar(),
       body: Selector(
         builder: (context, int index, child) {

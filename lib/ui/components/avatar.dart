@@ -7,7 +7,7 @@ class Avatar extends StatelessWidget {
 
   Avatar({
     @required this.color,
-    @required this.size,
+    this.size,
     this.borderRadius = 3,
   });
 

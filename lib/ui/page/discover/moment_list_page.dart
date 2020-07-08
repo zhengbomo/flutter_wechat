@@ -1,106 +1,248 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:flutterwechat/data/constants/constants.dart';
+import 'package:flutterwechat/data/constants/style.dart';
 import 'package:flutterwechat/ui/components/avatar.dart';
-import 'package:flutterwechat/ui/components/link_button.dart';
+import 'package:flutterwechat/ui/page/discover/moment_cell.dart';
+import 'package:flutterwechat/ui/page/discover/moment_list_provider.dart';
+import 'package:flutterwechat/ui/page/discover/moment_operate_more.dart';
+import 'package:flutterwechat/ui/page/discover/value_change_notifier.dart';
+import 'package:flutterwechat/ui/view/bm_appbar.dart';
+import 'package:provider/provider.dart';
 
-class MomentListPage extends StatefulWidget {
-  @override
-  _MomentListPageState createState() => _MomentListPageState();
-}
+class MomentListPage extends StatelessWidget {
+  final ScrollController _scrollController = ScrollController();
+  // final ItemScrollController _scrollController = ItemScrollController();
 
-class _MomentListPageState extends State<MomentListPage> {
+  final double keyboardHeight = 350;
+
+  final int itemCount = 10;
+  final momentListProvider = MomentListProvider();
+  final bottomHeightProvider = ValueChangeNotifier<double>(value: 0);
+
   @override
   Widget build(BuildContext context) {
+    final paddingTop = MediaQuery.of(context).padding.top;
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Stack(
-        children: <Widget>[
-          MediaQuery.removePadding(
-            removeTop: true,
-            context: context,
-            child: Padding(
-              padding: EdgeInsets.only(),
-              child: ListView.builder(
-                itemBuilder: (context, i) {
-                  if (i == 0) {
-                    return _createHeader();
-                  } else {
-                    return _createChild();
-                  }
-                },
-                itemCount: 20,
-              ),
-            ),
-          ),
-          Positioned(
-            left: 0,
-            right: 0,
-            top: 0,
-            height: MediaQuery.of(context).padding.top + kToolbarHeight,
-            child: Container(
-              // padding:
-              // EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-              child: Opacity(
-                opacity: 1,
-                child: AppBar(
-                  elevation: 0,
-                  backgroundColor: Colors.transparent,
-                  title: Text(
-                    "朋友圈",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  actions: <Widget>[
-                    IconButton(
-                      icon: Icon(
-                        Icons.add,
-                        color: Colors.white,
+      body: MultiProvider(
+          providers: [
+            ChangeNotifierProvider.value(value: momentListProvider),
+            ChangeNotifierProvider.value(value: bottomHeightProvider),
+          ],
+          child: Builder(
+            builder: (context) {
+              print("context");
+              final textEditorHeight =
+                  context.watch<ValueChangeNotifier<double>>();
+              return Stack(
+                children: <Widget>[
+                  // 列表
+                  MediaQuery.removePadding(
+                    removeTop: true,
+                    removeBottom: true,
+                    context: context,
+                    child: NotificationListener<ScrollNotification>(
+                      onNotification: (ScrollNotification notification) {
+                        final pixels = notification.metrics.pixels -
+                            notification.metrics.minScrollExtent;
+
+                        const maxValue = 300.0;
+                        final offset = min(maxValue, max(0.0, pixels));
+                        final alpha = offset / maxValue;
+                        momentListProvider.setAppBarBackgroundAlpha(alpha);
+                        return false;
+                      },
+                      child: ListView.builder(
+                        controller: _scrollController,
+                        itemBuilder: (context, i) {
+                          if (i == 0) {
+                            return _createHeader(context);
+                          } else if (i == itemCount + 1) {
+                            return SizedBox(height: textEditorHeight.value);
+                          } else {
+                            return MomentCell(
+                              test: (offset) {
+                                final addition = paddingTop + kToolbarHeight;
+                                print(offset);
+                                // _scrollController.scrollTo(
+                                //     index: i,
+                                //     offset: addition - offset.dy,
+                                //     duration: Duration(milliseconds: 250));
+                              },
+                              moreOperate: (offset) {
+                                // 获取位置
+                                final model = momentListProvider;
+                                if (model.showOperateMore) {
+                                  model.setOperateMoreTop(show: false);
+                                } else {
+                                  model.setOperateMoreTop(
+                                      show: true, top: offset.dy);
+                                }
+                              },
+                            );
+                          }
+                        },
+                        itemCount: itemCount + 2,
                       ),
-                      onPressed: () {},
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+                    ),
+                  ),
+                  // appbar
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    height: paddingTop + kToolbarHeight,
+                    child: Container(
+                      child: Builder(
+                        builder: (context) {
+                          final threadshold = 0.8;
+                          final originOffset = context.select(
+                              (MomentListProvider value) =>
+                                  value.appbarBackgroundAlpha);
+                          final offset = max(0, originOffset - threadshold) *
+                              (1 / (1 - threadshold));
+                          final alpha = (offset * 255).toInt();
+                          return BMAppBar(
+                            color: originOffset < threadshold
+                                ? Colors.white
+                                : Colors.black,
+                            backgroundColor:
+                                Style.primaryColor.withAlpha(alpha),
+                            title: Text(
+                              "朋友圈",
+                              style: TextStyle(
+                                  color: Colors.black.withAlpha(alpha)),
+                            ),
+                            actions: <Widget>[
+                              IconButton(
+                                icon: SvgPicture.asset(
+                                  Constant.assetsImagesMe
+                                      .named("icons_filled_camera.svg"),
+                                  color: originOffset < threadshold
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
+                                onPressed: () {
+                                  final model = bottomHeightProvider;
+                                  if (model.value >= 50) {
+                                    model.setValue(0);
+                                  } else {
+                                    final newHeight =
+                                        MediaQuery.of(context).padding.bottom +
+                                            min(50, 50);
+                                    model.setValue(newHeight + keyboardHeight);
+                                  }
+                                  WidgetsBinding.instance
+                                      .addPostFrameCallback((timeStamp) {
+                                    // _scrollController.scrollTo(
+                                    //     index: 7,
+                                    //     curve: Curves.easeInOut,
+                                    //     duration: Duration(milliseconds: 250));
+                                  });
+                                },
+                              )
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  // OperateMore
+                  Positioned(
+                    top: 0,
+                    bottom: 0,
+                    right: 0,
+                    left: 0,
+                    child: Builder(
+                      builder: (context) {
+                        final top = context.select(
+                            (MomentListProvider model) => model.operateMoreTop);
+                        return MomentOperateMore(
+                          top: top,
+                          show: context.select((MomentListProvider model) =>
+                              model.showOperateMore),
+                          dismiss: () {
+                            momentListProvider.setOperateMoreTop(show: false);
+                          },
+                          onComment: () {
+                            momentListProvider.setOperateMoreTop(show: false);
+                          },
+                          onLike: () {
+                            momentListProvider.setOperateMoreTop(show: false);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  // input
+                  AnimatedPositioned(
+                    duration: Duration(milliseconds: 250),
+                    curve: Curves.easeInOut,
+                    left: 0,
+                    right: 0,
+                    bottom: -keyboardHeight - 40 + textEditorHeight.value,
+                    height: keyboardHeight + 40,
+                    child: Container(
+                      color: Colors.green,
+                      height:
+                          context.watch<ValueChangeNotifier<double>>().value,
+                      child: TextField(
+                          // autofocus: true,
+                          ),
+                    ),
+                  )
+                ],
+              );
+            },
+          )),
     );
   }
 
-  Widget _createHeader() {
+  Widget _createHeader(BuildContext context) {
     return Container(
-      height: 320,
+      color: Colors.white,
+      height: MediaQuery.of(context).size.height * 0.5,
       child: Stack(
+        fit: StackFit.loose,
         children: <Widget>[
           Positioned(
             top: 0,
             left: 0,
             right: 0,
-            bottom: 30,
+            bottom: 40,
             child: Container(
               color: Colors.green,
-              height: 300,
             ),
           ),
           Positioned(
             right: 12,
-            bottom: 12,
-            width: 60,
-            height: 60,
+            bottom: 18,
+            width: 68,
+            height: 68,
             child: Avatar(
-              size: 60,
-              color: Colors.red,
+              borderRadius: 8,
+              color: Colors.blue,
             ),
           ),
           Positioned(
-            right: 12.0 + 60 + 12,
-            bottom: 36,
+            right: 12.0 + 60 + 32,
+            bottom: 48,
             child: Container(
               child: Text(
                 "八戒",
                 style: TextStyle(
                   fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                   color: Colors.white,
+                  shadows: [
+                    Shadow(
+                      color: Colors.black,
+                      blurRadius: 2,
+                      offset: Offset.zero,
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -108,118 +250,5 @@ class _MomentListPageState extends State<MomentListPage> {
         ],
       ),
     );
-  }
-
-  Widget _createChild() {
-    return Container(
-        margin: EdgeInsets.all(12),
-        // color: Shares.randomColor.randomColor(),
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(bottom: 12),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Avatar(
-                    color: Colors.red,
-                    size: 50,
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Container(
-                          color: Colors.green,
-                          child: LinkButton(
-                            child: Text("八戒"),
-                            onPressed: () {},
-                          ),
-                        ),
-                        Text("今天晚上吃什么呀今天晚上吃什么呀今天晚上吃什么呀今天晚上吃什么呀今天晚上吃什么呀今天晚上"),
-                        Padding(
-                          padding: EdgeInsets.only(top: 12, bottom: 12),
-                          child: Wrap(
-                            children: List.generate(
-                              3,
-                              (index) => Container(
-                                width: 50,
-                                height: 50,
-                                margin: EdgeInsets.only(right: 8),
-                                color: Colors.blue,
-                              ),
-                            ),
-                          ),
-                        ),
-                        LinkButton(
-                          child: Text("寂静岭"),
-                          onPressed: () {},
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Expanded(child: Text("4分钟前")),
-                            IconButton(
-                              icon: Icon(Icons.add),
-                              onPressed: () {},
-                            )
-                          ],
-                        ),
-                        Container(
-                          width: double.infinity,
-                          margin: EdgeInsets.only(left: 0, right: 0),
-                          color: Colors.white24,
-                          child: Column(
-                            children: <Widget>[
-                              Container(
-                                color: Colors.green,
-                                alignment: Alignment.centerLeft,
-                                child: Container(
-                                  color: Colors.red,
-                                  child: RichText(
-                                    text: TextSpan(text: "", children: [
-                                      WidgetSpan(
-                                        child: Icon(Icons.favorite, size: 30),
-                                      ),
-                                      ...List.generate(
-                                        10,
-                                        (index) => WidgetSpan(
-                                          child: LinkButton(
-                                            padding: EdgeInsets.only(right: 10),
-                                            child: Text("蜗牛骑士"),
-                                            onPressed: () {},
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                                  ),
-                                ),
-                              ),
-                              Column(
-                                children: <Widget>[
-                                  ...List.generate(
-                                    3,
-                                    (index) => Container(
-                                      margin: EdgeInsets.only(top: 12),
-                                      height: 30,
-                                      color: Colors.red,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Divider(
-              height: 1,
-            ),
-          ],
-        ));
   }
 }
