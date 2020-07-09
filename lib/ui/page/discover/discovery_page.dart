@@ -26,6 +26,7 @@ class _DiscoverPageState extends AutoKeepAliveState<DiscoverPage> {
     _items.clear();
     _items.add([
       NormalCellInfo(
+        hideSeperator: true,
         title: "朋友圈",
         icon: SvgPicture.asset(
           Constant.assetsImagesDiscover
@@ -76,6 +77,7 @@ class _DiscoverPageState extends AutoKeepAliveState<DiscoverPage> {
         },
       ),
       NormalCellInfo(
+        hideSeperator: true,
         title: "摇一摇",
         icon: SvgPicture.asset(
           Constant.assetsImagesDiscover.named("icons_outlined_shake.svg"),
@@ -97,6 +99,7 @@ class _DiscoverPageState extends AutoKeepAliveState<DiscoverPage> {
         onPressed: () {},
       ),
       NormalCellInfo(
+        hideSeperator: true,
         title: "搜一搜",
         icon: SvgPicture.asset(
           Constant.assetsImagesDiscover.named("icons_outlined_searchlogo.svg"),
@@ -109,6 +112,7 @@ class _DiscoverPageState extends AutoKeepAliveState<DiscoverPage> {
 
     _items.add([
       NormalCellInfo(
+        hideSeperator: true,
         title: "附近的人",
         icon: SvgPicture.asset(
           Constant.assetsImagesDiscover.named("icons_outlined_nearby.svg"),
@@ -130,6 +134,7 @@ class _DiscoverPageState extends AutoKeepAliveState<DiscoverPage> {
         onPressed: () {},
       ),
       NormalCellInfo(
+        hideSeperator: true,
         title: "游戏",
         icon: SvgPicture.asset(
           Constant.assetsImagesDiscover
@@ -143,6 +148,7 @@ class _DiscoverPageState extends AutoKeepAliveState<DiscoverPage> {
 
     _items.add([
       NormalCellInfo(
+        hideSeperator: true,
         title: "小程序",
         icon: SvgPicture.asset(
           Constant.assetsImagesDiscover.named("icons_outlined_miniprogram.svg"),
@@ -226,14 +232,26 @@ class _DiscoverPageState extends AutoKeepAliveState<DiscoverPage> {
         ],
       ),
       body: Container(
-        child: SectionListView(
-          numberOfSection: () => _items.length,
-          numberOfRowsInSection: (section) => _items[section].length,
-          rowWidget: (context, section, row) {
-            NormalCellInfo cellInfo = _items[section][row];
-            return NormalCell(cellInfo: cellInfo);
-          },
-          ignoreFirstSectionHeader: true,
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: SectionListView(
+                numberOfSection: () => _items.length,
+                numberOfRowsInSection: (section) => _items[section].length,
+                rowWidget: (context, section, row) {
+                  NormalCellInfo cellInfo = _items[section][row];
+                  return NormalCell(cellInfo: cellInfo);
+                },
+                ignoreFirstSectionHeader: true,
+              ),
+            ),
+            Builder(
+              builder: (c) => MediaQuery.removePadding(
+                context: c,
+                child: TextField(),
+              ),
+            ),
+          ],
         ),
       ),
     );

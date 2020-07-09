@@ -23,8 +23,7 @@ class Constant {
   static const String assetsImagesArrow = 'assets/images/arrow/';
 
   /// 微信模块相关的资源
-  static const AssertUtil assetsImagesMainframe =
-      AssertUtil('assets/images/chat/');
+  static const AssertUtil assetsImagesChat = AssertUtil('assets/images/chat/');
 
   /// 微信聊天输入栏资源
   static const AssertUtil assetsImagesChatBar =

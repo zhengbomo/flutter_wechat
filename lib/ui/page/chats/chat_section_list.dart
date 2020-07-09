@@ -6,6 +6,7 @@ import 'package:flutterwechat/data/constants/style.dart';
 import 'package:flutterwechat/data/models/chat_section_info.dart';
 import 'package:flutterwechat/data/providers/chat_section_model.dart';
 import 'package:flutterwechat/ui/page/chats/chat_detail_page.dart';
+import 'package:flutterwechat/ui/page/test_page.dart';
 import 'package:provider/provider.dart';
 
 class ChatSectionList extends StatefulWidget {
@@ -132,7 +133,7 @@ class _ChatSectionListState extends State<ChatSectionList> {
                     Padding(
                         padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
                         child: Image.asset(
-                            Constant.assetsImagesMainframe
+                            Constant.assetsImagesChat
                                 .named("message_disable_notify_icon.png"),
                             width: 15,
                             color: Colors.black)),

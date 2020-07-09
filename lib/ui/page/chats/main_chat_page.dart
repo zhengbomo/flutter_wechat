@@ -28,42 +28,41 @@ class _MainChatPageState extends AutoKeepAliveState<MainChatPage> {
         return Stack(
           children: <Widget>[
             _createMainView(context),
-            Selector(builder: (context, show, child) {
-              return AddMenu(show: show, dismissCall: () {
-                context.read<MainChatModel>().setShowMenu(false);
-              },);
-            }, selector: (context, MainChatModel model) => model.showMenu)          
+            Selector(
+              builder: (context, show, child) {
+                return AddMenu(
+                  show: show,
+                  dismissCall: () {
+                    context.read<MainChatModel>().setShowMenu(false);
+                  },
+                );
+              },
+              selector: (context, MainChatModel model) => model.showMenu,
+            )
           ],
-        ); 
+        );
       }),
     );
   }
 
   Widget _createMainView(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          elevation: 0,
-          centerTitle: true,
-          title: Text("微信"),
-          actions: [
-            IconButton(
-              icon: SvgPicture.asset(
-                Constant.assetsImagesMainframe.named("icons_outlined_add2.svg"),
-                color: Color(0xFF181818),
-              ),
-              onPressed: () {
-                context.read<MainChatModel>().setShowMenu(true);
-              },
-            )
-          ]
-      ),
+      appBar:
+          AppBar(elevation: 0, centerTitle: true, title: Text("微信"), actions: [
+        IconButton(
+          icon: SvgPicture.asset(
+            Constant.assetsImagesChat.named("icons_outlined_add2.svg"),
+            color: Color(0xFF181818),
+          ),
+          onPressed: () {
+            context.read<MainChatModel>().setShowMenu(true);
+          },
+        )
+      ]),
       body: ChangeNotifierProvider(
         create: (_) => ChatSectionModel(),
         child: ChatSectionList(),
-      )
+      ),
     );
   }
-
-
 }
-

@@ -34,6 +34,7 @@ class _MePageState extends AutoKeepAliveState<MePage> {
     _items.clear();
     _items.add([
       NormalCellInfo(
+        hideSeperator: true,
         title: "支付",
         icon: SvgPicture.asset(
           Constant.assetsImagesMe.named("icons_outlined_wechatpay.svg"),
@@ -72,6 +73,7 @@ class _MePageState extends AutoKeepAliveState<MePage> {
         onPressed: () {},
       ),
       NormalCellInfo(
+        hideSeperator: true,
         title: "表情",
         icon: SvgPicture.asset(
           Constant.assetsImagesMe.named("icons_outlined_sticker.svg"),
@@ -84,6 +86,7 @@ class _MePageState extends AutoKeepAliveState<MePage> {
 
     _items.add([
       NormalCellInfo(
+        hideSeperator: true,
         title: "设置",
         icon: SvgPicture.asset(
           Constant.assetsImagesMe.named("icons_outlined_setting.svg"),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterwechat/ui/view/bm_appbar.dart';
 
 class MessageSettingPage extends StatefulWidget {
   @override
@@ -9,7 +10,7 @@ class _MessageSettingPageState extends State<MessageSettingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: BMAppBar(),
     );
   }
 }

@@ -2,12 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutterwechat/data/constants/constants.dart';
 
-class BMAppBar extends StatelessWidget {
+class BMAppBar extends StatelessWidget with PreferredSizeWidget {
   final Widget title;
   final Color color;
   final Color backgroundColor;
   final List<Widget> actions;
-  BMAppBar({this.title, this.actions, this.backgroundColor, this.color});
+  final double elevation;
+
+  BMAppBar({
+    this.title,
+    this.actions,
+    this.backgroundColor,
+    this.color,
+    this.elevation = 0,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,10 +33,13 @@ class BMAppBar extends StatelessWidget {
     return AppBar(
       backgroundColor: this.backgroundColor,
       leading: leading,
-      elevation: 0,
+      elevation: elevation,
       centerTitle: true,
       title: this.title,
       actions: this.actions,
     );
   }
+
+  @override
+  Size get preferredSize => Size.fromHeight(kToolbarHeight);
 }

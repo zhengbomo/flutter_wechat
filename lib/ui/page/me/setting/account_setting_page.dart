@@ -3,6 +3,7 @@ import 'package:flutterwechat/ui/components/normal_cell.dart';
 import 'package:flutterwechat/ui/components/normal_label_cell.dart';
 import 'package:flutterwechat/ui/components/normal_section.dart';
 import 'package:flutterwechat/ui/components/section_list_view.dart';
+import 'package:flutterwechat/ui/view/bm_appbar.dart';
 
 class AccountSettingPage extends StatefulWidget {
   @override
@@ -108,7 +109,7 @@ class _AccountSettingPageState extends State<AccountSettingPage> {
   Widget build(BuildContext context) {
     _setupItem();
     return Scaffold(
-      appBar: AppBar(
+      appBar: BMAppBar(
         title: Text("账号与安全"),
       ),
       body: Container(

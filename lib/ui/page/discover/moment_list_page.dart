@@ -6,6 +6,7 @@ import 'package:flutterwechat/data/constants/style.dart';
 import 'package:flutterwechat/ui/components/action_sheet.dart';
 import 'package:flutterwechat/ui/components/avatar.dart';
 import 'package:flutterwechat/ui/page/discover/moment_cell.dart';
+import 'package:flutterwechat/ui/page/discover/moment_info.dart';
 import 'package:flutterwechat/ui/page/discover/moment_list_provider.dart';
 import 'package:flutterwechat/ui/page/discover/moment_operate_more.dart';
 import 'package:flutterwechat/ui/page/discover/value_change_notifier.dart';
@@ -16,11 +17,12 @@ class MomentListPage extends StatelessWidget {
   final ScrollController _scrollController = ScrollController();
   // final ItemScrollController _scrollController = ItemScrollController();
 
-  final double keyboardHeight = 350;
+  final double keyboardHeight = 250;
 
-  final int itemCount = 10;
   final momentListProvider = MomentListProvider();
   final bottomHeightProvider = ValueChangeNotifier<double>(value: 0);
+
+  final _items = List.generate(10, (index) => MomentInfo.random());
 
   @override
   Widget build(BuildContext context) {
@@ -60,12 +62,12 @@ class MomentListPage extends StatelessWidget {
                         itemBuilder: (context, i) {
                           if (i == 0) {
                             return _createHeader(context);
-                          } else if (i == itemCount + 1) {
+                          } else if (i == _items.length + 1) {
                             return SizedBox(height: textEditorHeight.value);
                           } else {
                             return MomentCell(
+                              momentInfo: _items[i - 1],
                               test: (offset) {
-                                final addition = paddingTop + kToolbarHeight;
                                 print(offset);
                                 // _scrollController.scrollTo(
                                 //     index: i,
@@ -85,7 +87,7 @@ class MomentListPage extends StatelessWidget {
                             );
                           }
                         },
-                        itemCount: itemCount + 2,
+                        itemCount: _items.length + 2,
                       ),
                     ),
                   ),

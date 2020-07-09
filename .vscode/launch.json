@@ -23,6 +23,15 @@
             ]
         },
         {
+            "name": "Custom Phone",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "-d",
+                "Custom Phone"
+            ]
+        },
+        {
             "name": "Google Nexus 5",
             "request": "launch",
             "type": "dart",

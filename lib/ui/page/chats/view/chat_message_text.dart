@@ -9,12 +9,12 @@ class ChatMessageText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.fromLTRB(8, 3, 8, 3),
+        padding: EdgeInsets.all(8),
         decoration: BoxDecoration(
             color: Colors.green, borderRadius: BorderRadius.circular(3)),
         child: Text(
           message.content,
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.white, fontSize: 16),
         ));
   }
 }

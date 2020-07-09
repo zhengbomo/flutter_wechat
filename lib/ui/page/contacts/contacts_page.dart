@@ -56,7 +56,6 @@ class _ContactsPageState extends AutoKeepAliveState<ContactsPage> {
   @override
   Widget build(BuildContext context) {
     super.build(context);
-
     final query = MediaQuery.of(context);
 
     return Scaffold(

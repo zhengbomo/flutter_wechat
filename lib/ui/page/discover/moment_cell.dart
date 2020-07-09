@@ -4,16 +4,20 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutterwechat/data/constants/constants.dart';
 import 'package:flutterwechat/ui/components/avatar.dart';
 import 'package:flutterwechat/ui/components/link_button.dart';
+import 'package:flutterwechat/ui/page/discover/moment_info.dart';
 
 class MomentCell extends StatelessWidget {
+  final MomentInfo momentInfo;
+
   final ValueChanged<Offset> moreOperate;
   final ValueChanged<Offset> test;
 
-  final _likes = ["蜗牛骑士"];
-  final _comment = ["牛逼🐮", "哈哈哈", "今天晚上吃什么今天晚上吃什么今天晚上吃什么今天晚上吃什么今天晚上吃什么"];
+  // final _likes = ["蜗牛骑士"];
+  // final _comment = ["牛逼🐮", "哈哈哈", "今天晚上吃什么今天晚上吃什么今天晚上吃什么今天晚上吃什么今天晚上吃什么"];
   // final _comment = [];
 
-  MomentCell({@required this.moreOperate, this.test});
+  MomentCell(
+      {@required this.momentInfo, @required this.moreOperate, this.test});
 
   Widget _likeText() {
     final color = Color(0xff364f80);
@@ -32,14 +36,14 @@ class MomentCell extends StatelessWidget {
             color: color),
       ),
     ));
-    for (var i = 0; i < _likes.length; i++) {
+    for (var i = 0; i < momentInfo.likes.length; i++) {
       spans.add(TextSpan(
-          text: _likes[i],
+          text: momentInfo.likes[i],
           recognizer: TapGestureRecognizer()
             ..onTap = () {
-              print(_likes[i]);
+              print(momentInfo.likes[i]);
             }));
-      if (i < _likes.length - 1) {
+      if (i < momentInfo.likes.length - 1) {
         spans.add(TextSpan(text: ", ", style: style));
       }
     }
@@ -53,15 +57,15 @@ class MomentCell extends StatelessWidget {
     final style = TextStyle(color: Colors.black);
 
     var spans = List<TextSpan>();
-    for (var i = 0; i < _comment.length; i++) {
+    for (var i = 0; i < momentInfo.comments.length; i++) {
       spans.add(TextSpan(
           text: "蜗牛骑士",
           recognizer: TapGestureRecognizer()
             ..onTap = () {
-              print(_comment[i]);
+              print(momentInfo.comments[i]);
             }));
-      spans.add(TextSpan(text: ": ${_comment[i]}", style: style));
-      if (i < _comment.length - 1) {
+      spans.add(TextSpan(text: ": ${momentInfo.comments[i]}", style: style));
+      if (i < momentInfo.comments.length - 1) {
         spans.add(TextSpan(text: "\n"));
       }
     }
@@ -77,12 +81,9 @@ class MomentCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final parentContext = context;
-
     return Container(
       color: Colors.white,
       padding: EdgeInsets.all(12),
-      // color: Shares.randomColor.randomColor(),
       child: Column(
         children: <Widget>[
           Padding(
@@ -104,43 +105,47 @@ class MomentCell extends StatelessWidget {
                       children: <Widget>[
                         Container(
                           child: LinkButton(
-                            child: Text("八戒"),
+                            child: Text(this.momentInfo.username),
                             onPressed: () {},
                           ),
                         ),
                         Text(
-                          "今天晚上吃什么呀今天晚上吃什么呀今天晚上吃什么呀今天晚上吃什么呀今天晚上吃什么呀今天晚上",
+                          this.momentInfo.content,
                           style: TextStyle(fontSize: 17),
                         ),
                         Padding(
                           padding: EdgeInsets.only(top: 12, bottom: 6),
                           child: Wrap(
+                            runSpacing: 8,
                             spacing: 8,
-                            children: List.generate(
-                              3,
-                              (index) => FlatButton(
-                                padding: EdgeInsets.zero,
-                                child: Container(
-                                  width: 80,
-                                  height: 80,
-                                  color: Colors.blue.withAlpha(100),
-                                ),
-                                onPressed: () {},
-                              ),
+                            children: this
+                                .momentInfo
+                                .images
+                                .map((e) => FlatButton(
+                                      padding: EdgeInsets.zero,
+                                      child: Container(
+                                        width: 80,
+                                        height: 80,
+                                        color: e.withAlpha(100),
+                                      ),
+                                      onPressed: () {},
+                                    ))
+                                .toList(),
+                          ),
+                        ),
+                        if (momentInfo.location != null)
+                          LinkButton(
+                            child: Text(
+                              this.momentInfo.location,
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w400),
                             ),
+                            onPressed: () {},
                           ),
-                        ),
-                        LinkButton(
-                          child: Text(
-                            "寂静岭",
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w400),
-                          ),
-                          onPressed: () {},
-                        ),
                         Row(
                           children: <Widget>[
-                            Expanded(child: Text("4分钟前")),
+                            Expanded(
+                                child: Text(this.momentInfo.time.toString())),
                             SizedBox(
                               child: Builder(
                                 builder: (context) {
@@ -177,15 +182,18 @@ class MomentCell extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Container(
-                                child: _likeText(),
-                              ),
-                              Divider(
-                                height: 5,
-                              ),
-                              Container(
-                                child: _commentList(),
-                              ),
+                              if (momentInfo.likes.length > 0)
+                                Container(
+                                  child: _likeText(),
+                                ),
+                              if (momentInfo.likes.length > 0)
+                                Divider(
+                                  height: 1,
+                                ),
+                              if (momentInfo.comments.length > 0)
+                                Container(
+                                  child: _commentList(),
+                                ),
                             ],
                           ),
                         ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:flutterwechat/data/constants/constants.dart';
 import 'package:flutterwechat/data/providers/chat_detail_emoji_model.dart';
 import 'package:flutterwechat/data/providers/chat_message_model.dart';
 import 'package:flutterwechat/data/providers/chat_message_ui_model.dart';
@@ -6,7 +8,7 @@ import 'package:flutterwechat/ui/page/chats/chat_editor.dart';
 import 'package:flutterwechat/ui/page/chats/chat_input_type.dart';
 import 'package:flutterwechat/ui/page/chats/view/chat_message_container.dart';
 import 'package:flutterwechat/ui/page/chats/view/chat_message_text.dart';
-import 'package:keyboard_utils/keyboard_utils.dart';
+import 'package:flutterwechat/ui/view/bm_appbar.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
@@ -23,39 +25,50 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   ChatMessageUIModel _chatMessageUIModel;
   ChatMessageModel _chatMessageModel;
   ChatDetailEmojiModel _chatDetailEmojiModel;
-  KeyboardUtils _keyboardUtils = KeyboardUtils();
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _scrollToEnd(animated: false);
+    });
+    super.initState();
+  }
 
   @override
   void didChangeDependencies() {
-    _chatMessageModel = ChatMessageModel();
-    _chatDetailEmojiModel = ChatDetailEmojiModel();
-    _chatMessageUIModel = ChatMessageUIModel(
-        buildContext: context,
+    if (_chatMessageModel == null) {
+      MediaQuery query =
+          context.getElementForInheritedWidgetOfExactType<MediaQuery>().widget;
+      _chatMessageModel = ChatMessageModel();
+      _chatDetailEmojiModel = ChatDetailEmojiModel();
+      _chatMessageUIModel = ChatMessageUIModel(
+        mediaQueryData: query.data,
         chatInputTypeChanged: (type) {
           if (type == ChatInputType.more ||
               type == ChatInputType.keyboard ||
               type == ChatInputType.emoji) {
             _scrollToEnd();
           }
-        });
+        },
+      );
+    }
     super.didChangeDependencies();
   }
 
-  _scrollToEnd() {
+  _scrollToEnd({bool animated = true}) {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      // _scrollController.jumpTo(index: _chatMessageModel.messages.length - 1);
-      _scrollController.scrollTo(
-        index: _chatMessageModel.messages.length - 1,
-        duration: Duration(milliseconds: 250),
-        offset: -500,
-      );
+      if (animated) {
+        _scrollController.scrollTo(
+          index: _chatMessageModel.messages.length - 1,
+          duration: Duration(milliseconds: 250),
+          offset: -500,
+        );
+      } else {
+        _scrollController.jumpTo(
+          index: _chatMessageModel.messages.length - 1,
+        );
+      }
     });
-  }
-
-  @override
-  void dispose() {
-    _keyboardUtils.removeAllKeyboardListeners();
-    super.dispose();
   }
 
   @override
@@ -63,28 +76,27 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     print("build");
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => _chatMessageModel,
-        ),
-        ChangeNotifierProvider(
-          create: (_) => _chatMessageUIModel,
-        ),
-        ChangeNotifierProvider(
-          create: (_) => _chatDetailEmojiModel,
-        ),
+        ChangeNotifierProvider.value(value: _chatMessageModel),
+        ChangeNotifierProvider.value(value: _chatMessageUIModel),
+        ChangeNotifierProvider.value(value: _chatDetailEmojiModel),
       ],
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: AppBar(
+        appBar: BMAppBar(
+          elevation: 1,
           title: Text("八戒"),
           actions: <Widget>[
             IconButton(
-                icon: Icon(Icons.add),
-                onPressed: () {
-                  _scrollToEnd();
-                }),
-            IconButton(
               icon: Icon(Icons.add),
+              onPressed: () {
+                // 发送数据
+                _chatMessageModel.addMessage(1);
+                _scrollToEnd();
+              },
+            ),
+            IconButton(
+              icon: SvgPicture.asset(
+                  Constant.assetsImagesChat.named("icons_filled_more.svg")),
               onPressed: () {
                 final indexInfo =
                     _scrollController.getCurrentIndexInfo(wholeVisible: false);
@@ -107,28 +119,30 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
             )
           ],
         ),
-        body: Stack(
-          children: <Widget>[
-            Builder(builder: (context) => _buildMessageList(context)),
-            MediaQuery.removePadding(
-              context: context,
-              removeTop: true,
-              removeBottom: false,
-              child: Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: ChatEditor(
-                  textViewHeightChanged: (init) {
-                    if (!init) {
-                      _scrollToEnd();
-                    }
-                  },
+        body: Builder(builder: (context) {
+          return Stack(
+            children: <Widget>[
+              _buildMessageList(context),
+              MediaQuery.removePadding(
+                context: context,
+                removeTop: true,
+                removeBottom: false,
+                child: Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: ChatEditor(
+                    textViewHeightChanged: (init) {
+                      if (!init) {
+                        _scrollToEnd();
+                      }
+                    },
+                  ),
                 ),
-              ),
-            )
-          ],
-        ),
+              )
+            ],
+          );
+        }),
       ),
     );
   }
@@ -148,33 +162,36 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       },
       child: Builder(
         builder: (c) {
-          final model = c.watch<ChatMessageModel>();
-          final uimodel = c.watch<ChatMessageUIModel>();
           return MediaQuery.removePadding(
             removeBottom: true,
             context: c,
-            child: ScrollablePositionedList.builder(
-              itemCount: model.messages.length + 1,
-              itemBuilder: (context, i) {
-                if (model.messages.length == i) {
-                  // 占位
-                  return Container(
-                    // color: Colors.green,
-                    height: uimodel.messageListBottomHeight,
-                  );
-                } else {
-                  return Container(
-                    // color: model.messages[i].color.withAlpha(150),
-                    // height: model.messages[i].height,
-                    child: ChatMessageContainer(
-                        child: ChatMessageText(message: model.messages[i])),
-                  );
-                }
+            child: Builder(
+              builder: (c) {
+                final model = c.watch<ChatMessageModel>();
+                final messageListBottomHeight = c.select(
+                    (ChatMessageUIModel model) =>
+                        model.messageListBottomHeight);
+
+                return ScrollablePositionedList.builder(
+                  itemCount: model.messages.length + 1,
+                  itemBuilder: (context, i) {
+                    if (model.messages.length == i) {
+                      // 占位
+                      return SizedBox(height: messageListBottomHeight);
+                    } else {
+                      return ChatMessageContainer(
+                        showUsername: false,
+                        message: model.messages[i],
+                        child: ChatMessageText(message: model.messages[i]),
+                      );
+                    }
+                  },
+                  itemScrollController: _scrollController,
+                  itemPositionsListener: itemPositionsListener,
+                  reverse: false,
+                  scrollDirection: Axis.vertical,
+                );
               },
-              itemScrollController: _scrollController,
-              itemPositionsListener: itemPositionsListener,
-              reverse: false,
-              scrollDirection: Axis.vertical,
             ),
           );
         },

@@ -1,20 +1,26 @@
 PODS:
   - Flutter (1.0.0)
+  - flutter_plugin_record (0.0.1):
+    - Flutter
   - keyboard_utils (0.0.1):
     - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - flutter_plugin_record (from `.symlinks/plugins/flutter_plugin_record/ios`)
   - keyboard_utils (from `.symlinks/plugins/keyboard_utils/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
+  flutter_plugin_record:
+    :path: ".symlinks/plugins/flutter_plugin_record/ios"
   keyboard_utils:
     :path: ".symlinks/plugins/keyboard_utils/ios"
 
 SPEC CHECKSUMS:
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  flutter_plugin_record: 562ded56f3a109d769e72c3ef52ef20d835493d4
   keyboard_utils: ab24bc711be9e91a5937c20489056b8dd650fecc
 
 PODFILE CHECKSUM: 2609452b760cd11039b14039a86564367a3d8ab9

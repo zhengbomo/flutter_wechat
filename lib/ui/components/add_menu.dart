@@ -90,7 +90,7 @@ class _AddMenuState extends State<AddMenu> with SingleTickerProviderStateMixin {
           right: 6,
           top: 0,
           child: Image.asset(
-              Constant.assetsImagesMainframe.named("menu_up_arrow.png"),
+              Constant.assetsImagesChat.named("menu_up_arrow.png"),
               height: 10),
         ),
         Padding(
@@ -161,16 +161,15 @@ class _Item {
   static final List<_Item> items = [
     _Item(
         title: "发起群聊",
-        icon: Constant.assetsImagesMainframe
-            .named("icons_filled_add-friends.svg")),
+        icon: Constant.assetsImagesChat.named("icons_filled_add-friends.svg")),
     _Item(
         title: "添加朋友",
-        icon: Constant.assetsImagesMainframe.named("icons_filled_chats.svg")),
+        icon: Constant.assetsImagesChat.named("icons_filled_chats.svg")),
     _Item(
         title: "扫一扫",
-        icon: Constant.assetsImagesMainframe.named("icons_filled_scan.svg")),
+        icon: Constant.assetsImagesChat.named("icons_filled_scan.svg")),
     _Item(
         title: "收付款",
-        icon: Constant.assetsImagesMainframe.named("icons_filled_pay.svg")),
+        icon: Constant.assetsImagesChat.named("icons_filled_pay.svg")),
   ];
 }

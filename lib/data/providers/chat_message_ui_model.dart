@@ -5,7 +5,6 @@ import 'package:quiver/iterables.dart';
 
 class ChatMessageUIModel extends ChangeNotifier {
   final ValueChanged<ChatInputType> chatInputTypeChanged;
-  final BuildContext _buildContext;
 
   // 底部安全区域
   final double _safeBottom;
@@ -13,10 +12,9 @@ class ChatMessageUIModel extends ChangeNotifier {
 
   ChatMessageUIModel({
     this.chatInputTypeChanged,
-    BuildContext buildContext,
-  })  : _buildContext = buildContext,
-        _safeBottom = MediaQuery.of(buildContext).padding.bottom,
-        _screenSize = MediaQuery.of(buildContext).size;
+    MediaQueryData mediaQueryData,
+  })  : _safeBottom = mediaQueryData.padding.bottom,
+        _screenSize = mediaQueryData.size;
 
   double keyboardHeight = 0;
 
@@ -63,7 +61,7 @@ class ChatMessageUIModel extends ChangeNotifier {
       case ChatInputType.emoji:
         return _screenSize.height / 2;
       case ChatInputType.more:
-        return 300;
+        return 260 + _safeBottom;
       case ChatInputType.voice:
         return _safeBottom;
       default:

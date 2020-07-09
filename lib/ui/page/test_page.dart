@@ -1,8 +1,10 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:flutterwechat/data/constants/constants.dart';
+import 'package:flutterwechat/data/providers/chat_detail_emoji_model.dart';
+import 'package:flutterwechat/data/providers/chat_message_model.dart';
+import 'package:flutterwechat/data/providers/chat_message_ui_model.dart';
+import 'package:flutterwechat/ui/page/chats/chat_input_type.dart';
+import 'package:provider/provider.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class TestPage extends StatefulWidget {
   @override
@@ -10,72 +12,78 @@ class TestPage extends StatefulWidget {
 }
 
 class _TestPageState extends State<TestPage> {
-  // final ges = TapGestureRecognizer();
-  // ges.onTap = () {};
-  List<String> _likes = ["小白"];
+  final ItemScrollController _scrollController = ItemScrollController();
+  final ItemPositionsListener itemPositionsListener =
+      ItemPositionsListener.create();
 
-  Widget _likeText() {
-    var spans = List<InlineSpan>();
-    spans.add(WidgetSpan(
-      child: SvgPicture.asset(
-          Constant.assetsImagesDiscover.named("icons_outlined_like.svg"),
-          width: 18),
-    ));
-    for (var i = 0; i < _likes.length; i++) {
-      spans.add(
-        TextSpan(
-          text: _likes[i],
-          // recognizer: TapGestureRecognizer()
-          //   ..onTap = () {
-          //     print("tap");
-          //   },
-        ),
-      );
-      if (i < _likes.length - 1) {
-        spans.add(TextSpan(text: ", "));
-      }
-    }
-    return Text.rich(TextSpan(
-      children: spans,
-    ));
+  ChatMessageUIModel _chatMessageUIModel;
+  ChatMessageModel _chatMessageModel;
+  ChatDetailEmojiModel _chatDetailEmojiModel;
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      // _scrollToEnd(animated: false);
+    });
+    super.initState();
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  void didChangeDependencies() {
+    if (_chatMessageModel == null) {
+      MediaQuery query =
+          context.getElementForInheritedWidgetOfExactType<MediaQuery>().widget;
+
+      _chatMessageModel = ChatMessageModel();
+      _chatDetailEmojiModel = ChatDetailEmojiModel();
+      _chatMessageUIModel = ChatMessageUIModel(
+        mediaQueryData: query.data,
+        chatInputTypeChanged: (type) {
+          if (type == ChatInputType.more ||
+              type == ChatInputType.keyboard ||
+              type == ChatInputType.emoji) {
+            _scrollToEnd();
+          }
+        },
+      );
+    }
+    super.didChangeDependencies();
+  }
+
+  _scrollToEnd({bool animated = true}) {
+    return;
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      // _scrollController.jumpTo(index: _chatMessageModel.messages.length - 1);
+      if (animated) {
+        _scrollController.scrollTo(
+          index: _chatMessageModel.messages.length - 1,
+          duration: Duration(milliseconds: 250),
+          offset: -500,
+        );
+      } else {
+        _scrollController.jumpTo(
+          index: _chatMessageModel.messages.length - 1,
+        );
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Container(
-        child: ListView.builder(
-          itemBuilder: (context, i) {
-            return Text.rich(TextSpan(
-              children: <InlineSpan>[
-                TextSpan(
-                    text: 'Flutter is',
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () {
-                        print("first");
-                      }),
-                WidgetSpan(
-                    child: SizedBox(
-                  width: 120,
-                  height: 50,
-                  child: Card(child: Center(child: Text('Hello World!'))),
-                )),
-                ..._likes.map((e) => TextSpan(
-                    text: '$e',
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () {
-                        print("second");
-                      }))
-              ],
-            ));
-          },
-          itemCount: 100,
+    print("build");
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: _chatMessageModel),
+        ChangeNotifierProvider.value(value: _chatMessageUIModel),
+        ChangeNotifierProvider.value(value: _chatDetailEmojiModel),
+      ],
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: Container(
+          child: Center(
+            child: TextField(),
+          ),
         ),
       ),
     );

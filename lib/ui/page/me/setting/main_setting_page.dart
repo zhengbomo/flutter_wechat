@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutterwechat/ui/components/navigator_service.dart';
 import 'package:flutterwechat/ui/components/normal_button_cell.dart';
 import 'package:flutterwechat/ui/components/normal_cell.dart';
-import 'package:flutterwechat/ui/components/normal_section.dart';
 import 'package:flutterwechat/ui/components/section_list_view.dart';
 import 'package:flutterwechat/ui/page/me/setting/account_setting_page.dart';
 import 'package:flutterwechat/ui/page/me/setting/message_setting_page.dart';
+import 'package:flutterwechat/ui/view/bm_appbar.dart';
 
 class MainSetting extends StatefulWidget {
   @override
@@ -19,6 +19,7 @@ class _MainSettingState extends State<MainSetting> {
     _items.clear();
     _items.add([
       NormalCellInfo(
+        hideSeperator: true,
         title: "账号与安全",
         onPressed: () {
           NavigatorService.push(AccountSettingPage());
@@ -38,6 +39,7 @@ class _MainSettingState extends State<MainSetting> {
         onPressed: () {},
       ),
       NormalCellInfo(
+        hideSeperator: true,
         title: "通用",
         onPressed: () {},
       ),
@@ -53,6 +55,7 @@ class _MainSettingState extends State<MainSetting> {
         onPressed: () {},
       ),
       NormalCellInfo(
+        hideSeperator: true,
         title: "插件",
         trailing: Padding(
           padding: EdgeInsets.only(right: 12),
@@ -82,7 +85,7 @@ class _MainSettingState extends State<MainSetting> {
   Widget build(BuildContext context) {
     _setupItem();
     return Scaffold(
-      appBar: AppBar(
+      appBar: BMAppBar(
         title: Text("设置"),
       ),
       body: Container(
