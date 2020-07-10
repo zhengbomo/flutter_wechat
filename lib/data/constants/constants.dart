@@ -10,9 +10,6 @@ class Constant {
   /// 新特性模块相关的资源
   static const String assetsImagesNewFeature = 'assets/images/new_feature/';
 
-  /// 联系人模块相关的资源
-  static const String assetsImagesContacts = 'assets/images/contacts/';
-
   /// 搜索模块相关的资源
   static const String assetsImagesSearch = 'assets/images/search/';
 
@@ -36,6 +33,10 @@ class Constant {
   /// 通用模块资源
   static const AssertUtil assetsImagesCommon =
       AssertUtil('assets/images/common/');
+
+  /// 联系人模块相关的资源
+  static const AssertUtil assetsImagesContacts =
+      AssertUtil('assets/images/contact/');
 
   /// 我的模块资源
   static const AssertUtil assetsImagesMe = AssertUtil('assets/images/me/');

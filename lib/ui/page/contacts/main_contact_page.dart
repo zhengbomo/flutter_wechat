@@ -67,11 +67,13 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
     super.initState();
   }
 
-  _jumpToSection(int section) {
+  bool _jumpToSection(int section) {
     final top = Constant.searchBarHeight + _itemHeight * _topItems.length;
 
     if (section == 0) {
-      _scrollController.jumpTo(top);
+      if (_scrollController.offset != top) {
+        _scrollController.jumpTo(top);
+      }
     } else {
       var offset = _contacts.getRange(0, section).fold(
           top,
@@ -79,7 +81,9 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
               previousValue +
               element.item2.length * _itemHeight +
               _headerHeight);
-      _scrollController.safeJumpTo(offset);
+      if (_scrollController.offset != offset) {
+        _scrollController.safeJumpTo(offset);
+      }
     }
   }
 
@@ -168,7 +172,7 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
               ),
               Positioned(
                 right: 0,
-                width: 50,
+                width: 100,
                 top: 0,
                 bottom: 0,
                 child: IndexBar(
