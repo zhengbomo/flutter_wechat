@@ -29,7 +29,13 @@ dependencies:
   flutter_plugin_record: ^0.1.7
   # 元组
   tuple: ^1.0.3
+  # HUD
+  bmprogresshud: ^0.0.8
 
+  flutter_sticky_header:
+   git:
+      url: git@github.com:zhengbomo/flutter_sticky_header.git
+      ref: f3f553eab7603d3dfcc314271c928c320c92796e
 
   scrollable_positioned_list:
     git:

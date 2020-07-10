@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutterwechat/data/providers/main_badge_model.dart';
 import 'package:flutterwechat/ui/page/chats/main_chat_page.dart';
-import 'package:flutterwechat/ui/page/contacts/contacts_page.dart';
+import 'package:flutterwechat/ui/page/contacts/main_contact_page.dart';
 import 'package:flutterwechat/ui/page/discover/discovery_page.dart';
 import 'package:flutterwechat/ui/page/main/main_tab_bar.dart';
 import 'package:flutterwechat/ui/page/me/me_page.dart';
@@ -19,7 +19,7 @@ class _MainPageState extends State<MainPage> {
 
   final _tabWidget = [
     MainChatPage(),
-    ContactsPage(),
+    MainContactPage(),
     DiscoverPage(),
     MePage(),
   ];

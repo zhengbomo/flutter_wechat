@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutterwechat/data/constants/constants.dart';
 import 'package:flutterwechat/data/providers/list_search_bar_model.dart';
+import 'package:flutterwechat/data/providers/main_badge_model.dart';
 import 'package:flutterwechat/ui/view/search_bar.dart';
 import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
 
 typedef WidgetBuilder1<T> = Widget Function(BuildContext context, T searchBar);
-
-final double _searchHeight = 50;
 
 class SearchListPage extends StatelessWidget {
   final Widget appbar;
@@ -33,11 +34,15 @@ class SearchListPage extends StatelessWidget {
             context,
             Builder(builder: (context) {
               return SizedBox(
-                height: _searchHeight,
+                height: Constant.searchBarHeight,
                 child: SearchBar(beginEdit: () {
                   context.read<ListSearchBarModel>().changeFocus(true);
+                  // 隐藏tabbar
+                  context.read<MainBadgeModel>().showBottomTabBar(false);
                 }, cancelCallback: () {
                   context.read<ListSearchBarModel>().changeFocus(false);
+                  // 显示tabbar
+                  context.read<MainBadgeModel>().showBottomTabBar(true);
                 }),
               );
             }),
@@ -70,47 +75,52 @@ class _SearchListContentState extends State<_SearchListContent> {
 
   @override
   Widget build(BuildContext context) {
-    return MediaQuery.removePadding(
-      removeTop: true,
-      context: context,
+    final model = context.watch<ListSearchBarModel>();
+    return SingleChildBuilder(
+      builder: (context, child) {
+        return MediaQuery.removePadding(
+          removeTop: true,
+          context: context,
+          child: child,
+        );
+      },
       child: Stack(
         children: <Widget>[
+          // 内容
           AnimatedPositioned(
             duration: Duration(milliseconds: 250),
             top: MediaQuery.of(context).padding.top +
                 kToolbarHeight +
-                (context.watch<ListSearchBarModel>().isFocus
-                    ? -kToolbarHeight
-                    : 0),
+                (model.isFocus ? -kToolbarHeight : 0),
             bottom: 0,
             left: 0,
             right: 0,
             child: widget.child,
           ),
+          // appbar
           AnimatedPositioned(
             duration: Duration(milliseconds: 250),
             top: MediaQuery.of(context).padding.top +
-                (context.watch<ListSearchBarModel>().isFocus
-                    ? -kToolbarHeight
+                (model.isFocus
+                    ? (-kToolbarHeight - MediaQuery.of(context).padding.top)
                     : 0),
             left: 0,
             right: 0,
             height: kToolbarHeight,
             child: widget.appbar,
           ),
+          // search panel
           AnimatedPositioned(
             duration: Duration(milliseconds: 250),
             top: MediaQuery.of(context).padding.top +
-                (context.watch<ListSearchBarModel>().isFocus
-                    ? -kToolbarHeight
-                    : 0) +
+                (model.isFocus ? -kToolbarHeight : 0) +
                 kToolbarHeight +
-                _searchHeight,
+                Constant.searchBarHeight,
             left: 0,
             right: 0,
             bottom: 0,
             child: Offstage(
-              offstage: !context.watch<ListSearchBarModel>().isFocus,
+              offstage: !model.isFocus,
               child: widget.searchPanel,
             ),
           ),

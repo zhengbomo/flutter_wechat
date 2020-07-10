@@ -18,7 +18,7 @@ class ChatMessageModel extends ChangeNotifier {
           ..color = Shares.randomColor.randomColor()
           ..date = DateTime.now()
           ..height = 30.0 + Shares.random.nextInt(200)
-          ..userType = Shares.random.nextInt(2)));
+          ..userType = MessageUserType.values[Shares.random.nextInt(2)]));
   }
 
   String randomContent() {
@@ -46,7 +46,7 @@ class ChatMessageModel extends ChangeNotifier {
           ..username = "bomo"
           ..date = DateTime.now()
           ..height = 100.0 + Shares.random.nextInt(100)
-          ..userType = Shares.random.nextInt(2));
+          ..userType = MessageUserType.values[Shares.random.nextInt(2)]);
     messages.insertAll(0, list);
     notifyListeners();
     return list;
@@ -64,7 +64,7 @@ class ChatMessageModel extends ChangeNotifier {
           ..username = "bomo"
           ..date = DateTime.now()
           ..height = 100.0 + Shares.random.nextInt(100)
-          ..userType = Shares.random.nextInt(2));
+          ..userType = MessageUserType.values[Shares.random.nextInt(2)]);
     messages.addAll(list);
     notifyListeners();
     return list;

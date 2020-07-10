@@ -17,13 +17,15 @@ class ChatMessageContainer extends StatelessWidget {
       child: Avatar(
         size: 50,
         borderRadius: 3,
-        color: message.userType == 0 ? Colors.blue : Colors.orange,
+        color: message.userType == MessageUserType.me
+            ? Colors.blue
+            : Colors.orange,
       ),
     );
     Widget container = ConstrainedBox(
       constraints: BoxConstraints(maxWidth: 200),
       child: Column(
-        crossAxisAlignment: message.userType == 0
+        crossAxisAlignment: message.userType == MessageUserType.me
             ? CrossAxisAlignment.start
             : CrossAxisAlignment.end,
         children: <Widget>[
@@ -45,11 +47,11 @@ class ChatMessageContainer extends StatelessWidget {
       ),
     );
 
-    List<Widget> children = message.userType == 0
-        ? [avatar, container, space]
-        : [space, container, avatar];
+    List<Widget> children = message.userType == MessageUserType.me
+        ? [space, container, avatar]
+        : [avatar, container, space];
 
-    if (message.userType >= 0) {
+    if (message.userType == MessageUserType.me) {
       return Padding(
         padding: EdgeInsets.only(bottom: 12),
         child: Container(

@@ -257,15 +257,10 @@ class _ChatEditorState extends State<ChatEditor>
           .paintBounds
           .size
           .height;
-      var height2 = _textFieldKey.currentContext
-          .findRenderObject()
-          .paintBounds
-          .size
-          .height;
-      print("$height, $height2");
       height += (2 * Constant.chatToolbarTopBottomPadding);
       var model = _uimodel;
       if (height != model.inputToolHeight) {
+        print("textHeight changed");
         // scroll to end
         if (model.setInputToolHeight(height)) {
           widget.textViewHeightChanged(false);

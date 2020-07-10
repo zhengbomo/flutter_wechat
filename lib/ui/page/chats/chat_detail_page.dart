@@ -73,7 +73,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    print("build");
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: _chatMessageModel),
@@ -179,6 +178,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                       // 占位
                       return SizedBox(height: messageListBottomHeight);
                     } else {
+                      Widget content;
+
                       return ChatMessageContainer(
                         showUsername: false,
                         message: model.messages[i],

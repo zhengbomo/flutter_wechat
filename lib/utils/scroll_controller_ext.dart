@@ -14,4 +14,10 @@ extension ScrollControllerExtension on ScrollController {
       return this.animateTo(newOffset, duration: duration, curve: curve);
     }
   }
+
+  void safeJumpTo(double value) {
+    final offset = max(min(value, this.position.maxScrollExtent),
+        this.position.minScrollExtent);
+    position.jumpTo(offset);
+  }
 }

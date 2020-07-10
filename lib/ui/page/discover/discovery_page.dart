@@ -231,28 +231,14 @@ class _DiscoverPageState extends AutoKeepAliveState<DiscoverPage> {
           )
         ],
       ),
-      body: Container(
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              child: SectionListView(
-                numberOfSection: () => _items.length,
-                numberOfRowsInSection: (section) => _items[section].length,
-                rowWidget: (context, section, row) {
-                  NormalCellInfo cellInfo = _items[section][row];
-                  return NormalCell(cellInfo: cellInfo);
-                },
-                ignoreFirstSectionHeader: true,
-              ),
-            ),
-            Builder(
-              builder: (c) => MediaQuery.removePadding(
-                context: c,
-                child: TextField(),
-              ),
-            ),
-          ],
-        ),
+      body: SectionListView(
+        numberOfSection: () => _items.length,
+        numberOfRowsInSection: (section) => _items[section].length,
+        rowWidget: (context, section, row) {
+          NormalCellInfo cellInfo = _items[section][row];
+          return NormalCell(cellInfo: cellInfo);
+        },
+        ignoreFirstSectionHeader: true,
       ),
     );
   }

@@ -105,4 +105,7 @@ class Constant {
 
   /// normalcell的高度
   static const double normalCellHeight = 56;
+
+  // 搜索框高度
+  static const double searchBarHeight = 50;
 }
