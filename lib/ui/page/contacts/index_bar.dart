@@ -1,13 +1,24 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutterwechat/data/constants/basic.dart';
 import 'package:flutterwechat/data/constants/constants.dart';
 
 class IndexBar extends StatefulWidget {
+  final ThreeValueResult<BuildContext, int, bool, Widget> builder;
+
+  final IndexedWidgetBuilder bubbleWidgetBuilder;
+
+  final int itemCount;
   final int index;
-  final List<String> keys;
   final ValueChanged<int> indexChanged;
-  IndexBar({this.index, this.keys, this.indexChanged});
+  IndexBar({
+    @required this.bubbleWidgetBuilder,
+    @required this.index,
+    @required this.itemCount,
+    @required this.indexChanged,
+    @required this.builder,
+  });
   @override
   _IndexBarState createState() => _IndexBarState();
 }
@@ -23,18 +34,18 @@ class _IndexBarState extends State<IndexBar> {
 
   _dragUpdate(double dy, double indexHeight, double parentHeight) {
     final index = dy ~/ _itemHeight;
-    final newIndex = max(0, min(index, widget.keys.length - 1));
-    print(newIndex);
-    if (widget.index != newIndex) {
+    final newIndex = max(0, min(index, widget.itemCount - 1));
+    if (_dragingIndex != newIndex) {
       widget.indexChanged(newIndex);
+
+      setState(() {
+        _dragingTop = parentHeight * 0.5 -
+            indexHeight * 0.5 +
+            newIndex * _itemHeight -
+            (40 - 30) * 0.5;
+        _dragingIndex = newIndex;
+      });
     }
-    setState(() {
-      _dragingTop = parentHeight * 0.5 -
-          indexHeight * 0.5 +
-          newIndex * _itemHeight -
-          (40 - 30) * 0.5;
-      _dragingIndex = newIndex;
-    });
   }
 
   @override
@@ -50,7 +61,6 @@ class _IndexBarState extends State<IndexBar> {
             right: 0,
             width: 40,
             child: Center(
-              // color: Colors.blue,
               child: Builder(builder: (gesContext) {
                 return GestureDetector(
                   onPanStart: (data) {
@@ -79,23 +89,14 @@ class _IndexBarState extends State<IndexBar> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      ...List.generate(widget.keys.length, (i) {
+                      ...List.generate(widget.itemCount, (i) {
                         bool selected =
                             i == (_isDraging ? _dragingIndex : widget.index);
-                        return Container(
-                          decoration: BoxDecoration(
-                            color: selected ? Colors.green : null,
-                            borderRadius: BorderRadius.circular(15),
-                          ),
+
+                        return SizedBox(
                           width: _itemHeight,
                           height: _itemHeight,
-                          alignment: Alignment.center,
-                          child: Text(
-                            "${widget.keys[i]}",
-                            style: TextStyle(
-                              color: selected ? Colors.white : Colors.black87,
-                            ),
-                          ),
+                          child: widget.builder(context, i, selected),
                         );
                       })
                     ],
@@ -109,30 +110,36 @@ class _IndexBarState extends State<IndexBar> {
             top: _dragingTop,
             child: Offstage(
               offstage: _dragingIndex == null,
-              child: Padding(
-                padding: EdgeInsets.zero,
-                child: Center(
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: <Widget>[
-                      Image.asset(
-                        Constant.assetsImagesContacts
-                            .named("contact_index_shape.png"),
-                        width: 40,
-                        height: 40,
+              child: Builder(builder: (context) {
+                final bubbleContent = widget.bubbleWidgetBuilder(
+                  context,
+                  _isDraging ? _dragingIndex : widget.index,
+                );
+                if (bubbleContent != null) {
+                  return Padding(
+                    padding: EdgeInsets.zero,
+                    child: Center(
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: <Widget>[
+                          Image.asset(
+                            Constant.assetsImagesContacts
+                                .named("contact_index_shape.png"),
+                            width: 50,
+                            height: 50,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(right: 3),
+                            child: bubbleContent,
+                          )
+                        ],
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 3),
-                        child: Text(
-                          widget
-                              .keys[_isDraging ? _dragingIndex : widget.index],
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
+                    ),
+                  );
+                } else {
+                  return SizedBox();
+                }
+              }),
             ),
           )
         ],

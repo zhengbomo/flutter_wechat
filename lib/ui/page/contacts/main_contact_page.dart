@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:flutterwechat/data/constants/constants.dart';
+import 'package:flutterwechat/data/models/contact_info.dart';
 import 'package:flutterwechat/ui/components/avatar.dart';
 import 'package:flutterwechat/ui/components/search_list_page.dart';
 import 'package:flutterwechat/ui/page/base/auto_keep_alive_state.dart';
 import 'package:flutterwechat/ui/page/contacts/index_bar.dart';
 import 'package:flutterwechat/ui/page/main/search_panel.dart';
 import 'package:flutterwechat/utils/scroll_controller_ext.dart';
+import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:flutterwechat/utils/iterable_ext.dart';
 
@@ -23,51 +25,57 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
   ScrollController _scrollController = ScrollController();
 
   final _topItems = ["新的朋友", "仅聊天的朋友", "群聊", "标签", "公众号", "企业微信联系人"];
-  List<Tuple2<String, List<String>>> _contacts =
-      List<Tuple2<String, List<String>>>();
-
-  int _index = 0;
+  final List<Tuple2<String, List<ContactInfo>>> _contacts =
+      List<Tuple2<String, List<ContactInfo>>>();
 
   List<String> _keys = List();
+
+  // 排序用的key
+  String _orderKeys = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#";
+
+  final _MainContactModel _model = _MainContactModel(0);
 
   @override
   void initState() {
     _contacts.clear();
-    _contacts.add(Tuple2("A", ["阿福", "阿胶", "阿珍"]));
-    _contacts.add(Tuple2("B", ["八戒", "Bash", "BIM"]));
-    _contacts.add(Tuple2("D", ["大眼猫", "冬瓜"]));
-    _contacts.add(Tuple2("X", ["小菜", "小明"]));
 
-    _contacts.add(Tuple2("#", [
-      "😇😐😑😶😏😣😥😮😯😪😫😴😌😛😜😝😒😓😔😕😲😷😖😞😟😤😢😭😦😧😨😬😰😱😳😵😡",
-      "😀",
-      // "😁",
-      // "😂",
-      // "😃",
-      // "😄",
-      // "😅",
-      // "😆",
-      // "😉",
-      "😘",
-      "😗",
-      "😙",
-      "😚",
-      "☺",
-    ]));
+    final allContact = List.generate(100, (index) => ContactInfo.random());
+    Map<String, List<ContactInfo>> map = Map();
+    for (var contact in allContact) {
+      final tagIndex = contact.tagIndex;
+      var list = map[tagIndex];
+      if (list == null) {
+        map[tagIndex] = [contact];
+      } else {
+        list.add(contact);
+      }
+    }
+    final allKeys = map.keys.toList();
+    // 排序key
+    allKeys.sort((a, b) {
+      return _orderKeys.indexOf(a).compareTo(_orderKeys.indexOf(b));
+    });
+    for (var i in allKeys) {
+      final list = map[i];
+      _contacts.add(Tuple2(i, list));
+    }
 
     _keys = _contacts.map((e) => e.item1).toList();
 
     _stickyHeaderController.objectChanged = (index) {
+      print("dddd $index");
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        setState(() {
-          _index = index;
-        });
+        if (index == -1) {
+          _model.index = index;
+        } else {
+          _model.index = index;
+        }
       });
     };
     super.initState();
   }
 
-  bool _jumpToSection(int section) {
+  void _jumpToSection(int section) {
     final top = Constant.searchBarHeight + _itemHeight * _topItems.length;
 
     if (section == 0) {
@@ -115,19 +123,25 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
                       child: searchBar,
                     ),
                     // top items
-                    SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, i) {
-                          return _buildItem(_topItems[i], () {});
-                        },
-                        childCount: _topItems.length,
+                    SliverStickyHeader(
+                      object: 0,
+                      header: SizedBox(
+                        height: 0.1,
+                      ),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, i) {
+                            return _buildItem(_topItems[i], () {});
+                          },
+                          childCount: _topItems.length,
+                        ),
                       ),
                     ),
                     // list
                     ..._contacts
                         .mapIndex(
                           (e, i) => SliverStickyHeader(
-                            object: i,
+                            object: i + 1,
                             header: Container(
                               height: 30.0,
                               color: Color(0xffe9e9e9),
@@ -159,7 +173,7 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
                             sliver: SliverList(
                               delegate: SliverChildBuilderDelegate(
                                 (context, i) {
-                                  return _buildItem(e.item2[i], () {});
+                                  return _buildItem(e.item2[i].name, () {});
                                 },
                                 childCount: e.item2.length,
                               ),
@@ -175,12 +189,66 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
                 width: 100,
                 top: 0,
                 bottom: 0,
-                child: IndexBar(
-                  index: _index,
-                  keys: _keys,
-                  indexChanged: (i) {
-                    _jumpToSection(i);
-                  },
+                child: ChangeNotifierProvider.value(
+                  value: _model,
+                  child: Builder(
+                    builder: (context) {
+                      final model = context.watch<_MainContactModel>();
+
+                      print("out index ${model.index}");
+                      return IndexBar(
+                        itemCount: _keys.length + 1,
+                        builder: (context, i, selected) {
+                          bool isSearch = i == 0;
+                          return Container(
+                            margin: EdgeInsets.fromLTRB(10, 5, 0, 5),
+                            decoration: BoxDecoration(
+                              color:
+                                  (!isSearch && selected) ? Colors.green : null,
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            width: _itemHeight,
+                            height: _itemHeight,
+                            alignment: Alignment.center,
+                            child: isSearch
+                                ? Icon(
+                                    Icons.search,
+                                    size: 15,
+                                    color: Colors.black87,
+                                  )
+                                : Text(
+                                    "${_keys[i - 1]}",
+                                    style: TextStyle(
+                                      color: selected
+                                          ? Colors.white
+                                          : Colors.black87,
+                                    ),
+                                  ),
+                          );
+                        },
+                        index: model.index,
+                        indexChanged: (i) {
+                          print(i);
+                          if (i == 0) {
+                            _scrollController.jumpTo(0);
+                          } else {
+                            _jumpToSection(i - 1);
+                          }
+                        },
+                        bubbleWidgetBuilder: (BuildContext context, int index) {
+                          if (index == 0) {
+                            return null;
+                          } else {
+                            return Text(
+                              _keys[index - 1],
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18),
+                            );
+                          }
+                        },
+                      );
+                    },
+                  ),
                 ),
               )
             ],
@@ -212,7 +280,7 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
                     ),
                     Expanded(
                       child: Padding(
-                        padding: EdgeInsets.only(left: 8),
+                        padding: EdgeInsets.symmetric(horizontal: 8),
                         child: Text(
                           title,
                           overflow: TextOverflow.ellipsis,
@@ -233,5 +301,20 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
         onPressed: onPressed,
       ),
     );
+  }
+}
+
+class _MainContactModel extends ChangeNotifier {
+  _MainContactModel(int index) : _index = index;
+
+  int _index;
+
+  int get index => _index;
+
+  set index(int index) {
+    if (_index != index) {
+      _index = index;
+      notifyListeners();
+    }
   }
 }
