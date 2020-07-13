@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutterwechat/data/constants/constants.dart';
 
 class MomentOperateMore extends StatefulWidget {
+  final bool hasLiked;
   final double top;
   final bool show;
   final VoidCallback dismiss;
@@ -11,6 +12,7 @@ class MomentOperateMore extends StatefulWidget {
 
   MomentOperateMore({
     @required this.top,
+    @required this.hasLiked,
     @required this.show,
     @required this.dismiss,
     @required this.onLike,
@@ -22,13 +24,11 @@ class MomentOperateMore extends StatefulWidget {
 }
 
 class _MomentOperateMoreState extends State<MomentOperateMore> {
-  Widget _content;
   bool _hasShow = false;
 
   @override
   void initState() {
     _hasShow = widget.show;
-    _content = _createContent();
     super.initState();
   }
 
@@ -68,7 +68,7 @@ class _MomentOperateMoreState extends State<MomentOperateMore> {
                   bottom: 0,
                   width: 200,
                   left: widget.show ? 0 : 200,
-                  child: _content,
+                  child: _createContent(),
                 ),
               ],
             ),
@@ -90,7 +90,7 @@ class _MomentOperateMoreState extends State<MomentOperateMore> {
           Expanded(
             child: _createMoreButton(
               Constant.assetsImagesDiscover.named("icons_outlined_like.svg"),
-              "赞",
+              widget.hasLiked ? "取消" : "赞",
               widget.onLike,
             ),
           ),

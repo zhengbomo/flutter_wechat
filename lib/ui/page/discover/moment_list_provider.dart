@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutterwechat/data/constants/style.dart';
+import 'package:flutterwechat/ui/page/discover/moment_info.dart';
 
 class MomentListProvider extends ChangeNotifier {
+  //用于标识moment列表变化
+  int momentChangeId = 0;
+
+  List<MomentInfo> moments = List.generate(20, (index) => MomentInfo.random());
+
   double operateMoreTop = 0;
   bool showOperateMore = false;
 
@@ -31,5 +37,10 @@ class MomentListProvider extends ChangeNotifier {
     if (needNotify) {
       notifyListeners();
     }
+  }
+
+  momentChanged() {
+    momentChangeId++;
+    notifyListeners();
   }
 }

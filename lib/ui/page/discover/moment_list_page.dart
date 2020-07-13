@@ -1,44 +1,299 @@
 import 'dart:math';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutterwechat/data/constants/constants.dart';
 import 'package:flutterwechat/data/constants/style.dart';
 import 'package:flutterwechat/ui/components/action_sheet.dart';
 import 'package:flutterwechat/ui/components/avatar.dart';
+import 'package:flutterwechat/ui/components/child_builder.dart';
 import 'package:flutterwechat/ui/page/discover/moment_cell.dart';
 import 'package:flutterwechat/ui/page/discover/moment_info.dart';
 import 'package:flutterwechat/ui/page/discover/moment_list_provider.dart';
 import 'package:flutterwechat/ui/page/discover/moment_operate_more.dart';
-import 'package:flutterwechat/ui/page/discover/value_change_notifier.dart';
 import 'package:flutterwechat/ui/view/bm_appbar.dart';
+import 'package:keyboard_utils/keyboard_listener.dart';
+import 'package:keyboard_utils/keyboard_utils.dart';
 import 'package:provider/provider.dart';
+import 'package:flutterwechat/utils/build_context_read.dart';
 
-class MomentListPage extends StatelessWidget {
+class MomentListPage extends StatefulWidget {
+  @override
+  _MomentListPageState createState() => _MomentListPageState();
+}
+
+class _MomentListPageState extends State<MomentListPage> {
   final ScrollController _scrollController = ScrollController();
-  // final ItemScrollController _scrollController = ItemScrollController();
 
-  final double keyboardHeight = 250;
+  final _momentListProvider = MomentListProvider();
 
-  final momentListProvider = MomentListProvider();
-  final bottomHeightProvider = ValueChangeNotifier<double>(value: 0);
+  final _BottomViewModel _bottomViewModel = _BottomViewModel();
 
-  final _items = List.generate(10, (index) => MomentInfo.random());
+  final FocusNode _focusNode = FocusNode();
+
+  final TextEditingController _textEditingController = TextEditingController();
+
+  KeyboardUtils _keyboardUtils = KeyboardUtils();
+
+  // 键盘事件
+  int _subscribingId;
+
+  // 键盘弹出时，需要滚动的位置
+  double _scrollOffset = 0;
+
+  // 当前的moment
+  MomentInfo _currentMoment;
 
   @override
+  void initState() {
+    _subscribingId = _keyboardUtils.add(
+      listener: KeyboardListener(willShowKeyboard: (height) {
+        _bottomViewModel.keyboardHeight = height;
+        _scrollController.animateTo(
+            _scrollOffset - _bottomViewModel.bottomHeight,
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeInOut);
+      }, willHideKeyboard: () {
+        _bottomViewModel.keyboardHeight = 0;
+      }),
+    );
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        _bottomViewModel.inputType = _InputType.keyboard;
+      } else {
+        if (_bottomViewModel.inputType == _InputType.keyboard) {
+          _bottomViewModel.inputType = _InputType.none;
+        }
+      }
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _keyboardUtils.unsubscribeListener(subscribingId: _subscribingId);
+    _keyboardUtils.dispose();
+    super.dispose();
+  }
+
+  GlobalKey _listViewKey = GlobalKey();
+  @override
   Widget build(BuildContext context) {
-    final paddingTop = MediaQuery.of(context).padding.top;
+    BuildContext rootContext = context;
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: MultiProvider(
           providers: [
-            ChangeNotifierProvider.value(value: momentListProvider),
-            ChangeNotifierProvider.value(value: bottomHeightProvider),
+            ChangeNotifierProvider.value(value: _momentListProvider),
+            ChangeNotifierProvider.value(value: _bottomViewModel),
           ],
-          child: Builder(
-            builder: (context) {
-              print("context");
-              final textEditorHeight =
-                  context.watch<ValueChangeNotifier<double>>();
+          child: ChildBuilder4(
+            child1: Builder(builder: (context) {
+              final bottomModel = _bottomViewModel;
+              final threadshold = 0.8;
+              final originOffset = context.select(
+                  (MomentListProvider value) => value.appbarBackgroundAlpha);
+              final offset =
+                  max(0, originOffset - threadshold) * (1 / (1 - threadshold));
+              final alpha = (offset * 255).toInt();
+              return BMAppBar(
+                color: originOffset < threadshold ? Colors.white : Colors.black,
+                backgroundColor: Style.primaryColor.withAlpha(alpha),
+                title: Text(
+                  "朋友圈",
+                  style: TextStyle(color: Colors.black.withAlpha(alpha)),
+                ),
+                actions: <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.add),
+                    color: originOffset < threadshold
+                        ? Colors.white
+                        : Colors.black,
+                    onPressed: () {
+                      if (bottomModel.inputType == _InputType.none) {
+                        _focusNode.requestFocus();
+                      } else {
+                        if (bottomModel.inputType == _InputType.keyboard) {
+                          _focusNode.unfocus();
+                        }
+                        bottomModel.inputType = _InputType.none;
+                      }
+                    },
+                  ),
+                  IconButton(
+                    icon: SvgPicture.asset(
+                      Constant.assetsImagesMe.named("icons_filled_camera.svg"),
+                      color: originOffset < threadshold
+                          ? Colors.white
+                          : Colors.black,
+                    ),
+                    onPressed: () {
+                      _publishChoose(context);
+                    },
+                  )
+                ],
+              );
+            }),
+            child2: Builder(builder: (context) {
+              final bottomModel = _bottomViewModel;
+              return MomentOperateMore(
+                hasLiked: (_currentMoment == null)
+                    ? false
+                    : _currentMoment.likes.contains("八戒"),
+                top: context
+                    .select((MomentListProvider model) => model.operateMoreTop),
+                show: context.select(
+                    (MomentListProvider model) => model.showOperateMore),
+                dismiss: () {
+                  _momentListProvider.setOperateMoreTop(show: false);
+                },
+                onComment: () {
+                  if (bottomModel.inputType == _InputType.none) {
+                    _focusNode.requestFocus();
+                  }
+                  _momentListProvider.setOperateMoreTop(show: false);
+                },
+                onLike: () {
+                  var likes = _currentMoment.likes;
+                  if (likes.contains("八戒")) {
+                    likes.remove("八戒");
+                  } else {
+                    likes.add("八戒");
+                  }
+                  _momentListProvider.momentChanged();
+                  _momentListProvider.setOperateMoreTop(show: false);
+                },
+              );
+            }),
+            child3: Column(
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: TextField(
+                        textInputAction: TextInputAction.send,
+                        controller: _textEditingController,
+                        onSubmitted: (text) {
+                          _currentMoment.comments.add(MomentCommentInfo()
+                            ..username = "八戒"
+                            ..content = text);
+                          _textEditingController.text = "";
+                          _momentListProvider.momentChanged();
+                        },
+                        focusNode: _focusNode,
+                        // autofocus: true,
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.check_circle),
+                      onPressed: () {
+                        _bottomViewModel.inputType = _InputType.emoji;
+                        if (_focusNode.hasFocus) {
+                          _focusNode.unfocus();
+                        }
+                      },
+                    )
+                  ],
+                ),
+                Expanded(
+                  child: Container(),
+                ),
+              ],
+            ),
+            child4: Builder(builder: (context) {
+              // 用于更新数据
+              context
+                  .select((MomentListProvider model) => model.momentChangeId);
+
+              final moments = _momentListProvider.moments;
+              final count = moments.length;
+
+              return ListView.builder(
+                key: _listViewKey,
+                controller: _scrollController,
+                itemBuilder: (context, i) {
+                  if (i == 0) {
+                    return _createHeader(context);
+                  } else if (i == count + 1) {
+                    return Builder(builder: (context) {
+                      return SizedBox(
+                        height: context.select(
+                            (_BottomViewModel model) => model.bottomPadding),
+                      );
+                    });
+                  } else {
+                    final momentInfo = moments[i - 1];
+                    return MomentCell(
+                      momentInfo: momentInfo,
+                      comment: (listItemOffset, renderBox) {
+                        final paddingTop = rootContext
+                            .getInheritedWidget<MediaQuery>()
+                            .data
+                            .padding
+                            .top;
+
+                        // 获取位置
+                        var listViewRenderBox =
+                            _listViewKey.currentContext.findRenderObject();
+                        // 目标box相对listView的位置
+                        final listViewOffset = renderBox.localToGlobal(
+                            Offset.zero,
+                            ancestor: listViewRenderBox);
+                        // item相对listView的位置
+                        final itemOffset = _scrollController.offset -
+                            (listItemOffset.dy - listViewOffset.dy);
+                        final finalOffset = itemOffset +
+                            listItemOffset.dy -
+                            kToolbarHeight -
+                            paddingTop +
+                            renderBox.size.height;
+                        _scrollOffset = finalOffset;
+                        _focusNode.requestFocus();
+                        _currentMoment = momentInfo;
+                      },
+                      moreOperate: (globalOffset, listItemOffset, renderBox) {
+                        final paddingTop = rootContext
+                            .getInheritedWidget<MediaQuery>()
+                            .data
+                            .padding
+                            .top;
+                        // 获取位置
+                        var listViewRenderBox =
+                            _listViewKey.currentContext.findRenderObject();
+                        // 目标box相对listView的位置
+                        final listViewOffset = renderBox.localToGlobal(
+                            Offset.zero,
+                            ancestor: listViewRenderBox);
+                        // item相对listView的位置
+                        final itemOffset = _scrollController.offset -
+                            (listItemOffset.dy - listViewOffset.dy);
+                        final finalOffset = itemOffset +
+                            listItemOffset.dy -
+                            kToolbarHeight -
+                            paddingTop +
+                            renderBox.size.height;
+                        _scrollOffset = finalOffset;
+                        final model = _momentListProvider;
+                        if (model.showOperateMore) {
+                          model.setOperateMoreTop(show: false);
+                        } else {
+                          model.setOperateMoreTop(
+                              show: true, top: globalOffset.dy);
+                        }
+                        _currentMoment = momentInfo;
+                      },
+                    );
+                  }
+                },
+                itemCount: count + 2,
+              );
+            }),
+            builder: (context, child1, child2, child3, child4) {
+              final viewHeight = MediaQuery.of(context).size.height;
+              final paddingTop = MediaQuery.of(context).padding.top;
+
+              final bottomModel = context.watch<_BottomViewModel>();
               return Stack(
                 children: <Widget>[
                   // 列表
@@ -54,114 +309,46 @@ class MomentListPage extends StatelessWidget {
                         const maxValue = 300.0;
                         final offset = min(maxValue, max(0.0, pixels));
                         final alpha = offset / maxValue;
-                        momentListProvider.setAppBarBackgroundAlpha(alpha);
+                        _momentListProvider.setAppBarBackgroundAlpha(alpha);
                         return false;
                       },
-                      child: ListView.builder(
-                        controller: _scrollController,
-                        itemBuilder: (context, i) {
-                          if (i == 0) {
-                            return _createHeader(context);
-                          } else if (i == _items.length + 1) {
-                            return SizedBox(height: textEditorHeight.value);
-                          } else {
-                            return MomentCell(
-                              momentInfo: _items[i - 1],
-                              test: (offset) {
-                                print(offset);
-                                // _scrollController.scrollTo(
-                                //     index: i,
-                                //     offset: addition - offset.dy,
-                                //     duration: Duration(milliseconds: 250));
-                              },
-                              moreOperate: (offset) {
-                                // 获取位置
-                                final model = momentListProvider;
-                                if (model.showOperateMore) {
-                                  model.setOperateMoreTop(show: false);
-                                } else {
-                                  model.setOperateMoreTop(
-                                      show: true, top: offset.dy);
-                                }
-                              },
-                            );
-                          }
-                        },
-                        itemCount: _items.length + 2,
-                      ),
+                      child: child4,
                     ),
                   ),
                   // appbar
                   Positioned(
-                    left: 0,
-                    right: 0,
-                    top: 0,
-                    height: paddingTop + kToolbarHeight,
-                    child: Container(
-                      child: Builder(
-                        builder: (context) {
-                          final threadshold = 0.8;
-                          final originOffset = context.select(
-                              (MomentListProvider value) =>
-                                  value.appbarBackgroundAlpha);
-                          final offset = max(0, originOffset - threadshold) *
-                              (1 / (1 - threadshold));
-                          final alpha = (offset * 255).toInt();
-                          return BMAppBar(
-                            color: originOffset < threadshold
-                                ? Colors.white
-                                : Colors.black,
-                            backgroundColor:
-                                Style.primaryColor.withAlpha(alpha),
-                            title: Text(
-                              "朋友圈",
-                              style: TextStyle(
-                                  color: Colors.black.withAlpha(alpha)),
-                            ),
-                            actions: <Widget>[
-                              IconButton(
-                                icon: SvgPicture.asset(
-                                  Constant.assetsImagesMe
-                                      .named("icons_filled_camera.svg"),
-                                  color: originOffset < threadshold
-                                      ? Colors.white
-                                      : Colors.black,
-                                ),
-                                onPressed: () {
-                                  _publishChoose(context);
-                                },
-                              )
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-                  ),
+                      left: 0,
+                      right: 0,
+                      top: 0,
+                      height: paddingTop + kToolbarHeight,
+                      child: child1),
                   // OperateMore
                   Positioned(
                     top: 0,
                     bottom: 0,
                     right: 0,
                     left: 0,
-                    child: Builder(
-                      builder: (context) {
-                        final top = context.select(
-                            (MomentListProvider model) => model.operateMoreTop);
-                        return MomentOperateMore(
-                          top: top,
-                          show: context.select((MomentListProvider model) =>
-                              model.showOperateMore),
-                          dismiss: () {
-                            momentListProvider.setOperateMoreTop(show: false);
-                          },
-                          onComment: () {
-                            momentListProvider.setOperateMoreTop(show: false);
-                          },
-                          onLike: () {
-                            momentListProvider.setOperateMoreTop(show: false);
-                          },
-                        );
-                      },
+                    child: child2,
+                  ),
+                  // 遮罩用于点击关闭
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    child: Offstage(
+                      offstage: bottomModel.inputType == _InputType.none,
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onPanDown: (_) {
+                          if (bottomModel.inputType == _InputType.keyboard) {
+                            _focusNode.unfocus();
+                          } else if (bottomModel.inputType ==
+                              _InputType.emoji) {
+                            bottomModel.inputType = _InputType.none;
+                          }
+                        },
+                      ),
                     ),
                   ),
                   // input
@@ -170,15 +357,12 @@ class MomentListPage extends StatelessWidget {
                     curve: Curves.easeInOut,
                     left: 0,
                     right: 0,
-                    bottom: -keyboardHeight - 40 + textEditorHeight.value,
-                    height: keyboardHeight + 40,
+                    top: viewHeight - bottomModel.bottomPadding,
+                    height: bottomModel.bottomHeight,
                     child: Container(
-                      color: Colors.green,
-                      height:
-                          context.watch<ValueChangeNotifier<double>>().value,
-                      child: TextField(
-                          // autofocus: true,
-                          ),
+                      color: Color(0xffefefef),
+                      height: bottomModel.bottomHeight,
+                      child: child3,
                     ),
                   )
                 ],
@@ -258,7 +442,7 @@ class MomentListPage extends StatelessWidget {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
                   ),
                   Text(
-                    "照片或视频",
+                    "照片或视��",
                     style: TextStyle(
                         fontSize: 14,
                         color: Colors.black26,
@@ -288,5 +472,53 @@ class MomentListPage extends StatelessWidget {
         }
       },
     ).show(context);
+  }
+}
+
+enum _InputType { none, emoji, keyboard }
+
+class _BottomViewModel extends ChangeNotifier {
+  double _keyboardHeight = 0;
+  _InputType _inputType = _InputType.none;
+
+  double textViewHeight = 50;
+
+  double get bottomPadding {
+    switch (_inputType) {
+      case _InputType.emoji:
+      case _InputType.keyboard:
+        return this.bottomHeight;
+      case _InputType.none:
+        return 0;
+    }
+    return 0;
+  }
+
+  double get bottomHeight {
+    switch (_inputType) {
+      case _InputType.emoji:
+        return 300 + textViewHeight;
+      case _InputType.none:
+        return textViewHeight;
+      case _InputType.keyboard:
+        return _keyboardHeight + textViewHeight;
+    }
+    return 0;
+  }
+
+  double get keyboardHeight => _keyboardHeight;
+  set keyboardHeight(double height) {
+    if (_keyboardHeight != height) {
+      _keyboardHeight = height;
+      notifyListeners();
+    }
+  }
+
+  _InputType get inputType => _inputType;
+  set inputType(_InputType type) {
+    if (_inputType != type) {
+      _inputType = type;
+      notifyListeners();
+    }
   }
 }
