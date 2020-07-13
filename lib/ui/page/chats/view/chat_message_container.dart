@@ -23,7 +23,7 @@ class ChatMessageContainer extends StatelessWidget {
       ),
     );
     Widget container = ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: 200),
+      constraints: BoxConstraints(maxWidth: 210),
       child: Column(
         crossAxisAlignment: message.userType == MessageUserType.me
             ? CrossAxisAlignment.start

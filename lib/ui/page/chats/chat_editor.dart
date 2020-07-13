@@ -12,9 +12,10 @@ import 'package:keyboard_utils/keyboard_utils.dart';
 import 'package:provider/provider.dart';
 
 class ChatEditor extends StatefulWidget {
+  final FocusNode focusNode;
   final ValueChanged<bool> textViewHeightChanged;
 
-  ChatEditor({this.textViewHeightChanged});
+  ChatEditor({this.textViewHeightChanged, this.focusNode});
 
   @override
   _ChatEditorState createState() => _ChatEditorState();
@@ -22,7 +23,6 @@ class ChatEditor extends StatefulWidget {
 
 class _ChatEditorState extends State<ChatEditor>
     with SingleTickerProviderStateMixin {
-  FocusNode _focusNode = FocusNode();
   TextEditingController _editingController;
   KeyboardUtils _keyboardUtils = KeyboardUtils();
   int _subscribingId;
@@ -69,7 +69,6 @@ class _ChatEditorState extends State<ChatEditor>
 
   @override
   void dispose() {
-    _focusNode.dispose();
     _keyboardUtils.unsubscribeListener(subscribingId: _subscribingId);
     super.dispose();
   }
@@ -78,6 +77,7 @@ class _ChatEditorState extends State<ChatEditor>
 
   @override
   Widget build(BuildContext context) {
+    print("chat editor build");
     final topBottomPadding = Constant.chatToolbarTopBottomPadding;
     return ColoredBox(
       color: Style.chatToolbarBackgroundColor,
@@ -96,12 +96,12 @@ class _ChatEditorState extends State<ChatEditor>
                       var model = _uimodel;
                       if (model.chatInputType != ChatInputType.voice) {
                         if (model.chatInputType == ChatInputType.keyboard) {
-                          FocusScope.of(context).requestFocus(FocusNode());
+                          widget.focusNode.unfocus();
                         }
                         model.setInputToolHeight(Constant.chatToolbarMinHeight);
                         model.setChatInputType(ChatInputType.voice);
                       } else {
-                        _focusNode.requestFocus();
+                        widget.focusNode.requestFocus();
                       }
                     },
                     assetName: context.select((ChatMessageUIModel model) =>
@@ -137,7 +137,7 @@ class _ChatEditorState extends State<ChatEditor>
                                     keyboardType: TextInputType.multiline,
                                     maxLines: 3,
                                     minLines: 1,
-                                    focusNode: _focusNode,
+                                    focusNode: widget.focusNode,
                                     placeholder: "ddd",
                                     controller: _editingController,
                                     onChanged: (text) {
@@ -150,15 +150,25 @@ class _ChatEditorState extends State<ChatEditor>
                                       chatInputType != ChatInputType.voice,
                                   child: SizedBox(
                                     height: 40,
-                                    child: FlatButton(
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5)),
-                                      color: Colors.white,
-                                      onPressed: () {},
-                                      child: Text("按住说话",
+                                    child: GestureDetector(
+                                      onPanDown: (data) {
+                                        print("start");
+                                      },
+                                      onPanEnd: (data) {
+                                        print("end");
+                                      },
+                                      child: FlatButton(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(5)),
+                                        color: Colors.white,
+                                        onPressed: () {},
+                                        child: Text(
+                                          "按住说话",
                                           style: TextStyle(
-                                              color: Color(0xff181818))),
+                                              color: Color(0xff181818)),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -173,10 +183,10 @@ class _ChatEditorState extends State<ChatEditor>
                       onPressed: () {
                         var model = _uimodel;
                         if (model.chatInputType == ChatInputType.emoji) {
-                          _focusNode.requestFocus();
+                          widget.focusNode.requestFocus();
                         } else {
                           if (model.chatInputType == ChatInputType.keyboard) {
-                            _focusNode.unfocus();
+                            widget.focusNode.unfocus();
                           }
                           _updateTextToolHeight(model);
                           model.setChatInputType(ChatInputType.emoji);
@@ -195,10 +205,10 @@ class _ChatEditorState extends State<ChatEditor>
                     onPressed: () {
                       var model = _uimodel;
                       if (model.chatInputType == ChatInputType.more) {
-                        _focusNode.requestFocus();
+                        widget.focusNode.requestFocus();
                       } else {
                         if (model.chatInputType == ChatInputType.keyboard) {
-                          _focusNode.unfocus();
+                          widget.focusNode.unfocus();
                         }
                         _updateTextToolHeight(model);
                         model.setChatInputType(ChatInputType.more);

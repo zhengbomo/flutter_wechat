@@ -75,7 +75,6 @@ class ChatMessageUIModel extends ChangeNotifier {
   }
 
   setChatInputType(ChatInputType type) {
-    print(type);
     if (_chatInputType != type) {
       _chatInputType = type;
       notifyListeners();

@@ -90,7 +90,6 @@ class _MomentListPageState extends State<MomentListPage> {
           ],
           child: ChildBuilder4(
             child1: Builder(builder: (context) {
-              final bottomModel = _bottomViewModel;
               final threadshold = 0.8;
               final originOffset = context.select(
                   (MomentListProvider value) => value.appbarBackgroundAlpha);
@@ -105,22 +104,6 @@ class _MomentListPageState extends State<MomentListPage> {
                   style: TextStyle(color: Colors.black.withAlpha(alpha)),
                 ),
                 actions: <Widget>[
-                  IconButton(
-                    icon: Icon(Icons.add),
-                    color: originOffset < threadshold
-                        ? Colors.white
-                        : Colors.black,
-                    onPressed: () {
-                      if (bottomModel.inputType == _InputType.none) {
-                        _focusNode.requestFocus();
-                      } else {
-                        if (bottomModel.inputType == _InputType.keyboard) {
-                          _focusNode.unfocus();
-                        }
-                        bottomModel.inputType = _InputType.none;
-                      }
-                    },
-                  ),
                   IconButton(
                     icon: SvgPicture.asset(
                       Constant.assetsImagesMe.named("icons_filled_camera.svg"),
