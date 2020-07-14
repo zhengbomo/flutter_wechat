@@ -109,4 +109,6 @@ class Constant {
 
   // 搜索框高度
   static const double searchBarHeight = 50;
+
+  static const Duration kCommonDuration = Duration(milliseconds: 350);
 }

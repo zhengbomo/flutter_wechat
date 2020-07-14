@@ -15,7 +15,9 @@ class ChatEditor extends StatefulWidget {
   final FocusNode focusNode;
   final ValueChanged<bool> textViewHeightChanged;
 
-  ChatEditor({this.textViewHeightChanged, this.focusNode});
+  final ValueChanged<String> emojiInput;
+
+  ChatEditor({this.textViewHeightChanged, this.focusNode, this.emojiInput});
 
   @override
   _ChatEditorState createState() => _ChatEditorState();
@@ -23,7 +25,6 @@ class ChatEditor extends StatefulWidget {
 
 class _ChatEditorState extends State<ChatEditor>
     with SingleTickerProviderStateMixin {
-  TextEditingController _editingController;
   KeyboardUtils _keyboardUtils = KeyboardUtils();
   int _subscribingId;
 
@@ -33,8 +34,6 @@ class _ChatEditorState extends State<ChatEditor>
 
   @override
   void initState() {
-    _editingController =
-        TextEditingController(text: "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
     _subscribingId = _keyboardUtils.add(
         listener: KeyboardListener(willShowKeyboard: (height) {
       _uimodel.keyboardHeight = height;
@@ -74,186 +73,194 @@ class _ChatEditorState extends State<ChatEditor>
   }
 
   GlobalKey _textFieldKey = GlobalKey();
+  ChatEditorModel _chatEditorModel = ChatEditorModel();
 
   @override
   Widget build(BuildContext context) {
     print("chat editor build");
     final topBottomPadding = Constant.chatToolbarTopBottomPadding;
-    return ColoredBox(
-      color: Style.chatToolbarBackgroundColor,
-      // color: Colors.green.withAlpha(150),
-      child: Column(
-        children: <Widget>[
-          Padding(
-            key: _globalKey,
-            padding:
-                EdgeInsets.fromLTRB(5, topBottomPadding, 5, topBottomPadding),
-            child: Container(
-              child: Row(
-                children: <Widget>[
-                  _IconButton(
-                    onPressed: () {
-                      var model = _uimodel;
-                      if (model.chatInputType != ChatInputType.voice) {
-                        if (model.chatInputType == ChatInputType.keyboard) {
-                          widget.focusNode.unfocus();
+    return Provider.value(
+      value: _chatEditorModel,
+      child: ColoredBox(
+        color: Style.chatToolbarBackgroundColor,
+        child: Column(
+          children: <Widget>[
+            Padding(
+              key: _globalKey,
+              padding:
+                  EdgeInsets.fromLTRB(5, topBottomPadding, 5, topBottomPadding),
+              child: Container(
+                child: Row(
+                  children: <Widget>[
+                    _IconButton(
+                      onPressed: () {
+                        var model = _uimodel;
+                        if (model.chatInputType != ChatInputType.voice) {
+                          if (model.chatInputType == ChatInputType.keyboard) {
+                            widget.focusNode.unfocus();
+                          }
+                          model.setInputToolHeight(
+                              Constant.chatToolbarMinHeight);
+                          model.setChatInputType(ChatInputType.voice);
+                        } else {
+                          widget.focusNode.requestFocus();
                         }
-                        model.setInputToolHeight(Constant.chatToolbarMinHeight);
-                        model.setChatInputType(ChatInputType.voice);
-                      } else {
-                        widget.focusNode.requestFocus();
-                      }
-                    },
-                    assetName: context.select((ChatMessageUIModel model) =>
-                                model.chatInputType) ==
-                            ChatInputType.voice
-                        ? Constant.assetsImagesChatBar
-                            .named("chat_bar_keyboard.svg")
-                        : Constant.assetsImagesChatBar
-                            .named("chat_bar_voice.svg"),
-                  ),
-                  Expanded(
-                    child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                            maxHeight: Constant.chatToolbarInputViewMaxHeight,
-                            minHeight: Constant.chatToolbarInputViewMinHeight),
-                        child: Builder(
-                          builder: (context) {
-                            final chatInputType = context.select(
-                                (ChatMessageUIModel model) =>
-                                    model.chatInputType);
-                            return Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: <Widget>[
-                                Offstage(
-                                  offstage:
-                                      chatInputType == ChatInputType.voice,
-                                  child: CupertinoTextField(
-                                    key: _textFieldKey,
-                                    style: TextStyle(fontSize: 18),
-                                    // expands: true,
-                                    keyboardType: TextInputType.multiline,
-                                    maxLines: 3,
-                                    minLines: 1,
-                                    focusNode: widget.focusNode,
-                                    placeholder: "ddd",
-                                    controller: _editingController,
-                                    onChanged: (text) {
-                                      _onTextChanged(context);
-                                    },
+                      },
+                      assetName: context.select((ChatMessageUIModel model) =>
+                                  model.chatInputType) ==
+                              ChatInputType.voice
+                          ? Constant.assetsImagesChatBar
+                              .named("chat_bar_keyboard.svg")
+                          : Constant.assetsImagesChatBar
+                              .named("chat_bar_voice.svg"),
+                    ),
+                    Expanded(
+                      child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                              maxHeight: Constant.chatToolbarInputViewMaxHeight,
+                              minHeight:
+                                  Constant.chatToolbarInputViewMinHeight),
+                          child: Builder(
+                            builder: (context) {
+                              final chatInputType = context.select(
+                                  (ChatMessageUIModel model) =>
+                                      model.chatInputType);
+                              return Column(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: <Widget>[
+                                  Offstage(
+                                    offstage:
+                                        chatInputType == ChatInputType.voice,
+                                    child: CupertinoTextField(
+                                      key: _textFieldKey,
+                                      scrollController:
+                                          _chatEditorModel.textScrollController,
+                                      style: TextStyle(fontSize: 18),
+                                      // expands: true,
+                                      keyboardType: TextInputType.multiline,
+                                      maxLines: 3,
+                                      minLines: 1,
+                                      focusNode: widget.focusNode,
+                                      placeholder: "ddd",
+                                      controller:
+                                          _chatEditorModel.editingController,
+                                      onChanged: (text) {
+                                        _onTextChanged(context);
+                                      },
+                                    ),
                                   ),
-                                ),
-                                Offstage(
-                                  offstage:
-                                      chatInputType != ChatInputType.voice,
-                                  child: SizedBox(
-                                    height: 40,
-                                    child: GestureDetector(
-                                      onPanDown: (data) {
-                                        print("start");
-                                      },
-                                      onPanEnd: (data) {
-                                        print("end");
-                                      },
-                                      child: FlatButton(
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(5)),
-                                        color: Colors.white,
-                                        onPressed: () {},
-                                        child: Text(
-                                          "按住说话",
-                                          style: TextStyle(
-                                              color: Color(0xff181818)),
+                                  Offstage(
+                                    offstage:
+                                        chatInputType != ChatInputType.voice,
+                                    child: SizedBox(
+                                      height: 40,
+                                      child: GestureDetector(
+                                        onPanDown: (data) {
+                                          print("start");
+                                        },
+                                        onPanEnd: (data) {
+                                          print("end");
+                                        },
+                                        child: FlatButton(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5)),
+                                          color: Colors.white,
+                                          onPressed: () {},
+                                          child: Text(
+                                            "按住说话",
+                                            style: TextStyle(
+                                                color: Color(0xff181818)),
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            );
-                          },
-                        )),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                    child: _IconButton(
+                                ],
+                              );
+                            },
+                          )),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+                      child: _IconButton(
+                        onPressed: () {
+                          var model = _uimodel;
+                          if (model.chatInputType == ChatInputType.emoji) {
+                            widget.focusNode.requestFocus();
+                          } else {
+                            if (model.chatInputType == ChatInputType.keyboard) {
+                              widget.focusNode.unfocus();
+                            }
+                            _updateTextToolHeight(model);
+                            model.setChatInputType(ChatInputType.emoji);
+                          }
+                        },
+                        assetName: context.select((ChatMessageUIModel model) =>
+                                    model.chatInputType) ==
+                                ChatInputType.emoji
+                            ? Constant.assetsImagesChatBar
+                                .named("chat_bar_keyboard.svg")
+                            : Constant.assetsImagesChatBar
+                                .named("chat_bar_emoji.svg"),
+                      ),
+                    ),
+                    _IconButton(
                       onPressed: () {
                         var model = _uimodel;
-                        if (model.chatInputType == ChatInputType.emoji) {
+                        if (model.chatInputType == ChatInputType.more) {
                           widget.focusNode.requestFocus();
                         } else {
                           if (model.chatInputType == ChatInputType.keyboard) {
                             widget.focusNode.unfocus();
                           }
                           _updateTextToolHeight(model);
-                          model.setChatInputType(ChatInputType.emoji);
+                          model.setChatInputType(ChatInputType.more);
                         }
                       },
-                      assetName: context.select((ChatMessageUIModel model) =>
-                                  model.chatInputType) ==
-                              ChatInputType.emoji
-                          ? Constant.assetsImagesChatBar
-                              .named("chat_bar_keyboard.svg")
-                          : Constant.assetsImagesChatBar
-                              .named("chat_bar_emoji.svg"),
+                      assetName: Constant.assetsImagesChatBar
+                          .named("chat_bar_more.svg"),
                     ),
-                  ),
-                  _IconButton(
-                    onPressed: () {
-                      var model = _uimodel;
-                      if (model.chatInputType == ChatInputType.more) {
-                        widget.focusNode.requestFocus();
-                      } else {
-                        if (model.chatInputType == ChatInputType.keyboard) {
-                          widget.focusNode.unfocus();
-                        }
-                        _updateTextToolHeight(model);
-                        model.setChatInputType(ChatInputType.more);
-                      }
-                    },
-                    assetName:
-                        Constant.assetsImagesChatBar.named("chat_bar_more.svg"),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-          AnimatedSize(
-            curve: Curves.easeInOut,
-            duration: Duration(milliseconds: 250),
-            vsync: this,
-            child: Builder(builder: (context) {
-              var chatType = context
-                  .select((ChatMessageUIModel model) => model.chatInputType);
-              var model = _uimodel;
-              final bottomHeight = model.bottomHeight;
-              Widget child;
-              switch (chatType) {
-                case ChatInputType.none:
-                case ChatInputType.voice:
-                case ChatInputType.keyboard:
-                  child = Container();
-                  break;
-                case ChatInputType.emoji:
-                  child = MainEmojiPanel(key: emojiPanelKey);
-                  break;
-                case ChatInputType.more:
-                  child = MorePanel();
-                  break;
-                default:
-                  child = Container();
-                  break;
-              }
-              return SizedBox(
-                height: bottomHeight,
-                child: child,
-              );
-            }),
-          ),
-        ],
+            AnimatedSize(
+              curve: Curves.easeInOut,
+              duration: Constant.kCommonDuration,
+              vsync: this,
+              child: Builder(builder: (context) {
+                var chatType = context
+                    .select((ChatMessageUIModel model) => model.chatInputType);
+                var model = _uimodel;
+                final bottomHeight = model.bottomHeight;
+                Widget child;
+                switch (chatType) {
+                  case ChatInputType.none:
+                  case ChatInputType.voice:
+                  case ChatInputType.keyboard:
+                    child = Container();
+                    break;
+                  case ChatInputType.emoji:
+                    child = MainEmojiPanel(key: emojiPanelKey);
+                    break;
+                  case ChatInputType.more:
+                    child = MorePanel();
+                    break;
+                  default:
+                    child = Container();
+                    break;
+                }
+                return SizedBox(
+                  height: bottomHeight,
+                  child: child,
+                );
+              }),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -302,6 +309,29 @@ class _IconButton extends StatelessWidget {
       iconSize: 30,
       color: Color(0xff181818),
       assetName: assetName,
+    );
+  }
+}
+
+class ChatEditorModel {
+  TextEditingController editingController =
+      TextEditingController(text: "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
+
+  ScrollController textScrollController = ScrollController();
+  deleteInput() {
+    final text = editingController.text;
+    if (text.length > 0) {
+      editingController.text = text.substring(0, text.length - 2);
+    }
+  }
+
+  addInput(String input) {
+    editingController.text += input;
+
+    textScrollController.animateTo(
+      textScrollController.position.maxScrollExtent,
+      duration: Constant.kCommonDuration,
+      curve: Curves.easeInOut,
     );
   }
 }

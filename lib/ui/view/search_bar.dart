@@ -63,7 +63,7 @@ class _SearchBarState extends State<SearchBar> {
             right: _textFieldRight,
             top: 0,
             bottom: 0,
-            duration: Duration(milliseconds: 250),
+            duration: Constant.kCommonDuration,
             curve: Curves.easeInOut,
             child: Container(
               decoration: BoxDecoration(
@@ -102,7 +102,7 @@ class _SearchBarState extends State<SearchBar> {
             width: _cancelWidth,
             bottom: 0,
             curve: Curves.easeInOut,
-            duration: Duration(milliseconds: 250),
+            duration: Constant.kCommonDuration,
             child: FlatButton(
               padding: EdgeInsets.zero,
               child: Text("取消"),
@@ -129,7 +129,7 @@ class _SearchBarState extends State<SearchBar> {
                 ? 16
                 : (MediaQuery.of(context).size.width - 50) * 0.5,
             curve: Curves.easeInOut,
-            duration: Duration(milliseconds: 250),
+            duration: Constant.kCommonDuration,
             child: IgnorePointer(
               child: Container(
                 padding: EdgeInsets.fromLTRB(0, 0, 0, 0),

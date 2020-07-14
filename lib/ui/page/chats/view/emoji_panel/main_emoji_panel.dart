@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterwechat/data/constants/constants.dart';
 import 'package:flutterwechat/data/constants/style.dart';
 import 'package:flutterwechat/data/providers/chat_detail_emoji_model.dart';
 import 'package:flutterwechat/ui/page/chats/view/emoji_panel/emoji_panel_emoji.dart';
@@ -8,7 +9,13 @@ import 'package:flutterwechat/utils/scroll_controller_ext.dart';
 import 'package:provider/provider.dart';
 
 class MainEmojiPanel extends StatefulWidget {
-  MainEmojiPanel({Key key}) : super(key: key);
+  // 动态表情输入
+  final ValueChanged<String> emojiInput;
+
+  MainEmojiPanel({
+    Key key,
+    @required this.emojiInput,
+  }) : super(key: key);
 
   @override
   _MainEmojiPanelState createState() => _MainEmojiPanelState();
@@ -39,7 +46,7 @@ class _MainEmojiPanelState extends State<MainEmojiPanel> {
         var newOffset = 50.0 * newIndex;
         _scrollController.scrollToCenter(
             offset: newOffset,
-            duration: Duration(milliseconds: 250),
+            duration: Constant.kCommonDuration,
             curve: Curves.easeInOut);
       }
     });
@@ -89,22 +96,24 @@ class _MainEmojiPanelState extends State<MainEmojiPanel> {
           ),
         ),
         Expanded(
-            child: Container(
-                color: Color(0xffe9e9e9),
-                child: PageView.builder(
-                  controller: _pageController,
-                  itemBuilder: (context, index) {
-                    switch (index) {
-                      case 0:
-                        return EmojiPanelEmoji();
-                      case 1:
-                        return EmojiPanelFavorite();
-                      default:
-                        return EmojiPanelShopEmoji();
-                    }
-                  },
-                  itemCount: _count,
-                )))
+          child: Container(
+            color: Color(0xffe9e9e9),
+            child: PageView.builder(
+              controller: _pageController,
+              itemBuilder: (context, index) {
+                switch (index) {
+                  case 0:
+                    return EmojiPanelEmoji();
+                  case 1:
+                    return EmojiPanelFavorite();
+                  default:
+                    return EmojiPanelShopEmoji();
+                }
+              },
+              itemCount: _count,
+            ),
+          ),
+        )
       ],
     );
   }

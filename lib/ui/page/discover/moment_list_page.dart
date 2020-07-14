@@ -51,7 +51,7 @@ class _MomentListPageState extends State<MomentListPage> {
         _bottomViewModel.keyboardHeight = height;
         _scrollController.animateTo(
             _scrollOffset - _bottomViewModel.bottomHeight,
-            duration: const Duration(milliseconds: 250),
+            duration: Constant.kCommonDuration,
             curve: Curves.easeInOut);
       }, willHideKeyboard: () {
         _bottomViewModel.keyboardHeight = 0;
@@ -336,7 +336,7 @@ class _MomentListPageState extends State<MomentListPage> {
                   ),
                   // input
                   AnimatedPositioned(
-                    duration: Duration(milliseconds: 250),
+                    duration: Constant.kCommonDuration,
                     curve: Curves.easeInOut,
                     left: 0,
                     right: 0,

@@ -39,7 +39,7 @@ class MainTabBar extends StatelessWidget {
       ),
       child: AnimatedContainer(
           curve: Curves.easeInOut,
-          duration: Duration(milliseconds: 250),
+          duration: Constant.kCommonDuration,
           height: context.select((MainBadgeModel m) => m.isShowBottomTabBar)
               ? Constant.bootomNavigationBarHeight +
                   MediaQuery.of(context).padding.bottom

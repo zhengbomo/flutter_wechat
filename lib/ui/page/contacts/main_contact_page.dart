@@ -63,7 +63,6 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
     _keys = _contacts.map((e) => e.item1).toList();
 
     _stickyHeaderController.objectChanged = (index) {
-      print("dddd $index");
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         if (index == -1) {
           _model.index = index;
@@ -111,77 +110,81 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
           ],
         ),
         builder: (BuildContext context, Widget searchBar) {
+          print("build content");
           return Stack(
             children: <Widget>[
               DefaultStickyHeaderController(
                 controller: _stickyHeaderController,
-                child: CustomScrollView(
+                child: PrimaryScrollController(
                   controller: _scrollController,
-                  slivers: <Widget>[
-                    // search bar
-                    SliverToBoxAdapter(
-                      child: searchBar,
-                    ),
-                    // top items
-                    SliverStickyHeader(
-                      object: 0,
-                      header: SizedBox(
-                        height: 0.1,
+                  child: CustomScrollView(
+                    primary: true,
+                    slivers: <Widget>[
+                      // search bar
+                      SliverToBoxAdapter(
+                        child: searchBar,
                       ),
-                      sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, i) {
-                            return _buildItem(_topItems[i], () {});
-                          },
-                          childCount: _topItems.length,
+                      // top items
+                      SliverStickyHeader(
+                        object: 0,
+                        header: SizedBox(
+                          height: 0.1,
+                        ),
+                        sliver: SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, i) {
+                              return _buildItem(_topItems[i], () {});
+                            },
+                            childCount: _topItems.length,
+                          ),
                         ),
                       ),
-                    ),
-                    // list
-                    ..._contacts
-                        .mapIndex(
-                          (e, i) => SliverStickyHeader(
-                            object: i + 1,
-                            header: Container(
-                              height: 30.0,
-                              color: Color(0xffe9e9e9),
-                              alignment: Alignment.centerLeft,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Expanded(
-                                    child: Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 16.0),
-                                        child: Text(
-                                          e.item1,
-                                          style: const TextStyle(
-                                              color: Color(0xff666666)),
+                      // list
+                      ..._contacts
+                          .mapIndex(
+                            (e, i) => SliverStickyHeader(
+                              object: i + 1,
+                              header: Container(
+                                height: 30.0,
+                                color: Color(0xffe9e9e9),
+                                alignment: Alignment.centerLeft,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Expanded(
+                                      child: Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 16.0),
+                                          child: Text(
+                                            e.item1,
+                                            style: const TextStyle(
+                                                color: Color(0xff666666)),
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  Divider(
-                                    height: 0.5,
-                                    thickness: 0.5,
-                                  ),
-                                ],
+                                    Divider(
+                                      height: 0.5,
+                                      thickness: 0.5,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              sliver: SliverList(
+                                delegate: SliverChildBuilderDelegate(
+                                  (context, i) {
+                                    return _buildItem(e.item2[i].name, () {});
+                                  },
+                                  childCount: e.item2.length,
+                                ),
                               ),
                             ),
-                            sliver: SliverList(
-                              delegate: SliverChildBuilderDelegate(
-                                (context, i) {
-                                  return _buildItem(e.item2[i].name, () {});
-                                },
-                                childCount: e.item2.length,
-                              ),
-                            ),
-                          ),
-                        )
-                        .toList()
-                  ],
+                          )
+                          .toList()
+                    ],
+                  ),
                 ),
               ),
               Positioned(
@@ -194,8 +197,6 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
                   child: Builder(
                     builder: (context) {
                       final model = context.watch<_MainContactModel>();
-
-                      print("out index ${model.index}");
                       return IndexBar(
                         itemCount: _keys.length + 1,
                         builder: (context, i, selected) {

@@ -43,13 +43,15 @@ class _AddMenuState extends State<AddMenu> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Offstage(
-        offstage: _opacity == 0,
+      offstage: _opacity == 0,
+      child: ColoredBox(
+        color: Colors.transparent,
         child: Opacity(
             opacity: _opacity,
             child: Stack(
               children: <Widget>[
                 GestureDetector(
-                  onTap: () {
+                  onPanDown: (_) {
                     widget.dismissCall();
                   },
                 ),
@@ -65,7 +67,9 @@ class _AddMenuState extends State<AddMenu> with SingleTickerProviderStateMixin {
                   ),
                 ),
               ],
-            )));
+            )),
+      ),
+    );
   }
 
   @override

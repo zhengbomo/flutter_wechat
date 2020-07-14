@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:flutterwechat/ui/page/chats/chat_editor.dart';
 
 class EmojiPanelEmoji extends StatefulWidget {
   @override
@@ -25,11 +27,15 @@ class _EmojiPanelEmojiState extends State<EmojiPanelEmoji> {
         delegate: SliverChildBuilderDelegate(
           (BuildContext context, int index) {
             return IconButton(
-                onPressed: () {
-                  print("😁");
-                },
-                icon: Icon(Icons.account_circle,
-                    size: 30, color: Colors.orangeAccent));
+              onPressed: () {
+                context.read<ChatEditorModel>().addInput("[捂脸]");
+              },
+              icon: Icon(
+                Icons.account_circle,
+                size: 30,
+                color: Colors.orangeAccent,
+              ),
+            );
           },
           childCount: 4,
         ),
@@ -49,8 +55,16 @@ class _EmojiPanelEmojiState extends State<EmojiPanelEmoji> {
               SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 7),
           delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) {
-              return Icon(Icons.account_circle,
-                  size: 30, color: Colors.orangeAccent);
+              return IconButton(
+                onPressed: () {
+                  context.read<ChatEditorModel>().addInput("😁");
+                },
+                icon: Icon(
+                  Icons.account_circle,
+                  size: 30,
+                  color: Colors.orangeAccent,
+                ),
+              );
             },
             childCount: 70,
           ),

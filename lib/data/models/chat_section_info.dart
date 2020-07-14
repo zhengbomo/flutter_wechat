@@ -1,10 +1,13 @@
 import 'dart:math';
 
+import 'package:flutter/material.dart';
+import 'package:flutterwechat/data/constants/shares.dart';
+
 class ChatSectionInfo {
   int sectionId;
   String title;
   String desc;
-  String icon;
+  Color avatar;
   DateTime date;
   String badge;
   // 免打扰
@@ -30,6 +33,7 @@ class ChatSectionInfo {
     final section = ChatSectionInfo();
     section.isMute = _random.nextBool();
     section.sectionId = _count++;
+    section.avatar = Shares.randomColor.randomColor();
     section.title = "八戒";
     section.desc = "今天中午吃什么";
     section.date =

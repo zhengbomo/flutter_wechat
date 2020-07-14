@@ -29,7 +29,7 @@ class _ContactListState extends State<ContactList> {
   void initState() {
     Future.delayed(Duration(seconds: 1)).then((_) {
       // _scrollController.animateTo(100,
-      // duration: Duration(milliseconds: 250), curve: Curves.easeInOut);
+      // duration: Constant.kCommonDuration, curve: Curves.easeInOut);
     });
     super.initState();
   }
@@ -89,7 +89,7 @@ class _ContactListState extends State<ContactList> {
                             beginEdit: () {
                               widget.onEdit();
                               widget.scrollController.animateTo(0,
-                                  duration: Duration(milliseconds: 250),
+                                  duration: Constant.kCommonDuration,
                                   curve: Curves.easeInOut);
                             },
                             cancelCallback: widget.cancelCallback,
