@@ -12,9 +12,11 @@ class IndexBar extends StatefulWidget {
   final int itemCount;
   final int index;
   final ValueChanged<int> indexChanged;
+  final VoidCallback panRelease;
   IndexBar({
     @required this.bubbleWidgetBuilder,
     @required this.index,
+    @required this.panRelease,
     @required this.itemCount,
     @required this.indexChanged,
     @required this.builder,
@@ -76,6 +78,7 @@ class _IndexBarState extends State<IndexBar> {
                     _dragingIndex = null;
                     // update
                     setState(() {});
+                    widget.panRelease();
                   },
                   onPanUpdate: (data) {
                     // 获取相对位置

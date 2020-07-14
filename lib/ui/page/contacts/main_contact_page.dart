@@ -39,7 +39,7 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
   void initState() {
     _contacts.clear();
 
-    final allContact = List.generate(100, (index) => ContactInfo.random());
+    final allContact = List.generate(20, (index) => ContactInfo.random());
     Map<String, List<ContactInfo>> map = Map();
     for (var contact in allContact) {
       final tagIndex = contact.tagIndex;
@@ -63,6 +63,7 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
     _keys = _contacts.map((e) => e.item1).toList();
 
     _stickyHeaderController.objectChanged = (index) {
+      print("header changed $index");
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         if (index == -1) {
           _model.index = index;
@@ -79,15 +80,16 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
 
     if (section == 0) {
       if (_scrollController.offset != top) {
-        _scrollController.jumpTo(top);
+        _scrollController.jumpTo(top + 0.1);
       }
     } else {
       var offset = _contacts.getRange(0, section).fold(
-          top,
-          (previousValue, element) =>
-              previousValue +
-              element.item2.length * _itemHeight +
-              _headerHeight);
+              top,
+              (previousValue, element) =>
+                  previousValue +
+                  element.item2.length * _itemHeight +
+                  _headerHeight) +
+          0.1;
       if (_scrollController.offset != offset) {
         _scrollController.safeJumpTo(offset);
       }
@@ -198,6 +200,9 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
                     builder: (context) {
                       final model = context.watch<_MainContactModel>();
                       return IndexBar(
+                        panRelease: () {
+                          _model.index = _stickyHeaderController.object;
+                        },
                         itemCount: _keys.length + 1,
                         builder: (context, i, selected) {
                           bool isSearch = i == 0;
@@ -229,12 +234,12 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
                         },
                         index: model.index,
                         indexChanged: (i) {
-                          print(i);
                           if (i == 0) {
                             _scrollController.jumpTo(0);
                           } else {
                             _jumpToSection(i - 1);
                           }
+                          _model.index = i;
                         },
                         bubbleWidgetBuilder: (BuildContext context, int index) {
                           if (index == 0) {
