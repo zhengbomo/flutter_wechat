@@ -6,6 +6,7 @@ import 'package:flutterwechat/data/constants/constants.dart';
 import 'package:flutterwechat/data/constants/style.dart';
 import 'package:flutterwechat/data/models/chat_section_info.dart';
 import 'package:flutterwechat/data/providers/main_badge_model.dart';
+import 'package:flutterwechat/ui/page/chats/applet.dart';
 import 'package:flutterwechat/ui/view/animted_scale.dart';
 import 'package:flutterwechat/ui/view/search_bar.dart';
 import 'package:flutterwechat/utils/build_context_read.dart';
@@ -288,10 +289,7 @@ class _MainChatPageState extends AutoKeepAliveState<MainChatPage>
                                           AppBar(
                                             title: Text("小程序"),
                                           ),
-                                          Container(
-                                            color: Colors.cyan,
-                                            height: 400,
-                                          )
+                                          Applet()
                                         ],
                                       ),
                                     ),
@@ -339,6 +337,7 @@ class _MainChatPageState extends AutoKeepAliveState<MainChatPage>
                                     _listSearchBarModel.appbarDuration =
                                         Constant.kCommonDuration;
 
+                                    // 隐藏 top view
                                     _mainChatModel.topViewTop = -(screenHeight -
                                         kToolbarHeight -
                                         query.padding.top * 2);
@@ -346,6 +345,9 @@ class _MainChatPageState extends AutoKeepAliveState<MainChatPage>
                                     _listSearchBarModel.listViewOffset = 0;
                                     _mainChatModel.topViewShowOffset = 0;
                                     _mainChatModel.appletViewAlpha = 0;
+                                    context
+                                        .read<MainBadgeModel>()
+                                        .showBottomTabBar(true);
                                   },
                                 );
                               }),
