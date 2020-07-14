@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -7,6 +8,8 @@ import 'package:flutterwechat/data/constants/style.dart';
 import 'package:flutterwechat/ui/components/action_sheet.dart';
 import 'package:flutterwechat/ui/components/avatar.dart';
 import 'package:flutterwechat/ui/components/child_builder.dart';
+import 'package:flutterwechat/ui/page/chats/chat_editor.dart';
+import 'package:flutterwechat/ui/page/chats/view/emoji_panel/emoji_panel_emoji.dart';
 import 'package:flutterwechat/ui/page/discover/moment_cell.dart';
 import 'package:flutterwechat/ui/page/discover/moment_info.dart';
 import 'package:flutterwechat/ui/page/discover/moment_list_provider.dart';
@@ -31,7 +34,7 @@ class _MomentListPageState extends State<MomentListPage> {
 
   final FocusNode _focusNode = FocusNode();
 
-  final TextEditingController _textEditingController = TextEditingController();
+  final ChatEditorModel _chatEditorModel = ChatEditorModel();
 
   KeyboardUtils _keyboardUtils = KeyboardUtils();
 
@@ -48,19 +51,22 @@ class _MomentListPageState extends State<MomentListPage> {
   void initState() {
     _subscribingId = _keyboardUtils.add(
       listener: KeyboardListener(willShowKeyboard: (height) {
+        print(height);
         _bottomViewModel.keyboardHeight = height;
         _scrollController.animateTo(
             _scrollOffset - _bottomViewModel.bottomHeight,
             duration: Constant.kCommonDuration,
             curve: Curves.easeInOut);
       }, willHideKeyboard: () {
-        _bottomViewModel.keyboardHeight = 0;
+        // 隐藏键盘
       }),
     );
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
+        // 获得焦点
         _bottomViewModel.inputType = _InputType.keyboard;
       } else {
+        // 失去焦点
         if (_bottomViewModel.inputType == _InputType.keyboard) {
           _bottomViewModel.inputType = _InputType.none;
         }
@@ -149,40 +155,65 @@ class _MomentListPageState extends State<MomentListPage> {
                 },
               );
             }),
-            child3: Column(
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: TextField(
-                        textInputAction: TextInputAction.send,
-                        controller: _textEditingController,
-                        onSubmitted: (text) {
-                          _currentMoment.comments.add(MomentCommentInfo()
-                            ..username = "八戒"
-                            ..content = text);
-                          _textEditingController.text = "";
-                          _momentListProvider.momentChanged();
-                        },
-                        focusNode: _focusNode,
-                        // autofocus: true,
+            child3: Provider.value(
+              value: _chatEditorModel,
+              child: Column(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 12),
+                          child: CupertinoTextField(
+                            scrollController:
+                                _chatEditorModel.textScrollController,
+                            textInputAction: TextInputAction.send,
+                            controller: _chatEditorModel.editingController,
+                            onSubmitted: (text) {
+                              _currentMoment.comments.add(MomentCommentInfo()
+                                ..username = "八戒"
+                                ..content = text);
+                              _chatEditorModel.editingController.text = "";
+                              _momentListProvider.momentChanged();
+                            },
+                            focusNode: _focusNode,
+                            // autofocus: true,
+                          ),
+                        ),
                       ),
+                      IconButton(
+                        icon: SvgPicture.asset(
+                          Constant.assetsImagesChatBar
+                              .named("chat_bar_emoji.svg"),
+                          color: Colors.black,
+                        ),
+                        onPressed: () {
+                          final oldOffset = _bottomViewModel.bottomHeight;
+                          _bottomViewModel.inputType = _InputType.emoji;
+                          final newOffset = _bottomViewModel.bottomHeight;
+
+                          _scrollController.animateTo(
+                              _scrollOffset -
+                                  oldOffset +
+                                  (newOffset - oldOffset),
+                              duration: Constant.kCommonDuration,
+                              curve: Curves.easeInOut);
+                          if (_focusNode.hasFocus) {
+                            _focusNode.unfocus();
+                          }
+                        },
+                      )
+                    ],
+                  ),
+                  Expanded(
+                    child: MediaQuery.removePadding(
+                      context: context,
+                      child: EmojiPanelEmoji(),
+                      removeTop: true,
                     ),
-                    IconButton(
-                      icon: Icon(Icons.check_circle),
-                      onPressed: () {
-                        _bottomViewModel.inputType = _InputType.emoji;
-                        if (_focusNode.hasFocus) {
-                          _focusNode.unfocus();
-                        }
-                      },
-                    )
-                  ],
-                ),
-                Expanded(
-                  child: Container(),
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
             child4: Builder(builder: (context) {
               // 用于更新数据

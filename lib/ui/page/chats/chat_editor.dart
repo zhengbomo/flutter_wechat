@@ -73,7 +73,8 @@ class _ChatEditorState extends State<ChatEditor>
   }
 
   GlobalKey _textFieldKey = GlobalKey();
-  ChatEditorModel _chatEditorModel = ChatEditorModel();
+  ChatEditorModel _chatEditorModel =
+      ChatEditorModel(text: "mmmmmmmmmmmmmmmmmmmmmmmmmmmm");
 
   @override
   Widget build(BuildContext context) {
@@ -314,8 +315,10 @@ class _IconButton extends StatelessWidget {
 }
 
 class ChatEditorModel {
-  TextEditingController editingController =
-      TextEditingController(text: "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
+  final TextEditingController editingController;
+
+  ChatEditorModel({String text = ""})
+      : editingController = TextEditingController(text: text);
 
   ScrollController textScrollController = ScrollController();
   deleteInput() {
