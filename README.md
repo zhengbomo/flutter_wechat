@@ -24,5 +24,10 @@
 6. 我的页面
    * 下拉展示拍视频动态
 
+![聊天页面](https://github.com/zhengbomo/flutter_wechat/blob/master/images/wechat_chat-min.gif?raw=true)
+![联系人页面](https://github.com/zhengbomo/flutter_wechat/blob/master/images/wechat_contact-min.gif?raw=true)
+![主页](https://github.com/zhengbomo/flutter_wechat/blob/master/images/wechat_home-min.gif?raw=true)
+![我的页面](https://github.com/zhengbomo/flutter_wechat/blob/master/images/wechat_me-min.gif?raw=true)
+![朋友圈页面](https://github.com/zhengbomo/flutter_wechat/blob/master/images/wechat_moment-min.gif?raw=true)
 
-
+![安卓demo](https://github.com/zhengbomo/flutter_wechat/blob/master/images/wechat_android-min.gif?raw=true)
