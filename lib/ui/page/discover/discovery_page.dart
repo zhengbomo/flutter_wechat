@@ -2,12 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutterwechat/data/constants/constants.dart';
-import 'package:flutterwechat/data/constants/style.dart';
 import 'package:flutterwechat/ui/components/action_sheet.dart';
 import 'package:flutterwechat/ui/components/avatar.dart';
 import 'package:flutterwechat/ui/components/navigator_service.dart';
 import 'package:flutterwechat/ui/components/normal_cell.dart';
-import 'package:flutterwechat/ui/components/normal_section.dart';
 import 'package:flutterwechat/ui/components/section_list_view.dart';
 import 'package:flutterwechat/ui/page/base/auto_keep_alive_state.dart';
 import 'package:flutterwechat/ui/page/discover/moment_list_page.dart';
@@ -172,6 +170,7 @@ class _DiscoverPageState extends AutoKeepAliveState<DiscoverPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
+        centerTitle: true,
         elevation: 0,
         title: Text("发现"),
         actions: <Widget>[

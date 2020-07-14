@@ -203,43 +203,47 @@ class _MainChatPageState extends AutoKeepAliveState<MainChatPage>
                       }
                       return false;
                     },
-                    child: PrimaryScrollController(
-                      controller: _scrollController,
-                      child: ListView.separated(
-                        itemBuilder: (c, i) {
-                          if (i == 0) {
-                            return SizedBox(
-                              height: Constant.searchBarHeight,
-                              child: SearchBar(beginEdit: () {
-                                _listSearchBarModel.changeFocus(true);
-                                // 隐藏tabbar
-                                context
-                                    .read<MainBadgeModel>()
-                                    .showBottomTabBar(false);
-                              }, cancelCallback: () {
-                                _listSearchBarModel.changeFocus(false);
-                                // 显示tabbar
-                                context
-                                    .read<MainBadgeModel>()
-                                    .showBottomTabBar(true);
-                              }),
-                            );
-                          } else {
-                            return _createItem(
-                                c, _mainChatModel.sections[i - 1]);
-                          }
-                        },
-                        separatorBuilder: (c, i) {
-                          if (i == 0) {
-                            return SizedBox();
-                          } else {
-                            return Padding(
-                              padding: EdgeInsets.fromLTRB(60, 0, 0, 0),
-                              child: Divider(height: 1, color: Colors.black12),
-                            );
-                          }
-                        },
-                        itemCount: _mainChatModel.sections.length,
+                    child: ScrollConfiguration(
+                      behavior: Constant.sameScrollBehavior,
+                      child: PrimaryScrollController(
+                        controller: _scrollController,
+                        child: ListView.separated(
+                          itemBuilder: (c, i) {
+                            if (i == 0) {
+                              return SizedBox(
+                                height: Constant.searchBarHeight,
+                                child: SearchBar(beginEdit: () {
+                                  _listSearchBarModel.changeFocus(true);
+                                  // 隐藏tabbar
+                                  context
+                                      .read<MainBadgeModel>()
+                                      .showBottomTabBar(false);
+                                }, cancelCallback: () {
+                                  _listSearchBarModel.changeFocus(false);
+                                  // 显示tabbar
+                                  context
+                                      .read<MainBadgeModel>()
+                                      .showBottomTabBar(true);
+                                }),
+                              );
+                            } else {
+                              return _createItem(
+                                  c, _mainChatModel.sections[i - 1]);
+                            }
+                          },
+                          separatorBuilder: (c, i) {
+                            if (i == 0) {
+                              return SizedBox();
+                            } else {
+                              return Padding(
+                                padding: EdgeInsets.fromLTRB(60, 0, 0, 0),
+                                child:
+                                    Divider(height: 1, color: Colors.black12),
+                              );
+                            }
+                          },
+                          itemCount: _mainChatModel.sections.length,
+                        ),
                       ),
                     ),
                   );
@@ -287,6 +291,7 @@ class _MainChatPageState extends AutoKeepAliveState<MainChatPage>
                                       child: Column(
                                         children: <Widget>[
                                           AppBar(
+                                            centerTitle: true,
                                             title: Text("小程序"),
                                           ),
                                           Applet()

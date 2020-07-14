@@ -103,6 +103,7 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
       resizeToAvoidBottomInset: false,
       body: SearchListPage(
         appbar: AppBar(
+          centerTitle: true,
           title: Text("通讯录"),
           actions: <Widget>[
             IconButton(

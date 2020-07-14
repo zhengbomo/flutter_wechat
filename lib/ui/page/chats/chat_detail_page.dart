@@ -79,6 +79,32 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     });
   }
 
+  DateTime _date = DateTime.now();
+  _loadMoreData() {
+    // 加载更早的数据
+    if (DateTime.now().difference(_date) < Duration(seconds: 1)) {
+      // 防止重复加载
+      return;
+    }
+
+    _date = DateTime.now();
+
+    print("load more data");
+    Future.delayed(Duration(milliseconds: 200)).then((value) {
+      final indexInfo =
+          _scrollController.getCurrentIndexInfo(wholeVisible: false);
+      final int index = indexInfo[0];
+      final double offset = indexInfo[1];
+
+      _scrollController.jumpTo(index: index, offset: offset);
+
+      final addCount = 20;
+      _chatMessageModel.insertMessage(addCount);
+      final realIndex = index + addCount;
+      _scrollController.jumpTo(index: realIndex, offset: -offset + 1);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     print("main build");
@@ -95,27 +121,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           title: Text("八戒"),
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () {
-                // 发送数据
-                _chatMessageModel.addMessage(1);
-                _scrollToEnd();
-              },
-            ),
-            IconButton(
               icon: SvgPicture.asset(
                   Constant.assetsImagesChat.named("icons_filled_more.svg")),
               onPressed: () {
-                // 加载更早的数据
-                final indexInfo =
-                    _scrollController.getCurrentIndexInfo(wholeVisible: false);
-                final int index = indexInfo[0];
-                final double offset = indexInfo[1];
-
-                final addCount = 20;
-                _chatMessageModel.insertMessage(addCount);
-                final realIndex = index + addCount;
-                _scrollController.jumpTo(index: realIndex, offset: -offset);
+                _loadMoreData();
               },
             )
           ],
@@ -132,37 +141,54 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                 _chatMessageUIModel.setChatInputType(ChatInputType.none);
               }
             },
-            child: Scrollbar(
-              child: Builder(builder: (c) {
-                // 关联变化
-                c.select((ChatMessageModel model) => model.messageChangedId);
-                final model = _chatMessageModel;
+            child: NotificationListener(
+              onNotification: (notification) {
+                if (notification is ScrollEndNotification) {
+                  print("end");
+                  if (notification.metrics.pixels <=
+                      notification.metrics.minScrollExtent) {
+                    print("到顶");
+                    _loadMoreData();
+                  }
+                }
+                return false;
+              },
+              child: ScrollConfiguration(
+                behavior: Constant.sameScrollBehavior,
+                child: Scrollbar(
+                  child: Builder(builder: (c) {
+                    // 关联变化
+                    c.select(
+                        (ChatMessageModel model) => model.messageChangedId);
+                    final model = _chatMessageModel;
 
-                return ScrollablePositionedList.builder(
-                  itemCount: model.messages.length + 1,
-                  itemBuilder: (context, i) {
-                    if (model.messages.length == i) {
-                      return Builder(builder: (context) {
-                        final messageListBottomHeight = context.select(
-                            (ChatMessageUIModel model) =>
-                                model.messageListBottomHeight);
-                        // 占位
-                        return SizedBox(height: messageListBottomHeight);
-                      });
-                    } else {
-                      return ChatMessageContainer(
-                        showUsername: false,
-                        message: model.messages[i],
-                        child: ChatMessageText(message: model.messages[i]),
-                      );
-                    }
-                  },
-                  itemScrollController: _scrollController,
-                  itemPositionsListener: itemPositionsListener,
-                  reverse: false,
-                  scrollDirection: Axis.vertical,
-                );
-              }),
+                    return ScrollablePositionedList.builder(
+                      itemCount: model.messages.length + 1,
+                      itemBuilder: (context, i) {
+                        if (model.messages.length == i) {
+                          return Builder(builder: (context) {
+                            final messageListBottomHeight = context.select(
+                                (ChatMessageUIModel model) =>
+                                    model.messageListBottomHeight);
+                            // 占位
+                            return SizedBox(height: messageListBottomHeight);
+                          });
+                        } else {
+                          return ChatMessageContainer(
+                            showUsername: false,
+                            message: model.messages[i],
+                            child: ChatMessageText(message: model.messages[i]),
+                          );
+                        }
+                      },
+                      itemScrollController: _scrollController,
+                      itemPositionsListener: itemPositionsListener,
+                      reverse: false,
+                      scrollDirection: Axis.vertical,
+                    );
+                  }),
+                ),
+              ),
             ),
           ),
           // chatbar

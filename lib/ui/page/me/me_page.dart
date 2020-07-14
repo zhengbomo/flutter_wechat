@@ -166,17 +166,20 @@ class _MePageState extends AutoKeepAliveState<MePage> {
                 }
                 return false;
               },
-              child: SectionListView(
-                header: _header,
-                numberOfSection: () => _items.length,
-                numberOfRowsInSection: (section) => _items[section].length,
-                rowWidget: (context, section, row) {
-                  NormalCellInfo cellInfo = _items[section][row];
-                  return NormalCell(cellInfo: cellInfo);
-                },
-                sectionWidget: (context, section) {
-                  return NormlSection();
-                },
+              child: ScrollConfiguration(
+                behavior: Constant.sameScrollBehavior,
+                child: SectionListView(
+                  header: _header,
+                  numberOfSection: () => _items.length,
+                  numberOfRowsInSection: (section) => _items[section].length,
+                  rowWidget: (context, section, row) {
+                    NormalCellInfo cellInfo = _items[section][row];
+                    return NormalCell(cellInfo: cellInfo);
+                  },
+                  sectionWidget: (context, section) {
+                    return NormlSection();
+                  },
+                ),
               ),
             ),
           ),
