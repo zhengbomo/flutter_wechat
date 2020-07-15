@@ -69,7 +69,9 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         _scrollController.scrollTo(
           index: _chatMessageModel.messages.length - 1,
           duration: Constant.kCommonDuration,
-          offset: -500,
+          curve: Curves.easeInOut,
+          // 避免误差
+          offset: -10000,
         );
       } else {
         _scrollController.jumpTo(

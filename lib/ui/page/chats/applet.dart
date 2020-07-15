@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutterwechat/data/constants/constants.dart';
+import 'package:flutterwechat/ui/components/avatar.dart';
 import 'package:flutterwechat/ui/view/search_bar.dart';
+import 'package:flutterwechat/utils/build_context_read.dart';
 
 class Applet extends StatefulWidget {
   @override
@@ -37,17 +39,9 @@ class _AppletState extends State<Applet> {
                 child: Text("最近使用"),
               ),
               Container(
-                height: 100,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(
-                      4,
-                      (index) => Container(
-                            margin: EdgeInsets.all(12),
-                            height: 80,
-                            width: 60,
-                            color: Colors.green,
-                          )),
+                  children: List.generate(4, (index) => _createItem(context)),
                 ),
               ),
               Container(
@@ -60,14 +54,7 @@ class _AppletState extends State<Applet> {
                 height: 100,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(
-                      4,
-                      (index) => Container(
-                            margin: EdgeInsets.all(12),
-                            height: 80,
-                            width: 60,
-                            color: Colors.green,
-                          )),
+                  children: List.generate(4, (index) => _createItem(context)),
                 ),
               ),
               SizedBox(
@@ -76,6 +63,27 @@ class _AppletState extends State<Applet> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  _createItem(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 12),
+      width: context.getInheritedWidget<MediaQuery>().data.size.width / 4,
+      child: Column(
+        children: <Widget>[
+          Avatar(
+            color: Colors.red,
+            size: 50,
+            borderRadius: 25,
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 5),
+            child: Text("王者荣耀",
+                style: TextStyle(fontSize: 12, color: Colors.black87)),
+          )
+        ],
       ),
     );
   }

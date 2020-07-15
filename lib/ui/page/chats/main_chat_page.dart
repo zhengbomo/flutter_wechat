@@ -153,6 +153,12 @@ class _MainChatPageState extends AutoKeepAliveState<MainChatPage>
 
                             _mainChatModel.appletViewAlpha = 1;
                             _mainChatModel.appletScale = 1;
+
+                            // 搜索框
+                            WidgetsBinding.instance
+                                .addPostFrameCallback((timeStamp) {
+                              _scrollController.jumpTo(0);
+                            });
                           } else {
                             model.appbarOffset = max(0, -offset);
                             _mainChatModel.topViewShowOffset = -offset;
