@@ -245,7 +245,12 @@ class _ChatEditorState extends State<ChatEditor>
                     child = Container();
                     break;
                   case ChatInputType.emoji:
-                    child = MainEmojiPanel(key: emojiPanelKey);
+                    child = MainEmojiPanel(
+                      key: emojiPanelKey,
+                      emojiInput: (String value) {
+                        // 动态表情输入
+                      },
+                    );
                     break;
                   case ChatInputType.more:
                     child = MorePanel();

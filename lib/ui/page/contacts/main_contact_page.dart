@@ -24,7 +24,22 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
   final _stickyHeaderController = StickyHeaderController();
   ScrollController _scrollController = ScrollController();
 
-  final _topItems = ["新的朋友", "仅聊天的朋友", "群聊", "标签", "公众号", "企业微信联系人"];
+  final _topItems = [
+    Tuple2(Constant.assetsImagesContacts.named("plugins_friend_notify.png"),
+        "新的朋友"),
+    Tuple2(Constant.assetsImagesContacts.named("contact_chatonly_friends.png"),
+        "仅聊天的朋友"),
+    Tuple2(Constant.assetsImagesContacts.named("add_friend_icon_addgroup.png"),
+        "群聊"),
+    Tuple2(Constant.assetsImagesContacts.named("contact_icon_contacttag.png"),
+        "标签"),
+    Tuple2(Constant.assetsImagesContacts.named("add_friend_icon_offical.png"),
+        "公众号"),
+    Tuple2(
+        Constant.assetsImagesContacts
+            .named("add_friend_icon_search_wework.png"),
+        "企业微信联系人"),
+  ];
   final List<Tuple2<String, List<ContactInfo>>> _contacts =
       List<Tuple2<String, List<ContactInfo>>>();
 
@@ -136,7 +151,18 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
                         sliver: SliverList(
                           delegate: SliverChildBuilderDelegate(
                             (context, i) {
-                              return _buildItem(_topItems[i], () {});
+                              final avatar = Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(4),
+                                  image: DecorationImage(
+                                    image: AssetImage(_topItems[i].item1),
+                                  ),
+                                ),
+                              );
+                              return _buildItem(
+                                  _topItems[i].item2, avatar, () {});
                             },
                             childCount: _topItems.length,
                           ),
@@ -178,7 +204,14 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
                               sliver: SliverList(
                                 delegate: SliverChildBuilderDelegate(
                                   (context, i) {
-                                    return _buildItem(e.item2[i].name, () {});
+                                    final avatar = Avatar(
+                                      userInteractionEnable: false,
+                                      size: 40,
+                                      borderRadius: 3,
+                                      color: e.item2[i].avatar,
+                                    );
+                                    return _buildItem(
+                                        e.item2[i].name, avatar, () {});
                                   },
                                   childCount: e.item2.length,
                                 ),
@@ -266,7 +299,7 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
     );
   }
 
-  Widget _buildItem(String title, VoidCallback onPressed) {
+  Widget _buildItem(String title, Widget avatar, VoidCallback onPressed) {
     return Container(
       height: _itemHeight,
       child: FlatButton(
@@ -279,12 +312,7 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
                 padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
                 child: Row(
                   children: <Widget>[
-                    Avatar(
-                      userInteractionEnable: false,
-                      size: 40,
-                      borderRadius: 3,
-                      color: Colors.blue,
-                    ),
+                    avatar,
                     Expanded(
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 8),
