@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterwechat/data/constants/basic.dart';
 import 'package:flutterwechat/data/constants/constants.dart';
-import 'package:flutterwechat/data/constants/style.dart';
 import 'package:flutterwechat/ui/view/search_bar.dart';
 
 class ContactList extends StatefulWidget {

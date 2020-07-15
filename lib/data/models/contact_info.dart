@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterwechat/data/constants/shares.dart';
 import 'package:lpinyin/lpinyin.dart';
-import 'package:tuple/tuple.dart';
 
 class ContactInfo {
   Color avatar;

@@ -21,6 +21,9 @@ class Constant {
   static const AssertUtil assetsImagesContacts =
       AssertUtil('assets/images/contact/');
 
+  static const AssertUtil assetsImagesChatBarMore =
+      AssertUtil('assets/images/chat/chat_bar/more/');
+
   /// 我的模块资源
   static const AssertUtil assetsImagesMe = AssertUtil('assets/images/me/');
 

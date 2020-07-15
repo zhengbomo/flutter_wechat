@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterwechat/ui/components/normal_cell.dart';
 import 'package:flutterwechat/ui/components/normal_label_cell.dart';
-import 'package:flutterwechat/ui/components/normal_section.dart';
 import 'package:flutterwechat/ui/components/section_list_view.dart';
 import 'package:flutterwechat/ui/view/bm_appbar.dart';
 

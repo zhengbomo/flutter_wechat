@@ -14,6 +14,7 @@ class _AddFriendPageState extends State<AddFriendPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SearchListPage(
+        hideTabBar: false,
         searchPanel: Container(
           color: Colors.green,
         ),

@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:flutterwechat/data/constants/constants.dart';
 import 'package:flutterwechat/ui/components/page_indicator/page_indicator.dart';
 import 'package:tuple/tuple.dart';
 
 class MorePanel extends StatelessWidget {
   final PageController _pageController = PageController();
 
-  List<Tuple3<String, String, VoidCallback>> _firstPageData = [
-    Tuple3("照片", "", () {}),
-    Tuple3("拍摄", "", () {}),
-    Tuple3("视频通话", "", () {}),
-    Tuple3("位置", "", () {}),
-    Tuple3("红包", "", () {}),
-    Tuple3("转账", "", () {}),
-    Tuple3("语音输入", "", () {}),
-    Tuple3("收藏", "", () {}),
+  final List<Tuple3<String, String, VoidCallback>> _firstPageData = [
+    Tuple3("照片", "icons_filled_album.svg", () {}),
+    Tuple3("拍摄", "icons_filled_camera.svg", () {}),
+    Tuple3("视频通话", "icons_filled_video_call.svg", () {}),
+    Tuple3("位置", "icons_filled_location.svg", () {}),
+    Tuple3("红包", "icons_filled_red_envelope.svg", () {}),
+    Tuple3("转账", "icons_filled_transfer.svg", () {}),
+    Tuple3("语音输入", "icons_filled_mike.svg", () {}),
+    Tuple3("收藏", "icons_filled_favorites.svg", () {}),
   ];
 
-  List<Tuple3<String, String, VoidCallback>> _secondPageData = [
-    Tuple3("个人名片", "", () {}),
-    Tuple3("文件", "", () {}),
-    Tuple3("卡券", "", () {}),
+  final List<Tuple3<String, String, VoidCallback>> _secondPageData = [
+    Tuple3("个人名片", "icons_filled_me.svg", () {}),
+    Tuple3("文件", "icons_filled_folder.svg", () {}),
+    Tuple3("卡券", "icons_filled_cards&offers.svg", () {}),
   ];
   @override
   Widget build(BuildContext context) {
@@ -39,8 +41,8 @@ class MorePanel extends StatelessWidget {
                   child: GridView.builder(
                     physics: NeverScrollableScrollPhysics(),
                     itemBuilder: (context, i) {
-                      return _createItem(
-                          _firstPageData[i].item1, _firstPageData[i].item2);
+                      return _createItem(_firstPageData[i].item1,
+                          _firstPageData[i].item2, _firstPageData[i].item3);
                     },
                     itemCount: _firstPageData.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -54,8 +56,8 @@ class MorePanel extends StatelessWidget {
                   child: GridView.builder(
                     physics: NeverScrollableScrollPhysics(),
                     itemBuilder: (context, i) {
-                      return _createItem(
-                          _secondPageData[i].item1, _secondPageData[i].item2);
+                      return _createItem(_secondPageData[i].item1,
+                          _secondPageData[i].item2, _secondPageData[i].item3);
                     },
                     itemCount: _secondPageData.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -89,7 +91,7 @@ class MorePanel extends StatelessWidget {
     ]);
   }
 
-  Widget _createItem(String title, String icon) {
+  Widget _createItem(String title, String icon, VoidCallback onPressed) {
     return Column(
       children: <Widget>[
         Padding(
@@ -102,9 +104,14 @@ class MorePanel extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14)),
               onPressed: () {
                 print(title);
+                onPressed();
               },
               color: Colors.white60,
-              child: Icon(Icons.image),
+              child: SvgPicture.asset(
+                Constant.assetsImagesChatBarMore.named(icon),
+                width: 30,
+                height: 30,
+              ),
             ),
           ),
         ),

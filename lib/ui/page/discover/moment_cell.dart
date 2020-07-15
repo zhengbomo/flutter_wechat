@@ -203,7 +203,7 @@ class MomentCell extends StatelessWidget {
                                           operationBox
                                               .localToGlobal(Offset.zero),
                                           // 相对listview.item的offset
-                                          operationBox.localToGlobal(
+                                          extendContainerBox.localToGlobal(
                                               Offset.zero,
                                               ancestor: parentBox),
                                           // 目标位置的box

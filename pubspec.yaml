@@ -61,6 +61,7 @@ flutter:
     - assets/images/tabbar/
     - assets/images/chat/
     - assets/images/chat/chat_bar/
+    - assets/images/chat/chat_bar/more/
     - assets/images/chat/voice_volume/    
     - assets/images/mock/
     - assets/images/discover/

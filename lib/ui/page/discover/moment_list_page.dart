@@ -54,7 +54,7 @@ class _MomentListPageState extends State<MomentListPage> {
         print(height);
         _bottomViewModel.keyboardHeight = height;
         _scrollController.animateTo(
-            _scrollOffset - _bottomViewModel.bottomHeight,
+            _scrollOffset + _bottomViewModel.bottomHeight,
             duration: Constant.kCommonDuration,
             curve: Curves.easeInOut);
       }, willHideKeyboard: () {
@@ -248,21 +248,20 @@ class _MomentListPageState extends State<MomentListPage> {
                             .top;
 
                         // 获取位置
-                        var listViewRenderBox =
+                        RenderBox listViewRenderBox =
                             _listViewKey.currentContext.findRenderObject();
                         // 目标box相对listView的位置
                         final listViewOffset = renderBox.localToGlobal(
                             Offset.zero,
                             ancestor: listViewRenderBox);
+
+                        final moveOffset = listViewRenderBox.size.height -
+                            (listViewOffset.dy + renderBox.size.height);
+
                         // item相对listView的位置
-                        final itemOffset = _scrollController.offset -
-                            (listItemOffset.dy - listViewOffset.dy);
-                        final finalOffset = itemOffset +
-                            listItemOffset.dy -
-                            kToolbarHeight -
-                            paddingTop +
-                            renderBox.size.height;
-                        _scrollOffset = finalOffset;
+                        final itemOffset =
+                            _scrollController.offset - moveOffset;
+                        _scrollOffset = itemOffset;
                         _focusNode.requestFocus();
                         _currentMoment = momentInfo;
                       },
@@ -273,21 +272,22 @@ class _MomentListPageState extends State<MomentListPage> {
                             .padding
                             .top;
                         // 获取位置
-                        var listViewRenderBox =
+                        RenderBox listViewRenderBox =
                             _listViewKey.currentContext.findRenderObject();
+
                         // 目标box相对listView的位置
                         final listViewOffset = renderBox.localToGlobal(
                             Offset.zero,
                             ancestor: listViewRenderBox);
+
+                        // 向下移动距离
+                        final moveOffset = listViewRenderBox.size.height -
+                            (listViewOffset.dy + renderBox.size.height);
+
                         // item相对listView的位置
-                        final itemOffset = _scrollController.offset -
-                            (listItemOffset.dy - listViewOffset.dy);
-                        final finalOffset = itemOffset +
-                            listItemOffset.dy -
-                            kToolbarHeight -
-                            paddingTop +
-                            renderBox.size.height;
-                        _scrollOffset = finalOffset;
+                        final itemOffset =
+                            _scrollController.offset - moveOffset;
+                        _scrollOffset = itemOffset;
                         final model = _momentListProvider;
                         if (model.showOperateMore) {
                           model.setOperateMoreTop(show: false);

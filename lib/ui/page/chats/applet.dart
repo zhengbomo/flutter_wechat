@@ -16,51 +16,74 @@ class _AppletState extends State<Applet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // color: Colors.cyan,
       child: SizedBox(
         height: 50 * 2 + 100.0 * 2 + Constant.searchBarHeight,
-        child: SingleChildScrollView(
-          controller: _controller,
-          physics: AlwaysScrollableScrollPhysics(),
-          child: Column(
-            children: <Widget>[
-              SizedBox(
-                height: Constant.searchBarHeight,
-                child: SearchBar(beginEdit: () {
-                  // 编辑
-                }, cancelCallback: () {
-                  // 取消编辑
-                }),
-              ),
-              Container(
-                height: 50,
-                padding: EdgeInsets.only(left: 24),
-                alignment: Alignment.centerLeft,
-                child: Text("最近使用"),
-              ),
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(4, (index) => _createItem(context)),
+        child: NotificationListener<ScrollNotification>(
+          onNotification: (notification) {
+            if (notification is ScrollEndNotification) {
+              if (notification.metrics.pixels < Constant.searchBarHeight &&
+                  notification.metrics.pixels > 0) {
+                print(notification.metrics.pixels);
+
+                double offset = 0;
+                if (notification.metrics.pixels >
+                    Constant.searchBarHeight * 0.5) {
+                  offset = Constant.searchBarHeight;
+                } else {}
+                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                  _controller.animateTo(offset,
+                      duration: Constant.kCommonDuration,
+                      curve: Curves.easeInOut);
+                });
+              }
+            }
+
+            return false;
+          },
+          child: SingleChildScrollView(
+            controller: _controller,
+            physics: AlwaysScrollableScrollPhysics(),
+            child: Column(
+              children: <Widget>[
+                SizedBox(
+                  height: Constant.searchBarHeight,
+                  child: SearchBar(beginEdit: () {
+                    // 编辑
+                  }, cancelCallback: () {
+                    // 取消编辑
+                  }),
                 ),
-              ),
-              Container(
-                alignment: Alignment.centerLeft,
-                padding: EdgeInsets.only(left: 24),
-                height: 50,
-                child: Text("我的小程序"),
-              ),
-              Container(
-                height: 100,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(4, (index) => _createItem(context)),
+                Container(
+                  height: 50,
+                  padding: EdgeInsets.only(left: 24),
+                  alignment: Alignment.centerLeft,
+                  child: Text("最近使用"),
                 ),
-              ),
-              SizedBox(
-                height: Constant.searchBarHeight,
-              )
-            ],
+                Container(
+                  height: 100,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(4, (index) => _createItem(context)),
+                  ),
+                ),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.only(left: 24),
+                  height: 50,
+                  child: Text("我的小程序"),
+                ),
+                Container(
+                  height: 100,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(4, (index) => _createItem(context)),
+                  ),
+                ),
+                SizedBox(
+                  height: Constant.searchBarHeight,
+                )
+              ],
+            ),
           ),
         ),
       ),

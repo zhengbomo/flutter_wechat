@@ -12,10 +12,12 @@ typedef WidgetBuilder1<T> = Widget Function(BuildContext context, T searchBar);
 class SearchListPage extends StatelessWidget {
   final Widget appbar;
   final Widget searchPanel;
+  final bool hideTabBar;
   final WidgetBuilder1<Widget> builder;
   final ListSearchBarModel listSearchBarModel;
 
   SearchListPage({
+    this.hideTabBar = true,
     @required this.appbar,
     ListSearchBarModel listSearchBarModel,
     @required this.searchPanel,
@@ -32,12 +34,16 @@ class SearchListPage extends StatelessWidget {
             height: Constant.searchBarHeight,
             child: SearchBar(beginEdit: () {
               context.read<ListSearchBarModel>().changeFocus(true);
-              // 隐藏tabbar
-              context.read<MainBadgeModel>().showBottomTabBar(false);
+              if (hideTabBar) {
+                // 隐藏tabbar
+                context.read<MainBadgeModel>().showBottomTabBar(false);
+              }
             }, cancelCallback: () {
               context.read<ListSearchBarModel>().changeFocus(false);
-              // 显示tabbar
-              context.read<MainBadgeModel>().showBottomTabBar(true);
+              if (hideTabBar) {
+                // 显示tabbar
+                context.read<MainBadgeModel>().showBottomTabBar(true);
+              }
             }),
           );
         })),

@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutterwechat/data/constants/constants.dart';
-import 'package:flutterwechat/ui/components/action_sheet.dart';
 import 'package:flutterwechat/ui/components/avatar.dart';
 import 'package:flutterwechat/ui/components/navigator_service.dart';
 import 'package:flutterwechat/ui/components/normal_cell.dart';
