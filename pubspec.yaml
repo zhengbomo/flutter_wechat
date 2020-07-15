@@ -33,6 +33,9 @@ dependencies:
   bmprogresshud: ^0.0.8
   # 二维码
   qr_flutter: ^3.2.0
+  # 汉字转拼音
+  lpinyin: ^1.0.9
+
 
 
   flutter_sticky_header:
