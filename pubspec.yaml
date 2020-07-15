@@ -31,6 +31,9 @@ dependencies:
   tuple: ^1.0.3
   # HUD
   bmprogresshud: ^0.0.8
+  # 二维码
+  qr_flutter: ^3.2.0
+
 
   flutter_sticky_header:
    git:
@@ -61,6 +64,7 @@ flutter:
     - assets/images/me/
     - assets/images/contact/
     - assets/images/common/
+    - assets/images/test/
 
   # fonts:
   #   - family: Schyler

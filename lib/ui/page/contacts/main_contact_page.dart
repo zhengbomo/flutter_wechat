@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:flutterwechat/data/constants/constants.dart';
 import 'package:flutterwechat/data/models/contact_info.dart';
 import 'package:flutterwechat/ui/components/avatar.dart';
+import 'package:flutterwechat/ui/components/navigator_service.dart';
 import 'package:flutterwechat/ui/components/search_list_page.dart';
 import 'package:flutterwechat/ui/page/base/auto_keep_alive_state.dart';
+import 'package:flutterwechat/ui/page/contacts/add_freiend_page.dart';
 import 'package:flutterwechat/ui/page/contacts/index_bar.dart';
+import 'package:flutterwechat/ui/page/contacts/user_profile_page.dart';
 import 'package:flutterwechat/ui/page/main/search_panel.dart';
 import 'package:flutterwechat/utils/scroll_controller_ext.dart';
 import 'package:provider/provider.dart';
@@ -122,8 +126,11 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
           title: Text("通讯录"),
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () {},
+              icon: SvgPicture.asset(Constant.assetsImagesContacts
+                  .named("icons_outlined_add_friends.svg")),
+              onPressed: () {
+                NavigatorService.push(AddFriendPage());
+              },
             )
           ],
         ),
@@ -211,7 +218,13 @@ class _MainContactPageState extends AutoKeepAliveState<MainContactPage> {
                                       color: e.item2[i].avatar,
                                     );
                                     return _buildItem(
-                                        e.item2[i].name, avatar, () {});
+                                      e.item2[i].name,
+                                      avatar,
+                                      () {
+                                        NavigatorService.push(
+                                            UserProfilePage());
+                                      },
+                                    );
                                   },
                                   childCount: e.item2.length,
                                 ),

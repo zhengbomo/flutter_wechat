@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutterwechat/data/providers/main_badge_model.dart';
 import 'package:flutterwechat/ui/components/navigator_service.dart';
+import 'package:flutterwechat/ui/page/me/my_profile_page.dart';
 import 'package:flutterwechat/ui/page/me/setting/main_setting_page.dart';
 import 'package:flutterwechat/ui/page/me/take_video_moment.dart';
 import 'package:provider/provider.dart';
@@ -269,7 +270,7 @@ class _MePageState extends AutoKeepAliveState<MePage> {
   Widget _createHeader() {
     return GestureDetector(
       onTap: () {
-        print("profile");
+        NavigatorService.push(MyProfilePage());
       },
       child: Container(
         padding: EdgeInsets.fromLTRB(20, kToolbarHeight + 20, 20, 20),
@@ -279,6 +280,7 @@ class _MePageState extends AutoKeepAliveState<MePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Avatar(
+              userInteractionEnable: false,
               color: Colors.blueAccent,
               borderRadius: 6,
               size: 56,

@@ -17,7 +17,7 @@ class NormalButtonCell extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
-      height: Constant.normalCellHeight,
+      height: Constant.kNormalCellMinHeight,
       child: FlatButton(child: Text(info.text), onPressed: info.onPressed),
     );
   }

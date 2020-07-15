@@ -34,30 +34,32 @@ class NormalCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: Constant.normalCellHeight,
+    return ConstrainedBox(
+      constraints: BoxConstraints(minHeight: Constant.kNormalCellMinHeight),
       child: FlatButton(
         padding: EdgeInsets.zero,
         color: Colors.white,
         child: Column(
-          children: <Widget>[
-            Expanded(
-              child: Padding(
-                padding: Theme.of(context).buttonTheme.padding,
-                child: Row(
-                  children: <Widget>[
-                    if (cellInfo.icon != null) cellInfo.icon,
-                    Expanded(
-                      child: Padding(
-                        child: Text(cellInfo.title),
-                        padding: EdgeInsets.only(
-                            left: cellInfo.icon != null ? 12 : 0, right: 12),
-                      ),
+          children: [
+            Padding(
+              padding: Theme.of(context).buttonTheme.padding,
+              child: Row(
+                children: <Widget>[
+                  if (cellInfo.icon != null) cellInfo.icon,
+                  Expanded(
+                    child: Padding(
+                      child: Text(cellInfo.title),
+                      padding: EdgeInsets.only(
+                          left: cellInfo.icon != null ? 12 : 0, right: 12),
                     ),
-                    if (cellInfo.trailing != null) cellInfo.trailing,
-                    if (cellInfo.showArrow) CommonArrow(),
-                  ],
-                ),
+                  ),
+                  if (cellInfo.trailing != null) cellInfo.trailing,
+                  if (cellInfo.showArrow)
+                    SizedBox(
+                      height: Constant.kNormalCellMinHeight,
+                      child: CommonArrow(),
+                    ),
+                ],
               ),
             ),
             if (!cellInfo.hideSeperator)

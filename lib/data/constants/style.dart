@@ -34,4 +34,6 @@ class Style {
 
   /// 聊天输入栏背景色
   static const Color chatToolbarBackgroundColor = Color(0xFFF4f4f4);
+
+  static const Color highlightTextColor = Color(0xff364f80);
 }

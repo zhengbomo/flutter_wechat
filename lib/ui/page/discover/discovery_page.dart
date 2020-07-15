@@ -173,62 +173,6 @@ class _DiscoverPageState extends AutoKeepAliveState<DiscoverPage> {
         centerTitle: true,
         elevation: 0,
         title: Text("发现"),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              ActionSheet(
-                itemCount: 2,
-                itemBuilder: (c, i) {
-                  if (i == 0) {
-                    return SizedBox(
-                      height: 70,
-                      child: FlatButton(
-                        padding: EdgeInsets.zero,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              "拍摄",
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.w400),
-                            ),
-                            Text(
-                              "照片或视频",
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black26,
-                                  fontWeight: FontWeight.w400),
-                            )
-                          ],
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                    );
-                  } else {
-                    return SizedBox(
-                      height: 60,
-                      child: FlatButton(
-                        padding: EdgeInsets.zero,
-                        child: Text(
-                          "从手机相册选择",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w400),
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                    );
-                  }
-                },
-              ).show(context);
-            },
-          )
-        ],
       ),
       body: SectionListView(
         numberOfSection: () => _items.length,

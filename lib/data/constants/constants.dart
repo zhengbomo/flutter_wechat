@@ -24,6 +24,8 @@ class Constant {
   /// 我的模块资源
   static const AssertUtil assetsImagesMe = AssertUtil('assets/images/me/');
 
+  static const AssertUtil assetsImagesTest = AssertUtil('assets/images/test/');
+
   /// 微信模块相关的资源
   static const AssertUtil assetsImagesMock = AssertUtil('assets/images/mock/');
 
@@ -57,9 +59,6 @@ class Constant {
   /// normalcell的icon大小
   static const double normalCellIconSize = 24;
 
-  /// normalcell的高度
-  static const double normalCellHeight = 56;
-
   // 搜索框高度
   static const double searchBarHeight = 50;
 
@@ -67,4 +66,7 @@ class Constant {
 
   // 禁用安卓回弹效果
   static const SameScrollBehavior sameScrollBehavior = SameScrollBehavior();
+
+  // 普通cell最小高度
+  static const double kNormalCellMinHeight = 56;
 }
