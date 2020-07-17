@@ -97,7 +97,7 @@ class _AppletState extends State<Applet> {
       child: Column(
         children: <Widget>[
           Avatar(
-            color: Colors.red,
+            color: Colors.green,
             size: 50,
             borderRadius: 25,
           ),
