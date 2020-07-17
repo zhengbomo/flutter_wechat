@@ -33,6 +33,21 @@
 ![朋友圈页面](https://github.com/zhengbomo/flutter_wechat/blob/master/images/wechat_moment-min.gif?raw=true)
 ![安卓demo](https://github.com/zhengbomo/flutter_wechat/blob/master/images/wechat_android-min.gif?raw=true)
 
+## 问题
+
+### iOS在RichText使用WidgetSpan和gesture会报下面问题，而Android没有该问题
+
+```txt
+RangeError (index): Invalid value: Valid value range is empty: 0
+```
+
+这个问题在flutter 1.20 pre版本得到解决
+[](https://github.com/flutter/flutter/issues/51936#issuecomment-658662209)
+
+## 文章
+
+* [flutter仿微信聊天交互](https://blog.bombox.org/2020-06-30/flutter-chat-listview/)
+
 ## TODO
 
 * 扫一扫
