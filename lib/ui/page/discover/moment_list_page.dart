@@ -18,7 +18,6 @@ import 'package:flutterwechat/ui/view/bm_appbar.dart';
 import 'package:keyboard_utils/keyboard_listener.dart';
 import 'package:keyboard_utils/keyboard_utils.dart';
 import 'package:provider/provider.dart';
-import 'package:flutterwechat/utils/build_context_read.dart';
 
 class MomentListPage extends StatefulWidget {
   @override
@@ -89,7 +88,9 @@ class _MomentListPageState extends State<MomentListPage> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: MultiProvider(
+      body: PrimaryScrollController(
+        controller: _scrollController,
+        child: MultiProvider(
           providers: [
             ChangeNotifierProvider.value(value: _momentListProvider),
             ChangeNotifierProvider.value(value: _bottomViewModel),
@@ -193,8 +194,7 @@ class _MomentListPageState extends State<MomentListPage> {
                           final newOffset = _bottomViewModel.bottomHeight;
 
                           _scrollController.animateTo(
-                              _scrollOffset -
-                                  oldOffset +
+                              _scrollController.offset +
                                   (newOffset - oldOffset),
                               duration: Constant.kCommonDuration,
                               curve: Curves.easeInOut);
@@ -225,7 +225,7 @@ class _MomentListPageState extends State<MomentListPage> {
 
               return ListView.builder(
                 key: _listViewKey,
-                controller: _scrollController,
+                primary: true,
                 itemBuilder: (context, i) {
                   if (i == 0) {
                     return _createHeader(context);
@@ -241,12 +241,6 @@ class _MomentListPageState extends State<MomentListPage> {
                     return MomentCell(
                       momentInfo: momentInfo,
                       comment: (listItemOffset, renderBox) {
-                        final paddingTop = rootContext
-                            .getInheritedWidget<MediaQuery>()
-                            .data
-                            .padding
-                            .top;
-
                         // 获取位置
                         RenderBox listViewRenderBox =
                             _listViewKey.currentContext.findRenderObject();
@@ -266,11 +260,6 @@ class _MomentListPageState extends State<MomentListPage> {
                         _currentMoment = momentInfo;
                       },
                       moreOperate: (globalOffset, listItemOffset, renderBox) {
-                        final paddingTop = rootContext
-                            .getInheritedWidget<MediaQuery>()
-                            .data
-                            .padding
-                            .top;
                         // 获取位置
                         RenderBox listViewRenderBox =
                             _listViewKey.currentContext.findRenderObject();
@@ -382,7 +371,9 @@ class _MomentListPageState extends State<MomentListPage> {
                 ],
               );
             },
-          )),
+          ),
+        ),
+      ),
     );
   }
 

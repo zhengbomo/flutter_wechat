@@ -20,4 +20,7 @@ extension ScrollControllerExtension on ScrollController {
         this.position.minScrollExtent);
     position.jumpTo(offset);
   }
+
+  /// 是否到底了
+  bool get isReachEnd => this.offset >= this.position.maxScrollExtent;
 }

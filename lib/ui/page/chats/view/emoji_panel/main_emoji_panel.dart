@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:flutterwechat/data/constants/constants.dart';
 import 'package:flutterwechat/data/constants/style.dart';
 import 'package:flutterwechat/data/providers/chat_detail_emoji_model.dart';
@@ -59,6 +60,7 @@ class _MainEmojiPanelState extends State<MainEmojiPanel> {
         Container(
           height: 50,
           color: Style.chatToolbarBackgroundColor,
+          padding: EdgeInsets.only(bottom: 8),
           child: ListView.builder(
             controller: _scrollController,
             scrollDirection: Axis.horizontal,
@@ -75,19 +77,41 @@ class _MainEmojiPanelState extends State<MainEmojiPanel> {
                       },
                     ),
                   );
-                default:
-                  return SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: IconButton(
+                case 1:
+                  return Padding(
+                    padding: EdgeInsets.only(right: 8),
+                    child: FlatButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
                       onPressed: () {
                         _pageController.jumpToPage(i - 1);
                       },
                       color:
                           (context.watch<ChatDetailEmojiModel>().index == i - 1)
-                              ? Colors.red
-                              : Colors.black54,
-                      icon: Icon(Icons.check_circle_outline),
+                              ? Colors.white
+                              : Colors.transparent,
+                      child: SvgPicture.asset(
+                        Constant.assetsImagesChatBar
+                            .named("chat_bar_emoji.svg"),
+                        color: Colors.black,
+                      ),
+                    ),
+                  );
+                default:
+                  return Padding(
+                    padding: EdgeInsets.only(right: 8),
+                    child: FlatButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                      onPressed: () {
+                        _pageController.jumpToPage(i - 1);
+                      },
+                      color:
+                          (context.watch<ChatDetailEmojiModel>().index == i - 1)
+                              ? Colors.white
+                              : Colors.transparent,
+                      child: SvgPicture.asset(Constant.assetsImagesChatBar
+                          .named("icons_outlined_like.svg")),
                     ),
                   );
               }

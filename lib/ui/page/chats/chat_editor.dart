@@ -32,8 +32,17 @@ class _ChatEditorState extends State<ChatEditor>
 
   ChatMessageUIModel _uimodel;
 
+  ChatEditorModel _chatEditorModel;
+
   @override
   void initState() {
+    _chatEditorModel = ChatEditorModel(
+      text: "mmmmmmmmmmmmmmmmmmmmmmmmmmmm",
+      textChanged: (text) {
+        _onTextChanged();
+      },
+    );
+
     _subscribingId = _keyboardUtils.add(
         listener: KeyboardListener(willShowKeyboard: (height) {
       _uimodel.keyboardHeight = height;
@@ -73,8 +82,6 @@ class _ChatEditorState extends State<ChatEditor>
   }
 
   GlobalKey _textFieldKey = GlobalKey();
-  ChatEditorModel _chatEditorModel =
-      ChatEditorModel(text: "mmmmmmmmmmmmmmmmmmmmmmmmmmmm");
 
   @override
   Widget build(BuildContext context) {
@@ -144,11 +151,11 @@ class _ChatEditorState extends State<ChatEditor>
                                       maxLines: 3,
                                       minLines: 1,
                                       focusNode: widget.focusNode,
-                                      placeholder: "ddd",
+                                      placeholder: "",
                                       controller:
                                           _chatEditorModel.editingController,
                                       onChanged: (text) {
-                                        _onTextChanged(context);
+                                        _onTextChanged();
                                       },
                                     ),
                                   ),
@@ -273,7 +280,7 @@ class _ChatEditorState extends State<ChatEditor>
 
   GlobalKey emojiPanelKey = GlobalKey();
 
-  _onTextChanged(BuildContext context) {
+  _onTextChanged() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       var height = _textFieldKey.currentContext
           .findRenderObject()
@@ -322,7 +329,9 @@ class _IconButton extends StatelessWidget {
 class ChatEditorModel {
   final TextEditingController editingController;
 
-  ChatEditorModel({String text = ""})
+  final ValueChanged textChanged;
+
+  ChatEditorModel({String text = "", this.textChanged})
       : editingController = TextEditingController(text: text);
 
   ScrollController textScrollController = ScrollController();
@@ -330,12 +339,13 @@ class ChatEditorModel {
     final text = editingController.text;
     if (text.length > 0) {
       editingController.text = text.substring(0, text.length - 2);
+      this.textChanged(editingController.text);
     }
   }
 
   addInput(String input) {
     editingController.text += input;
-
+    this.textChanged(editingController.text);
     textScrollController.animateTo(
       textScrollController.position.maxScrollExtent,
       duration: Constant.kCommonDuration,
