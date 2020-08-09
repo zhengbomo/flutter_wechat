@@ -13,7 +13,7 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^0.1.3
-  flutter_svg: ^0.17.4
+  flutter_svg: ^0.18.0
   # 工具箱
   quiver: ^2.1.3
   provider: ^4.1.3
@@ -24,9 +24,9 @@ dependencies:
   # 动画工具
   # ezanimation: ^0.4.0
   # 富文本
-  extended_text: ^3.0.1
+  extended_text: ^4.0.0
   # 录音插件
-  flutter_plugin_record: ^0.1.7
+  flutter_plugin_record: ^0.2.1
   # 元组
   tuple: ^1.0.3
   # HUD
@@ -35,8 +35,8 @@ dependencies:
   qr_flutter: ^3.2.0
   # 汉字转拼音
   lpinyin: ^1.0.9
-
-
+  # 网络请求
+  dio: ^3.0.9
 
   flutter_sticky_header:
    git:
