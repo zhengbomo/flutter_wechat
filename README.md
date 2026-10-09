@@ -48,7 +48,7 @@ RangeError (index): Invalid value: Valid value range is empty: 0
 
 ## 文章
 
-* [flutter仿微信聊天交互](https://blog.bombox.org/2020-06-30/flutter-chat-listview/)
+* [flutter仿微信聊天交互](https://blog.33344.top/2020-06-30/flutter-chat-listview/)
 
 ## TODO
 
